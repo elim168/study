@@ -1,0 +1,27 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+          http://www.springframework.org/schema/security
+          http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+
+	<!-- <security:http security="none" pattern="/login.jsp" /> -->
+
+	<security:http auto-config="true">
+		<security:form-login login-page="/login.jsp"
+			login-processing-url="/login.do" username-parameter="username"
+			password-parameter="password"/>
+		<!-- 表示匿名用户可以访问 -->
+		<security:intercept-url pattern="/login*.jsp*"
+			access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		<security:intercept-url pattern="/**" access="ROLE_USER" />
+	</security:http>
+
+	<security:authentication-manager>
+		<security:authentication-provider>
+			<security:jdbc-user-service data-source-ref="dataSource" role-prefix="ROLE_"/>			
+		</security:authentication-provider>
+	</security:authentication-manager>
+
+</beans>

@@ -1,0 +1,9 @@
+#jdbc.driverClassName=com.mysql.jdbc.Driver
+#jdbc.url=jdbc:mysql://localhost:3306/learn_spring_security
+#jdbc.username=root
+#jdbc.password=yeelim
+
+jdbc.driverClassName=oracle.jdbc.driver.OracleDriver
+jdbc.url=jdbc:oracle:thin:@localhost:1521:orcl
+jdbc.username=elim
+jdbc.password=elim

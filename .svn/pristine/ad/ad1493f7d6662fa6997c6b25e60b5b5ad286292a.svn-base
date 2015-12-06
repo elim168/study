@@ -1,0 +1,189 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+          http://www.springframework.org/schema/security
+          http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+
+	<security:global-method-security pre-post-annotations="enabled">
+		<security:expression-handler ref="expressionHandler"/>
+	</security:global-method-security>
+
+	<bean id="expressionHandler" class="org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler">
+		<property name="permissionEvaluator" ref="aclPermissionEvaluator"/>
+	</bean>
+
+	<security:http use-expressions="true" entry-point-ref="casEntryPoint">
+		<security:custom-filter ref="casFilter" position="CAS_FILTER"/>
+		<security:form-login login-page="/login.jsp"
+			username-parameter="username" password-parameter="password"
+			login-processing-url="/login.do" />
+		<security:logout delete-cookies="JSESSIONID" />
+		<security:intercept-url pattern="/login.jsp*"
+			access="hasRole('ROLE_ANONYMOUS')" />
+		<security:intercept-url pattern="/admin.jsp"
+			access="hasRole('ROLE_ADMIN')" />
+		<security:intercept-url pattern="/**"
+			access="hasAnyRole('ROLE_USER','ROLE_ADMIN')" />
+	</security:http>
+
+<!-- 	<bean id="myPermissionEvaluator" class="com.yeelim.learn.spring.security.MyPermissionEvaluator" /> -->
+
+	<!-- Acl相关开始 -->
+	<bean id="aclPermissionEvaluator"
+		class="org.springframework.security.acls.AclPermissionEvaluator">
+		<constructor-arg ref="aclService" />
+		<!-- 手工注册DefaultPermissionFactory和其中的Permission -->
+		<property name="permissionFactory">
+			<bean class="org.springframework.security.acls.domain.DefaultPermissionFactory">
+				<constructor-arg value="com.yeelim.learn.spring.security.BasePermissionExt"/>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="aclService"
+		class="org.springframework.security.acls.jdbc.JdbcMutableAclService">
+		<constructor-arg ref="dataSource" />
+		<constructor-arg ref="lookupStrategy" />
+		<constructor-arg ref="aclCache" />
+		<!-- 指定新增acl_sid的脚本 -->
+		<property name="insertSidSql"
+			value="insert into acl_sid(id, principal, sid) values (seq_acl_sid.nextval, ?, ?)" />
+		<!-- 指定新增acl_class的脚本 -->
+		<property name="insertClassSql"
+			value="insert into acl_class(id, class) values (seq_acl_class.nextval, ?)" />
+		<!-- 指定新增acl_object_identity的脚本 -->
+		<property name="insertObjectIdentitySql"
+			value="insert into acl_object_identity(id, object_id_class, object_id_identity, owner_sid, entries_inheriting) values(seq_acl_object_identity.nextval, ?, ?, ?, ?)" />
+		<!-- 指定新增acl_entry的脚本 -->
+		<property name="insertEntrySql"
+			value="insert into acl_entry(id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure) values (seq_acl_entry.nextval, ?, ?, ?, ?, ?, ?, ?)" />
+		<!-- 查询刚刚新增的acl_sid的主键的SQL -->
+		<property name="sidIdentityQuery" value="select seq_acl_sid.currval from dual" />
+		<!-- 查询刚刚新增的acl_class的主键的SQL -->
+		<property name="classIdentityQuery" value="select seq_acl_class.currval from dual" />
+	</bean>
+
+	<bean id="lookupStrategy"
+		class="org.springframework.security.acls.jdbc.BasicLookupStrategy">
+		<constructor-arg ref="dataSource" />
+		<constructor-arg ref="aclCache" />
+		<constructor-arg ref="aclAuthorizationStrategy" />
+		<constructor-arg ref="grantingStrategy" />
+	</bean>
+
+	<bean id="aclCache"
+		class="org.springframework.security.acls.domain.EhCacheBasedAclCache">
+		<constructor-arg ref="cache" /><!-- 对应于Ehcache -->
+		<constructor-arg ref="grantingStrategy" />
+		<constructor-arg ref="aclAuthorizationStrategy" />
+	</bean>
+
+	<!-- 定义一个Ehcache -->
+	<bean id="cache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+		<property name="cacheName" value="aclCache" />
+		<property name="cacheManager" ref="aclCacheManager" />
+	</bean>
+
+	<!-- 定义CacheManager -->
+	<bean id="aclCacheManager"
+		class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+		<!-- 指定配置文件的位置 -->
+		<property name="configLocation" value="/WEB-INF/config/ehcache.xml" />
+		<!-- 指定新建的CacheManager的名称 -->
+		<property name="cacheManagerName" value="aclCacheManager" />
+	</bean>
+
+	<bean id="aclAuthorizationStrategy"
+		class="org.springframework.security.acls.domain.AclAuthorizationStrategyImpl">
+		<constructor-arg>
+			<list>
+				<bean class="org.springframework.security.core.authority.SimpleGrantedAuthority">
+					<constructor-arg value="ROLE_ADMIN" /><!-- 改变所有权需要的权限 -->
+				</bean>
+				<bean class="org.springframework.security.core.authority.SimpleGrantedAuthority">
+					<constructor-arg value="gaModifyAuditing" /><!-- 改变授权需要的权限 -->
+				</bean>
+				<bean class="org.springframework.security.core.authority.SimpleGrantedAuthority">
+					<constructor-arg value="gaGeneralChanges" /><!-- 改变其它信息所需要的权限 -->
+				</bean>
+			</list>
+		</constructor-arg>
+	</bean>
+
+	<bean id="grantingStrategy"
+		class="org.springframework.security.acls.domain.DefaultPermissionGrantingStrategy">
+		<constructor-arg>
+			<bean class="org.springframework.security.acls.domain.ConsoleAuditLogger" />
+		</constructor-arg>
+	</bean>
+
+	<!-- Acl相关结束 -->
+
+<!-- 	<security:authentication-manager alias="authenticationManager">
+		<security:authentication-provider
+			user-service-ref="userDetailsService">
+			<security:password-encoder hash="md5"
+				base64="true">
+				<security:salt-source user-property="username" />
+			</security:password-encoder>
+		</security:authentication-provider>
+	</security:authentication-manager> -->
+
+	
+	<!-- 整合Cas -->
+	<security:authentication-manager alias="authenticationManager">
+		<security:authentication-provider ref="casAuthenticationProvider"/>
+	</security:authentication-manager>
+
+	<bean id="casAuthenticationProvider"
+		class="org.springframework.security.cas.authentication.CasAuthenticationProvider">
+		<!-- 通过username来加载UserDetails -->
+		<property name="authenticationUserDetailsService">
+			<bean class="org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper">
+				<!-- 真正加载UserDetails的UserDetailsService实现 -->
+				<constructor-arg ref="userDetailsService" />
+			</bean>
+		</property>
+		<property name="serviceProperties" ref="serviceProperties" />
+		<!-- 配置TicketValidator在登录认证成功后验证ticket -->
+		<property name="ticketValidator">
+			<bean class="org.jasig.cas.client.validation.Cas20ServiceTicketValidator">
+				<!-- Cas Server访问地址的前缀 ，即根路径-->
+				<constructor-arg index="0" value="https://yeelim:8443/cas" />
+			</bean>
+		</property>
+		<property name="key" value="key4CasAuthenticationProvider" />
+	</bean>
+
+	<bean id="userDetailsService"
+		class="org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<bean id="casFilter"
+		class="org.springframework.security.cas.web.CasAuthenticationFilter">
+		<property name="authenticationManager" ref="authenticationManager" />
+		<!-- 指定处理地址，不指定时默认将会是“/j_spring_cas_security_check” -->
+		<property name="filterProcessesUrl" value="/j_spring_cas_security_check"/>
+	</bean>
+
+	<!-- 认证的入口 -->
+	<bean id="casEntryPoint"
+		class="org.springframework.security.cas.web.CasAuthenticationEntryPoint">
+		<!-- Cas Server的登录地址，elim是我的计算机名 -->
+		<property name="loginUrl" value="https://yeelim:8443/cas/login" />
+		<!-- service相关的属性 -->
+		<property name="serviceProperties" ref="serviceProperties" />
+	</bean>
+
+	<!-- 指定service相关信息 -->
+	<bean id="serviceProperties" class="org.springframework.security.cas.ServiceProperties">
+		<!-- Cas Server认证成功后的跳转地址，这里要跳转到我们的Spring Security应用，之后会由CasAuthenticationFilter处理，默认处理地址为/j_spring_cas_security_check -->
+		<property name="service"
+			value="http://yeelim:8080/Learn_SpringSecurity/j_spring_cas_security_check" />
+	</bean>
+    
+	
+</beans>

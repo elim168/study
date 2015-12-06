@@ -1,0 +1,18 @@
+/**
+ * 
+ */
+package com.yeelim.learn.spring.security.test;
+
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.memory.InMemoryDaoImpl;
+
+/**
+ * @author Yeelim
+ * @date 2014-6-7
+ * @time 上午10:47:53 
+ *
+ */
+public class Test {
+
+}

@@ -1,0 +1,58 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+          http://www.springframework.org/schema/security
+          http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+
+	<!-- 通过access-decision-manager-ref指定将要使用的AccessDecisionManager -->
+	<security:http access-decision-manager-ref="accessDecisionManager">
+		<security:form-login login-page="/login.jsp"
+			username-parameter="username" password-parameter="password"
+			login-processing-url="/login.do" />
+		<security:logout delete-cookies="JSESSIONID" />
+		<security:intercept-url pattern="/login.jsp*"
+			access="ROLE_ANONYMOUS" />
+		<security:intercept-url pattern="/login_success.jsp"
+			access="ROLE_ADMIN" />
+		<security:intercept-url pattern="/**" access="ROLE_USER" />
+	</security:http>
+
+	<security:authentication-manager alias="authenticationManager">
+		<security:authentication-provider
+			user-service-ref="userDetailsService">
+			<security:password-encoder hash="md5"
+				base64="true">
+				<security:salt-source user-property="username" />
+			</security:password-encoder>
+		</security:authentication-provider>
+	</security:authentication-manager>
+
+	<bean id="userDetailsService"
+		class="org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<!-- 自己定义AccessDecisionManager对应的bean -->
+	<bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
+		<property name="decisionVoters">
+			<list>
+				<ref local="roleVoter"/>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="roleVoter"
+		class="org.springframework.security.access.vote.RoleHierarchyVoter">
+		<constructor-arg ref="roleHierarchy" />
+	</bean>
+	<bean id="roleHierarchy"
+		class="org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl">
+		<property name="hierarchy"><!-- 角色继承关系 -->
+			<value>
+				ROLE_ADMIN > ROLE_USER
+			</value>
+		</property>
+	</bean>
+
+</beans>

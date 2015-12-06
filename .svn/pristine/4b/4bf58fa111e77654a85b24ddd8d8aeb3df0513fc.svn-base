@@ -1,0 +1,28 @@
+/**
+ * 
+ */
+package com.yeelim.learn.spring.security.service;
+
+import java.util.List;
+
+import com.yeelim.learn.spring.security.entity.User;
+
+/**
+ * @author Yeelim
+ * @date 2014-6-15
+ * @time 下午4:42:22 
+ *
+ */
+public interface UserService {
+
+	public void addUser(User user);
+	
+	public void updateUser(User user);
+	
+	public User find(int id);
+	
+	public void delete(int id);
+	
+	public List<User> findAll();
+	
+}
