@@ -1,4 +1,0 @@
-#user\u4FE1\u606F\u5E94\u9075\u5FAA\u5982\u4E0B\u683C\u5F0F
-#username=password,grantedAuthority[,grantedAuthority][,enabled|disabled]
-user=user,ROLE_USER
-admin=admin,ROLE_USER,ROLE_ADMIN
