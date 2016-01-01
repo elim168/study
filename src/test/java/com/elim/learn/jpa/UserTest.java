@@ -11,6 +11,16 @@ import org.junit.Test;
 
 import com.elim.learn.jpa.entity.User;
 
+
+/**
+ * 
+ * JPA基本用法的测试类
+ *
+ * @author elim
+ *
+ * @date 2016年1月1日 下午10:53:34
+ *
+ */
 public class UserTest {
 
 	/**
@@ -85,6 +95,60 @@ public class UserTest {
 //		transaction.commit();
 //		entityManager.close();
 		System.out.println(user);
+	}
+	
+	/**
+	 * find方法是通过主键查询实体对象，类似于Hibernate中的get方法。<br/>
+	 * 如果对应主键的实体对象在数据库中不存在，则将返回null。
+	 */
+	@Test
+	public void testFind() {
+		User user = entityManager.find(User.class, 1);
+		System.out.println(user);
+	}
+
+	/**
+	 * JPA的remove方法用于将持久化的对象删除。对应的参数必须是一个持久化对象，如果给定的参数不是一个持久化对象则将抛出IllegalArgumentException。
+	 */
+	@Test
+	public void testRemove() {
+		User user = entityManager.getReference(User.class, 3);
+		entityManager.remove(user);
+	}
+	
+	/**
+	 * JPA的merge方法用于将实体对象的状态与持久化环境（数据库）中的进行合并，返回持久化后的对象。<br/>
+	 * 如果需要进行merge的实体对象没有指定主键，则将直接进行新增操作。
+	 */
+	@Test
+	public void testMerge1() {
+		User user = new User();
+		user.setName("张三");
+		user.setAge(30);
+		//返回持久化后的对象
+		User persistenceUser = entityManager.merge(user);
+		System.out.println(user == persistenceUser);//false
+		System.out.println(user.getId());//null
+		System.out.println(persistenceUser.getId());//持久化后的主键
+	}
+	
+	/**
+	 * JPA的merge方法用于将实体对象的状态与持久化环境（数据库）中的进行合并，返回持久化后的对象。<br/>
+	 * 如果需要进行merge的实体对象指定了主键，则分如下几种情况：
+	 * <li>如果数据库中存在指定主键的实体对象，则将进行更新操作。</li>
+	 * <li>如果数据库中不存在指定主键的实体对象，则将进行新增操作，新持久化的实体的主键将根据对应实体指定的主键策略产生。</li>
+	 */
+	@Test
+	public void testMerge2() {
+		User user = new User();
+		user.setId(50);//指定主键ID的值为5
+		user.setName("李四");
+		user.setAge(40);
+		//返回持久化后的对象
+		User persistenceUser = entityManager.merge(user);
+		System.out.println(user == persistenceUser);//false
+		System.out.println(user.getId());//5
+		System.out.println(persistenceUser.getId());//持久化后的主键，可能是5也可能不是。
 	}
 	
 }
