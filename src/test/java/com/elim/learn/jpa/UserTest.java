@@ -125,7 +125,7 @@ public class UserTest {
 		User user = new User();
 		user.setName("张三");
 		user.setAge(30);
-		//返回持久化后的对象
+		//返回持久化后的对象。merge方法的参数可以是一个临时状态的对象，也可以是刚从数据库查询出来的持久化对象
 		User persistenceUser = entityManager.merge(user);
 		System.out.println(user == persistenceUser);//false
 		System.out.println(user.getId());//null
@@ -140,15 +140,12 @@ public class UserTest {
 	 */
 	@Test
 	public void testMerge2() {
-		User user = new User();
-		user.setId(50);//指定主键ID的值为5
+		User user = entityManager.find(User.class, 8);
 		user.setName("李四");
 		user.setAge(40);
 		//返回持久化后的对象
 		User persistenceUser = entityManager.merge(user);
-		System.out.println(user == persistenceUser);//false
-		System.out.println(user.getId());//5
-		System.out.println(persistenceUser.getId());//持久化后的主键，可能是5也可能不是。
+		System.out.println(user == persistenceUser);//true，因为进行merge的对象本来就是一个持久化对象
 	}
 	
 }
