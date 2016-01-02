@@ -147,5 +147,36 @@ public class UserTest {
 		User persistenceUser = entityManager.merge(user);
 		System.out.println(user == persistenceUser);//true，因为进行merge的对象本来就是一个持久化对象
 	}
+
+	/**
+	 * JPA的flush方法用于将持久化上下文中的实体对象状态与数据库进行同步，即如果对持久化上下文中的对象进行了更改，则会将更改同步到数据库中。
+	 * 此方法的好处是更改了持久化上下文中的实体对象状态后，将对应的状态同步到数据库中后，在同一事务的其它地方从数据库中查询实体对象时能获取到对实体对象的更改内容。
+	 */
+	@Test
+	public void testFlush() {
+		User user = entityManager.getReference(User.class, 2);
+		user.setName("李四");
+		//发出update语句，将实体对象的状态同步到内存中
+		entityManager.flush();
+		user.setName("张三");
+		//发出update语句，因为持久化上下文中的实体对象与数据库中的已经不一致了。
+		entityManager.flush();
+		//不会发出SQL语句，因为持久化上下文中的实体对象与数据库的是一致的。
+		entityManager.flush();
+		//不会发出SQL语句，因为持久化上下文中已经存在了对应的实体对象。
+		entityManager.find(User.class, 2);
+	}
+	
+	/**
+	 * 在EntityManager没有关闭并且开启了事务(事务没有被标记为只读)的情况下，如果对查询出来的实体对象进行了更改，则在提交事务时
+	 * 将自动与数据库进行同步。
+	 */
+	@Test
+	public void testAutoFlush() {
+		transaction.setRollbackOnly();
+		User user = entityManager.getReference(User.class, 9);
+		user.setAge(50);
+		user.setName("王五");
+	}
 	
 }
