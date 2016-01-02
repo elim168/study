@@ -21,7 +21,7 @@ import com.elim.learn.jpa.entity.User;
  * @date 2016年1月1日 下午10:53:34
  *
  */
-public class UserTest {
+public class BasicTest {
 
 	/**
 	 * 类似于Hibernate里面的SessionFactory，是专门创建EntityManager的
