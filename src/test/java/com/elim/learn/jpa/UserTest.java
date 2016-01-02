@@ -32,7 +32,7 @@ public class UserTest {
 	 */
 	private EntityManager entityManager;
 	/**
-	 * 事务控制的接口，用于事务的启动、提交、回滚等
+	 * 事务控制的接口，用于事务的启动、提交、回滚和设置只读等
 	 */
 	private EntityTransaction transaction;
 	
