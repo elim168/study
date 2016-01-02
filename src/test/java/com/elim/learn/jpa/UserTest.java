@@ -164,7 +164,7 @@ public class UserTest {
 		//不会发出SQL语句，因为持久化上下文中的实体对象与数据库的是一致的。
 		entityManager.flush();
 		//不会发出SQL语句，因为持久化上下文中已经存在了对应的实体对象。
-		entityManager.find(User.class, 2);
+		user = entityManager.find(User.class, 2);
 	}
 	
 	/**
@@ -177,6 +177,18 @@ public class UserTest {
 		User user = entityManager.getReference(User.class, 9);
 		user.setAge(50);
 		user.setName("王五");
+	}
+	
+	/**
+	 * JPA的refresh方法用于将数据库中的实体对象与内存中的实体对象进行同步，如果内存中的实体对象有更改，则将用数据库中的覆盖内存中的对应更改。
+	 */
+	@Test
+	public void testRefresh() {
+		User user = entityManager.find(User.class, 2);
+		String name = user.getName();//User对象的原始name属性值
+		user.setName(user.getName() + "-1");
+		entityManager.refresh(user);
+		System.out.println(user.getName().equals(name));//true
 	}
 	
 }
