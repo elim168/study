@@ -25,6 +25,10 @@ public class User {
 		this.id = id;
 	}
 
+	/**
+	 * Column注解用于指定普通属性对应的字段信息，如果是对象关联这样的将使用@JoinColumn注解来指定字段信息
+	 * @return
+	 */
 	@Column(name="user_name")
 	public String getName() {
 		return name;
