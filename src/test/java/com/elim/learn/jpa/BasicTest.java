@@ -191,4 +191,14 @@ public class BasicTest {
 		System.out.println(user.getName().equals(name));//true
 	}
 	
+	/**
+	 * JPA的detach方法用于将实体对象从当前持久化上下文中移除，这样对对应的实体对象所进行的更改将不再会flush到数据库中。
+	 */
+	@Test
+	public void testDetach() {
+		User user = entityManager.find(User.class, 1);
+		entityManager.detach(user);
+		user.setName("Name Reset");
+	}
+	
 }
