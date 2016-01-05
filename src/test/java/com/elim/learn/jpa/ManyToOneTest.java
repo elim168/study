@@ -62,13 +62,31 @@ public class ManyToOneTest {
 	 * 保存多的一方时会自动把一的那一方的主键存到关联的字段中去。
 	 */
 	@Test
-	public void testPersistence() {
+	public void testPersist() {
 		User author = entityManager.getReference(User.class, 4);
 		Article article = new Article();
 		article.setAuthor(author);
 		article.setTitle("标题-----");
 		article.setContent("这是一篇什么什么样的文章。");
 		entityManager.persist(article);
+	}
+	
+	/**
+	 * 对于单向的多对一关联，如果在进行persist时多的一方和一的一方都是新new出来的，则如果先persist一的一方再persist多的一方，则多的一方能正确的维持一的那方的关联关系，这其实
+	 * 很好理解，因为在持久化一的那方后其已经变成了一个持久化对象，并且已经持有主键ID值，在持久化多的一方时就能正确的把一那方的主键值存储进去。反过来，如果是先持久化多的那方，再持久化一的那方，
+	 * 则多的那方不能正确的维持多的那方对一的那方的关系。
+	 */
+	@Test
+	public void testPersist2() {
+		User author = new User();
+		author.setName("Author123");
+		author.setAge(39);
+		Article article = new Article();
+		article.setTitle("title123");
+		article.setContent("content123");
+		entityManager.persist(article);
+		entityManager.persist(author);
+		System.out.println("-------------分界线------------");
 	}
 	
 	/**
@@ -102,7 +120,6 @@ public class ManyToOneTest {
 		article.setContent("content for test");
 		//只持久化多的一方，article
 		entityManager.merge(article);
-		System.out.println("--------------------分界线--------------------");
 	}
 	
 	/**
