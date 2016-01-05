@@ -1,5 +1,6 @@
 package com.elim.learn.jpa.entity;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -58,7 +59,7 @@ public class Article {
 	 * @return
 	 */
 	@JoinColumn(name="author_id")
-	@ManyToOne(fetch=FetchType.LAZY)
+	@ManyToOne(fetch=FetchType.LAZY, cascade={CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH})
 	public User getAuthor() {
 		return author;
 	}
