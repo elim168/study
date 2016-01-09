@@ -55,7 +55,8 @@ public class Article {
 
 	/**
 	 * ManyToOne用于指定多对一关系。ManyToOne等这样的对应关系将使用@JoinColumn注解来指定对应关联的字段的信息，而不能再使用@Column。<br/>
-	 * 可以通过@ManyToOne的fetch属性指定一的一方是懒加载还是一开始就加载出来。
+	 * 可以通过@ManyToOne的fetch属性指定一的一方是懒加载还是一开始就加载出来。<br/>
+	 * 可以通过@ManyToOne的cascade属性指定对一的一方的级联形式，CascadeType.ALL表示所有的可级联的操作都将级联
 	 * @return
 	 */
 	@JoinColumn(name="author_id")
