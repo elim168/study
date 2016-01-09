@@ -1,7 +1,9 @@
 package com.elim.learn.jpa.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -25,7 +27,7 @@ public class Lock {
 
 	private Integer id;
 	private String no;
-	private List<Key> keys;
+	private List<Key> keys = new ArrayList<Key>();
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -52,7 +54,7 @@ public class Lock {
 	 * 
 	 */
 	@JoinColumn(name="lock_id")
-	@OneToMany()
+	@OneToMany(cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE, CascadeType.REFRESH, CascadeType.DETACH})
 	public List<Key> getKeys() {
 		return keys;
 	}
