@@ -3,6 +3,8 @@
 	<persistence-unit name="jpa" transaction-type="RESOURCE_LOCAL">
 		<!-- JPA的PersistenceProvider的实现者，如果当前环境下只有一个JPA实现者则可以不用指定 -->
 		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+		<!-- 指定二级缓存的策略 -->
+		<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
 			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/jpa"/>
@@ -12,6 +14,8 @@
 			<property name="hibernate.show_sql" value="true"/>
 			<property name="hibernate.format_sql" value="true"/>
 			<property name="hibernate.hbm2ddl.auto" value="update"/>
+			<property name="cache.use_second_level_cache" value="true"/>
+			<property name="hibernate.cache.region.factory_class" value="org.hibernate.cache.ehcache.EhCacheRegionFactory"/>
 		</properties>
 	</persistence-unit>
 </persistence>
