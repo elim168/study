@@ -8,11 +8,18 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Cacheable
+@NamedQuery(name="queryName", query="from User u where u.age < ?")
+@NamedQueries({
+	@NamedQuery(name="query1", query="from User u where u.name like ?"),
+	@NamedQuery(name="query2", query="from User u where u.name = ?")
+	})
 @Entity
 @Table(name="t_user")
 public class User {
