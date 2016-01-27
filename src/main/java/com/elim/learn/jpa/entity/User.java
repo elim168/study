@@ -1,5 +1,7 @@
 package com.elim.learn.jpa.entity;
 
+import java.util.Date;
+
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -7,6 +9,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 @Cacheable
 @Entity
@@ -16,7 +20,18 @@ public class User {
 	private Integer id;
 	private String name;
 	private Integer age;
+	private Date birthday;
+	private Date createdDate = new Date();
 
+	public User() {
+		
+	}
+	
+	public User(String name, Integer age) {
+		this.name = name;
+		this.age = age;
+	}
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	public Integer getId() {
@@ -48,9 +63,33 @@ public class User {
 		this.age = age;
 	}
 
+	/**
+	 * @Temporal用于标注在java.util.Date类型和java.util.Calendar类型上来指定日期类型，可选值有TemporalType.DATE、TIME和TIMESTAMP
+	 * @return
+	 */
+	@Temporal(TemporalType.DATE)
+	public Date getBirthday() {
+		return birthday;
+	}
+
+	public void setBirthday(Date birthday) {
+		this.birthday = birthday;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
+
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", name=" + name + ", age=" + age + "]";
+		return "User [id=" + id + ", name=" + name + ", age=" + age
+				+ ", birthday=" + birthday + ", createdDate=" + createdDate
+				+ "]";
 	}
 	
 }
