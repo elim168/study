@@ -1,5 +1,8 @@
 package com.elim.learn.jpa;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -7,6 +10,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
+import javax.persistence.TemporalType;
 
 import org.junit.After;
 import org.junit.Before;
@@ -102,6 +106,11 @@ public class JpqlTest {
 		System.out.println(user);
 	}
 	
+	/**
+	 * 当只查询对象的某一个属性时默认返回的是该属性类型对应的List。<br/>
+	 * 当查询的是对象的多个属性时，默认返回的是多个属性组成的数组的List。<br/>
+	 * 当查询的是对象的多个属性时，如果希望返回的是对象的List时，则可以利用对应的属性来构造该对象，前提是该对象有对应的构造方法。<br/>
+	 */
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testQuery4() {
@@ -113,9 +122,50 @@ public class JpqlTest {
 		
 		String jpql2 = "select user.name, user.age from User user";
 		Query query2 = entityManager.createQuery(jpql2);
-		//当查询的是对象的多个属性时返回的则是多个属性组成的一个数组的List集合
+		//当查询的是对象的多个属性时默认返回的则是多个属性组成的一个数组的List集合
 		List<Object[]> users2 = query2.getResultList();
 		System.out.println(users2);
+		
+		//当查询的是对象的多个属性时如果希望返回该对象List，则可以通过查询出来的多个属性构造对应的对象。
+		String jpql3 = "select new User(user.name, user.age) from User user";
+		Query query3 = entityManager.createQuery(jpql3);
+		List<User> users3 = query3.getResultList();
+		System.out.println(users3);
+	}
+	
+	/**
+	 * 在给javax.persistence.Query设定参数时还可以通过指定的参数名来设定参数值，如果是java.util.Date或Calendar类型还可以
+	 * @throws ParseException
+	 */
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testQuery5() throws ParseException {
+		String jpql = "from User user where user.createdDate <= ? and user.createdDate >= :startDate";
+		Query query = entityManager.createQuery(jpql);
+		query.setParameter(1, new Date());
+		//通过setParameter(String name, Date value, TemporalType temporalType)来设定参数;
+		query.setParameter("startDate", new SimpleDateFormat("yyyy-MM-dd").parse("2016-01-01"), TemporalType.DATE);
+		//Query的getResultList()方法用于将查询结果作为一个List进行返回。
+		List<User> users = query.getResultList();
+		System.out.println(users);
+	}
+	
+	/**
+	 * JPA支持对Query进行命名，然后在多个地方基于命名的Query进行查询。具体实现方式是在实体类上使用@NamedQuery来定义一个查询，
+	 * 其主要包含两个参数name和query，分别用来指定查询的名字和查询语句。然后就可以通过EntityManager的createNamedQuery()方法
+	 * 来基于指定名字的Query来创建一个Query对象了。<br/>
+	 * 但是在一个实体类上只能使用一个@NamedQuery进行标注，如果需要在一个实体类上使用多个@NamedQuery则可以使用@NamedQueries来标注，
+	 * 其value参数接收一个@NamedQuery的数组，用以定义多个命名的Query。
+	 */
+	@Test
+	public void testNamedQuery() {
+		Query query = entityManager.createNamedQuery("queryName");
+		query.setParameter(1, 35);
+		System.out.println(query.getResultList());;
+		
+		Query query1 = entityManager.createNamedQuery("query1");
+		query1.setParameter(1, "%张%");
+		System.out.println(query1.getResultList());;
 	}
 	
 }
