@@ -168,4 +168,42 @@ public class JpqlTest {
 		System.out.println(query1.getResultList());;
 	}
 	
+	/**
+	 * 当我们希望直接基于数据库表进行操作时，我们可以创建基于数据库的SQL查询，即createNativeQuery
+	 */
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testNativeQuery() {
+		String sql = "select user_name from t_user";
+		Query query = entityManager.createNativeQuery(sql);
+		//当只查询某一个字段时返回的是所有该字段对应的一个List
+		List<String> users = query.getResultList();
+		System.out.println(users);
+		
+		String sql2 = "select user_name, age from t_user";
+		Query query2 = entityManager.createNativeQuery(sql2);
+		//当查询的是多个字段时默认返回的则是多个字段组成的一个数组的List集合
+		List<Object[]> users2 = query2.getResultList();
+		System.out.println(users2);
+	}
+	
+	/**
+	 * JPQL也可以进行DDL操作，当我们的JPQL语句是进行DDL操作时需要调用Query的executeUpdate()方法。<br/>
+	 * 我们可以通过它进行update和delete操作，insert操作貌似是不支持的。
+	 */
+	@Test
+	public void testUpdate() {
+		String jpql = "update User u set u.name = ?,u.age = ?,u.birthday = ? where u.id = ?";
+		Query query = entityManager.createQuery(jpql);
+		query.setParameter(1, "LiSi").setParameter(2, 32).setParameter(3, new Date()).setParameter(4, 10);
+		//执行更新操作
+		query.executeUpdate();
+		
+		String jpql2 = "delete User u where u.id = ?";
+		Query query2 = entityManager.createQuery(jpql2);
+		query2.setParameter(1, 11);
+		//执行更新操作
+		query2.executeUpdate();
+	}
+	
 }
