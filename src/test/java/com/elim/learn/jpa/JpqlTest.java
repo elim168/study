@@ -206,4 +206,18 @@ public class JpqlTest {
 		query2.executeUpdate();
 	}
 	
+	/**
+	 * JPQL也支持利用group by进行分组查询筛选出满足分组条件的内容，分组字段也可以直接是一个对象，筛选出来查询出来的也可以直接是一个对象，
+	 * 这就为我们在需要分组查询出某一个对象时简单了很多。
+	 */
+	@SuppressWarnings({"unchecked" })
+	@Test
+	public void testGroupBy() {
+		//根据作者进行分组，找出发表文章数量超过一篇的作者
+		String jpql = "select a.author from Article a group by a.author having count(1) > 1";
+		Query query = entityManager.createQuery(jpql);
+		List<User> authors = query.getResultList();
+		System.out.println(authors);
+	}
+	
 }
