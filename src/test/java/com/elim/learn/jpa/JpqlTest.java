@@ -8,6 +8,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
+import javax.persistence.FetchType;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
@@ -16,6 +17,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.elim.learn.jpa.entity.Lock;
 import com.elim.learn.jpa.entity.User;
 
 public class JpqlTest {
@@ -218,6 +220,44 @@ public class JpqlTest {
 		Query query = entityManager.createQuery(jpql);
 		List<User> authors = query.getResultList();
 		System.out.println(authors);
+	}
+	
+	/**
+	 * left join fetch和left outer join fetch的效果是一样的，它可以在查询出某一个对象时利用左外关联的方式把该对象关联的其它对象一并查出来，
+	 * 类似于我们设置fetch=FetchType.EAGER，而查询出来的还是我们的那个对象。类似于该示例中，其查询出来的还是Lock对象，但是其查询的时候通过左外关联的
+	 * 形式把其关联的keys一并查询出来了，这样在我们需要获取Lock对象的keys属性时就不再需要去数据库中进行查询了。这样的好处是我们在查询对象时，有的地方可以使用
+	 * 懒加载，而有的地方又可以不用，非常的方便。
+	 */
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testLeftJoinFetch() {
+		String jpql = "from Lock a left join fetch a.keys ";
+		Query query = entityManager.createQuery(jpql);
+		List<Lock> locks = query.getResultList();
+		System.out.println(locks);
+	}
+	
+	/**
+	 * 对于两个本身就有关联的对象，基于对象的左关联，我们只需要关联对象即可，不需要去用on关键字
+	 */
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testLeftJoin() {
+		String jpql = "from Lock a left join a.keys b ";
+		Query query = entityManager.createQuery(jpql);
+		//返回的是一个数组组成的列表，数组中包含的是Lock和Key对应的表中的所有字段
+		List<Object[]> locks = query.getResultList();
+		System.out.println(locks);
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testInnerJoin() {
+		String jpql = "from Lock a inner join a.keys ";
+		Query query = entityManager.createQuery(jpql);
+		//返回的是一个数组组成的列表，数组中包含的是Lock和Key对应的表中的所有字段
+		List<Object[]> locks = query.getResultList();
+		System.out.println(locks);
 	}
 	
 }
