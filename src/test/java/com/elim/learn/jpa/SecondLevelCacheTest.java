@@ -4,7 +4,9 @@ import javax.persistence.Cache;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.Query;
 
+import org.hibernate.annotations.QueryHints;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -83,6 +85,50 @@ public class SecondLevelCacheTest {
 		entityManager2.find(User.class, 1);
 		entityManager.close();
 		entityManager2.close();
+	}
+	
+	@Test
+	public void testSecondCache3() {
+		EntityManager entityManager = entityManagerFactory.createEntityManager();
+		String qlString = "from User a where a.id = ?";
+		Query query = entityManager.createQuery(qlString);
+		//参数的索引是从1开始的
+		query.setParameter(1, 1);
+		query.getResultList();
+		Cache cache = entityManagerFactory.getCache();
+		System.out.println(cache.contains(User.class, 1));//true
+		EntityManager entityManager2 = entityManagerFactory.createEntityManager();
+		//不会发出SQL语句，因为缓存中已经存在主键为1的User对象了
+		entityManager2.find(User.class, 1);
+		
+		EntityManager entityManager3 = entityManagerFactory.createEntityManager();
+		query = entityManager3.createQuery(qlString);
+		query.setParameter(1, 1);
+		query.getResultList();
+		
+		EntityManager entityManager4 = entityManagerFactory.createEntityManager();
+		query = entityManager4.createQuery(qlString);
+		query.setParameter(1, 1);
+		query.getResultList();
+		
+	}
+	
+	/**
+	 * 在基于Hibernate实现的JPA中使用Hibernate的查询缓存时在基于同一个EntityManager建立的Query时，如果第二个Query的语句和第一个
+	 * 的一致，则第二次查询不会发出SQL语句，而直接从缓存中取对应的结果。具体操作我们首先需要在persistence.xml通过设置名为hibernate.cache.use_query_cache
+	 * 的property值为true以启用Hibernate的查询缓存，然后在创建了Query后设置其org.hibernate.cacheable属性为true，表示当前的查询结果可以缓存。
+	 */
+	@Test
+	public void testHibernateQueryCache() {
+		EntityManager entityManager = entityManagerFactory.createEntityManager();
+		String qlString = "from User";
+		Query query = entityManager.createQuery(qlString);
+		query.setHint(QueryHints.CACHEABLE, true);
+		query.getResultList();
+		String qlString2 = "from User";
+		Query query2 = entityManager.createQuery(qlString2);
+		query2.setHint(QueryHints.CACHEABLE, true);
+		query2.getResultList();
 	}
 	
 }
