@@ -1,16 +1,15 @@
 package com.elim.learn.jpa.spring.service.impl;
 
-import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.elim.learn.jpa.spring.dao.RoleDao;
 import com.elim.learn.jpa.spring.entity.Role;
 import com.elim.learn.jpa.spring.service.RoleService;
 
 @Service("roleService")
-@Transactional
 public class RoleServiceImpl implements RoleService {
 
 	@Autowired
