@@ -40,6 +40,7 @@
 	<!-- 可以定义自己的DataSource，也可以直接使用persistence.xml中persistence-unit中定义的 -->
 	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"></bean>
 	
-	<bean id="jpaTransactionManager" class="org.springframework.orm.jpa.JpaTransactionManager"></bean>
+	<!-- 使用JPA时要加入支持JPA的事务管理器 -->
+	<bean id="jpaTransactionManager" class="org.springframework.orm.jpa.JpaTransactionManager"/>
 	
 </beans>
