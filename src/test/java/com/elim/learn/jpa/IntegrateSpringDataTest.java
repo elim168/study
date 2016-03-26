@@ -25,11 +25,14 @@ public class IntegrateSpringDataTest {
 	private OrganizationService orgService;
 	
 	/**
-	 * JpaRepository的save()相当于JPA里面EntityManager的persist方法。
+	 * JpaRepository的save()相当于JPA里面EntityManager的merge方法，
+	 * 如果对应的save的实体指定来主键，且对应的主键的对象在数据库中已经存在，则进行更新操作，否则
+	 * 进行新增操作。
 	 */
 	@Test
 	public void testSave() {
 		Organization org = new Organization();
+		org.setId(10);
 		org.setNo("A001");
 		org.setName("Org1");
 		orgRepository.save(org);
@@ -58,7 +61,7 @@ public class IntegrateSpringDataTest {
 	}
 	
 	/**
-	 * JpaRepository的saveAndFlush()方法相当于EntityManager的merge方法，可用于新增和更新。
+	 * JpaRepository的saveAndFlush()方法相当于相当于先进行save再进行flush操作。
 	 */
 	@Test
 	public void testSaveAndFlush() {
