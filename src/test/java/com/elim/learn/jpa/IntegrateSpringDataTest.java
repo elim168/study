@@ -62,7 +62,9 @@ public class IntegrateSpringDataTest {
 	 */
 	@Test
 	public void testSaveAndFlush() {
-		Organization org = orgRepository.findOne(2);
+//		Organization org = orgRepository.findOne(2);
+		Organization org = new Organization();
+		org.setId(1);
 		org.setNo("B001");
 		orgRepository.saveAndFlush(org);
 	}
