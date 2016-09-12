@@ -11,11 +11,11 @@ import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.elim.learn.redis.pubsub.PubSubMessageHandler;
 import com.elim.learn.redis.pubsub.listener.MyPubSubListener;
 import com.lambdaworks.redis.RedisClient;
 import com.lambdaworks.redis.RedisConnection;
 import com.lambdaworks.redis.RedisFuture;
+import com.lambdaworks.redis.pubsub.RedisPubSubAdapter;
 import com.lambdaworks.redis.pubsub.RedisPubSubConnection;
 import com.lambdaworks.redis.pubsub.RedisPubSubListener;
 
@@ -43,31 +43,37 @@ public class PubSubTest {
 
 			@Override
 			public void message(String channel, String message) {
+				//直接通过channel订阅的收到信息时将回调此方法
 				logger.info(String.format("channel: %s, message: %s", channel, message));
 			}
 
 			@Override
 			public void message(String pattern, String channel, String message) {
+				//通过pattern订阅的相应channel收到信息时将回调此方法
 				logger.info(String.format("pattern: %s, channel: %s, message: %s", pattern, channel, message));
 			}
 
 			@Override
 			public void subscribed(String channel, long count) {
+				//通过channel进行了消息订阅时将回调此方法
 				logger.info(String.format("channel: %s, count: %d", channel, count));
 			}
 
 			@Override
 			public void psubscribed(String pattern, long count) {
+				//通过pattern进行了频道订阅时将回调此方法
 				logger.info(String.format("pattern: %s, count: %d", pattern, count));
 			}
 
 			@Override
 			public void unsubscribed(String channel, long count) {
+				//通过channel进行取消订阅后将回调此方法
 				logger.info(String.format("channel: %s, count: %d", channel, count));
 			}
 
 			@Override
 			public void punsubscribed(String pattern, long count) {
+				//经过pattern进行了频道的取消订阅后将回调此方法
 				logger.info(String.format("pattern: %s, count: %d", pattern, count));
 			}
 			
@@ -80,7 +86,7 @@ public class PubSubTest {
 		
 		logger.info("complete subscribe in " + (endSub - startSub));
 		
-		TimeUnit.SECONDS.sleep(60);
+		TimeUnit.SECONDS.sleep(60 * 10);
 	}
 	
 	@Test
@@ -106,15 +112,9 @@ public class PubSubTest {
 	@Test
 	public void subcribe2() throws Exception {
 		RedisPubSubConnection<String, String> pubSubConn = client.connectPubSub();
-		new MyPubSubListener<String, String>(CHANNEL_2, new PubSubMessageHandler<String>() {
-
-			@Override
-			public void handle(String message) {
-				//简单的输出一下这条信息
-				logger.info("收到一条信息" + message);
-			}
-			
-		}, pubSubConn);
+		RedisPubSubListener<String, String> myPubSubListener = new MyPubSubListener<String, String>();
+		pubSubConn.addListener(myPubSubListener);
+		pubSubConn.subscribe(CHANNEL_2);
 		TimeUnit.SECONDS.sleep(60*60);
 	}
 	
@@ -122,6 +122,50 @@ public class PubSubTest {
 	public void publish2() {
 		RedisConnection<String, String> connect = client.connect();
 		connect.publish(CHANNEL_2, "now is :" + new Date());
+	}
+	
+	/**
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void subscribe3() throws Exception {
+		RedisPubSubConnection<String, String> pubSubConn = client.connectPubSub();
+		RedisFuture<Void> future = pubSubConn.psubscribe("Channel1*");
+		future.get();
+		pubSubConn.addListener(new RedisPubSubAdapter<String, String>() {
+
+			/* (non-Javadoc)
+			 * @see com.lambdaworks.redis.pubsub.RedisPubSubAdapter#message(java.lang.Object, java.lang.Object, java.lang.Object)
+			 */
+			@Override
+			public void message(String pattern, String channel, String message) {
+				//用pattern进行的订阅将回调此方法
+				logger.info(String.format("收到一条消息，pattern: %s, channel: %s, message: %s", pattern, channel, message));
+			}
+			
+		});
+		TimeUnit.MINUTES.sleep(30);
+	}
+	
+	@Test
+	public void subscribe4() throws Exception {
+		RedisPubSubConnection<String, String> pubSubConn = client.connectPubSub();
+		RedisFuture<Void> future = pubSubConn.subscribe(CHANNEL);
+		future.get();
+		pubSubConn.addListener(new RedisPubSubAdapter<String, String>() {
+
+			/* (non-Javadoc)
+			 * @see com.lambdaworks.redis.pubsub.RedisPubSubAdapter#message(java.lang.Object, java.lang.Object)
+			 */
+			@Override
+			public void message(String channel, String message) {
+				//直接通过channel订阅的将回调此方法
+				logger.info(String.format("收到一条信息，channel: %s, message: %s", channel, message));
+			}
+			
+		});
+		TimeUnit.MINUTES.sleep(30);
 	}
 	
 }
