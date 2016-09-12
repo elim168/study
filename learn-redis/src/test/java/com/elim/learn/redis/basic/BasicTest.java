@@ -17,7 +17,7 @@ import com.lambdaworks.redis.RedisStringsConnection;
  * @author elim
  *
  */
-public class Test1 {
+public class BasicTest {
 	
 	private RedisClient client = null;
 	
