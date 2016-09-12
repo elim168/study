@@ -10,7 +10,6 @@ import org.junit.Test;
 
 import com.lambdaworks.redis.RedisClient;
 import com.lambdaworks.redis.RedisConnection;
-import com.lambdaworks.redis.RedisStringsConnection;
 
 /**
  * 基础测试
@@ -19,22 +18,23 @@ import com.lambdaworks.redis.RedisStringsConnection;
  */
 public class BasicTest {
 	
-	private RedisClient client = null;
+	private static final RedisClient CLIENT = RedisClient.create("redis://localhost:6379");
+	private RedisConnection<String, String> connect = null;
 	
 	@Before
 	public void before() {
-		client = RedisClient.create("redis://localhost:6379");
+		connect = CLIENT.connect();
 	}
+	
 
 	/**
 	 * 简单的测试建立Redis链接和获取对应的String类型的Key对应的值
 	 */
 	@Test
 	public void test1() {
-		RedisStringsConnection<String, String> connection = client.connect();
 		String key = "abc";
-		connection.set(key, "Hello World");
-		String value = connection.get(key);
+		connect.set(key, "Hello World");
+		String value = connect.get(key);
 		System.out.println(value);
 	}
 	
@@ -43,7 +43,6 @@ public class BasicTest {
 	 */
 	@Test
 	public void test2() {
-		RedisConnection<String, String> connect = client.connect();
 		Map<String, String> map = new HashMap<>();
 		map.put("id", "1");
 		map.put("username", "zhangsan");
@@ -61,7 +60,6 @@ public class BasicTest {
 	 */
 	@Test
 	public void test3() {
-		RedisConnection<String, String> connect = client.connect();
 		String key = "list";
 		connect.lpush(key, "A", "B", "C", "D", "E", "F", "G");
 		Long listSize = connect.llen(key);
@@ -82,7 +80,6 @@ public class BasicTest {
 	 */
 	@Test
 	public void test4() {
-		RedisConnection<String, String> connect = client.connect();
 		String key = "set";
 		connect.sadd(key, "A", "B", "C", "D", "E", "F", "G");
 		Set<String> members = connect.smembers(key);
@@ -94,7 +91,6 @@ public class BasicTest {
 	 */
 	@Test
 	public void test5() {
-		RedisConnection<String, String> connect = client.connect();
 		String key = "sortedSet";
 		connect.zadd(key, 0d, "A", 1d, "B", 2d, "C", 3d, "D");
 		connect.zadd(key, 4, "E");
@@ -111,7 +107,6 @@ public class BasicTest {
 	 */
 	@Test
 	public void test6() {
-		RedisConnection<String, String> connect = client.connect();
 		String key = "HyperLogLog";
 		connect.pfadd(key, "A", "B", "C", "D", "F", "D", "F", "G", "E");
 		//统计指定key中不重复元素的数量，这里应为7
@@ -130,7 +125,6 @@ public class BasicTest {
 	 */
 	@Test
 	public void delAll() {
-		RedisConnection<String, String> connect = client.connect();
 		//获取所有的Key
 		List<String> keys = connect.keys("*");
 		if (!keys.isEmpty()) {
