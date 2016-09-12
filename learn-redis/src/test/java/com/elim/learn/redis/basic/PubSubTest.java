@@ -3,6 +3,7 @@
  */
 package com.elim.learn.redis.basic;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -10,6 +11,8 @@ import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.elim.learn.redis.pubsub.PubSubMessageHandler;
+import com.elim.learn.redis.pubsub.listener.MyPubSubListener;
 import com.lambdaworks.redis.RedisClient;
 import com.lambdaworks.redis.RedisConnection;
 import com.lambdaworks.redis.RedisFuture;
@@ -25,6 +28,7 @@ public class PubSubTest {
 
 	private RedisClient client = null;
 	private static final String CHANNEL = "Channel1";
+	private static final String CHANNEL_2 = "Channel_2";
 	private static final Logger logger = Logger.getLogger(PubSubTest.class);
 	
 	@Before
@@ -93,6 +97,31 @@ public class PubSubTest {
 		RedisConnection<String, String> connect = client.connect();
 		List<String> channels = connect.pubsubChannels();
 		System.out.println(channels);
+	}
+	
+	/**
+	 * 使用自己的监听器，只处理自己监听的那个CHANNEL的信息
+	 * @throws Exception
+	 */
+	@Test
+	public void subcribe2() throws Exception {
+		RedisPubSubConnection<String, String> pubSubConn = client.connectPubSub();
+		new MyPubSubListener<String, String>(CHANNEL_2, new PubSubMessageHandler<String>() {
+
+			@Override
+			public void handle(String message) {
+				//简单的输出一下这条信息
+				logger.info("收到一条信息" + message);
+			}
+			
+		}, pubSubConn);
+		TimeUnit.SECONDS.sleep(60*60);
+	}
+	
+	@Test
+	public void publish2() {
+		RedisConnection<String, String> connect = client.connect();
+		connect.publish(CHANNEL_2, "now is :" + new Date());
 	}
 	
 }
