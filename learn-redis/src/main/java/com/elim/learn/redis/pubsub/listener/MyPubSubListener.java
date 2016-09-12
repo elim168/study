@@ -3,9 +3,9 @@
  */
 package com.elim.learn.redis.pubsub.listener;
 
-import com.elim.learn.redis.pubsub.PubSubMessageHandler;
+import org.apache.log4j.Logger;
+
 import com.lambdaworks.redis.pubsub.RedisPubSubAdapter;
-import com.lambdaworks.redis.pubsub.RedisPubSubConnection;
 
 /**
  * 实现自己的监听器有两种方式，一种是直接实现RedisPubSubListener接口，另一种就是直接继续
@@ -15,25 +15,23 @@ import com.lambdaworks.redis.pubsub.RedisPubSubConnection;
  */
 public class MyPubSubListener<K, V> extends RedisPubSubAdapter<K, V> {
 
-	private K channel;
-	private PubSubMessageHandler<V> messageHandler;
+	private static final Logger logger = Logger.getLogger(MyPubSubListener.class);
 
-	@SuppressWarnings("unchecked")
-	public MyPubSubListener(K channel, PubSubMessageHandler<V> messageHandler, RedisPubSubConnection<K, V> pubSubConn) {
-		this.channel = channel;
-		this.messageHandler = messageHandler;
-		pubSubConn.addListener(this);
-		pubSubConn.subscribe(channel);
+	/* (non-Javadoc)
+	 * @see com.lambdaworks.redis.pubsub.RedisPubSubAdapter#message(java.lang.Object, java.lang.Object, java.lang.Object)
+	 */
+	@Override
+	public void message(K pattern, K channel, V message) {
+		logger.info(String.format("收到了通过pattern订阅的频道信息， channel: %s, message: %s", channel, message));
 	}
+
 
 	/* (non-Javadoc)
 	 * @see com.lambdaworks.redis.pubsub.RedisPubSubAdapter#message(java.lang.Object, java.lang.Object)
 	 */
 	@Override
 	public void message(K channel, V message) {
-		if (channel.equals(this.channel)) {//只处理自己订阅的频道的信息
-			this.messageHandler.handle(message);
-		}
+		logger.info(String.format("收到了通过channel订阅的频道信息， channel: %s, message: %s", channel, message));
 	}
 	
 }
