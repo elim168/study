@@ -26,19 +26,20 @@ import com.lambdaworks.redis.pubsub.RedisPubSubListener;
  */
 public class PubSubTest {
 
-	private RedisClient client = null;
+	private static final RedisClient CLIENT = RedisClient.create("redis://localhost:6379");;
 	private static final String CHANNEL = "Channel1";
 	private static final String CHANNEL_2 = "Channel_2";
 	private static final Logger logger = Logger.getLogger(PubSubTest.class);
 	
+	private RedisPubSubConnection<String, String> pubSubConn = null;
+	
 	@Before
 	public void before() {
-		client = RedisClient.create("redis://localhost:6379");
+		pubSubConn = CLIENT.connectPubSub();
 	}
 	
 	@Test
 	public void subscribe() throws Exception {
-		RedisPubSubConnection<String, String> pubSubConn = client.connectPubSub();
 		pubSubConn.addListener(new RedisPubSubListener<String, String>() {
 
 			@Override
@@ -91,7 +92,7 @@ public class PubSubTest {
 	
 	@Test
 	public void publish() {
-		RedisConnection<String, String> connect = client.connect();
+		RedisConnection<String, String> connect = CLIENT.connect();
 		for (int i=0; i<10; i++) {
 			Long result = connect.publish(CHANNEL, String.format("This is message%d......", i));
 			System.out.println(result);
@@ -100,7 +101,7 @@ public class PubSubTest {
 	
 	@Test
 	public void getAllChannels() {
-		RedisConnection<String, String> connect = client.connect();
+		RedisConnection<String, String> connect = CLIENT.connect();
 		List<String> channels = connect.pubsubChannels();
 		System.out.println(channels);
 	}
@@ -111,7 +112,6 @@ public class PubSubTest {
 	 */
 	@Test
 	public void subcribe2() throws Exception {
-		RedisPubSubConnection<String, String> pubSubConn = client.connectPubSub();
 		RedisPubSubListener<String, String> myPubSubListener = new MyPubSubListener<String, String>();
 		pubSubConn.addListener(myPubSubListener);
 		pubSubConn.subscribe(CHANNEL_2);
@@ -120,7 +120,7 @@ public class PubSubTest {
 	
 	@Test
 	public void publish2() {
-		RedisConnection<String, String> connect = client.connect();
+		RedisConnection<String, String> connect = CLIENT.connect();
 		connect.publish(CHANNEL_2, "now is :" + new Date());
 	}
 	
@@ -130,7 +130,6 @@ public class PubSubTest {
 	 */
 	@Test
 	public void subscribe3() throws Exception {
-		RedisPubSubConnection<String, String> pubSubConn = client.connectPubSub();
 		RedisFuture<Void> future = pubSubConn.psubscribe("Channel1*");
 		future.get();
 		pubSubConn.addListener(new RedisPubSubAdapter<String, String>() {
@@ -150,7 +149,6 @@ public class PubSubTest {
 	
 	@Test
 	public void subscribe4() throws Exception {
-		RedisPubSubConnection<String, String> pubSubConn = client.connectPubSub();
 		RedisFuture<Void> future = pubSubConn.subscribe(CHANNEL);
 		future.get();
 		pubSubConn.addListener(new RedisPubSubAdapter<String, String>() {
