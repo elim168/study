@@ -17,9 +17,10 @@ import com.lambdaworks.redis.RedisConnection;
  * 
  * 事务测试<br/>
  * 参考官方文档http://redis.io/topics/transactions<br/>
- * Redis的事务是为了保证多个指令的执行在一个事务里面，要么都执行，要么都不执行。而不会有类似于关系数据库的回滚机制，
+ * <p>Redis的事务是为了保证多个指令的执行在一个事务里面，要么都执行，要么都不执行，而且在一个事务里面的指令执行期间不会执行其它的指令，
+ * 也就是说一个事务里面的指令是一个接着一个执行的，执行期间不会有事务以外的其它指令被执行。而不会有类似于关系数据库的回滚机制，
  * 根据Redis官方文档的描述，之所以不会有回滚机制，是因为除了执行的指令存在语法错误外，Redis指令都能执行成功；另外
- * 一个原因就是Redis之所以快，是因为它在执行的过程中不需要考虑回滚这样的机制。<br/>
+ * 一个原因就是Redis之所以快，是因为它在执行的过程中不需要考虑回滚这样的机制。</p>
  * 与Redis事务相关的有几个很重要的指令。
  * <ul>
  * 	<li>multi：用于表示一个事务的开启</li>
@@ -58,9 +59,10 @@ public class TransactionTest {
 			connect.append(SETKEY1, "D");//会抛出异常，这个方法属于String类型的Key的，Set不能执行这个方法
 			connect.sadd(SETKEY1, "ABC");
 			//开启了事务机制后，对应的指令不会马上执行，而是会加入一个队列，在调用exec时才会真正执行，所以这里暂时还拿不到结果
-			LOGGER.info(connect.get("transactionTest1"));
+			LOGGER.info(connect.get(STRKEY1));
 			//返回结果是每一行指令的执行结果
 			List<Object> list = connect.exec();
+			System.out.println(list);
 			for (Object result : list) {
 				if (result instanceof Exception) {
 					LOGGER.error("指令执行异常", (Throwable)result);
