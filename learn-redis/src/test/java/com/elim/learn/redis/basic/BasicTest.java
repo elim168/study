@@ -1,10 +1,12 @@
 package com.elim.learn.redis.basic;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,6 +20,7 @@ import com.lambdaworks.redis.RedisConnection;
  */
 public class BasicTest {
 	
+	private static final Logger LOGGER = Logger.getLogger(BasicTest.class);
 	private static final RedisClient CLIENT = RedisClient.create("redis://localhost:6379");
 	private RedisConnection<String, String> connect = null;
 	
@@ -118,6 +121,51 @@ public class BasicTest {
 		//统计多个Key中不重复元素的数量，这里应为9
 		Long pfcount2 = connect.pfcount(key, key2);
 		System.out.println(pfcount2);//9
+	}
+	
+	/**
+	 * 存活时间的测试
+	 * @throws Exception
+	 */
+	@Test
+	public void test7() throws Exception {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String key = "abc";
+		
+		connect.expire(key, 100);//设置指定的Key多少秒以后失效
+		printTTL(key);//打印Key的存活时间
+		
+		connect.pexpire(key, 200 * 1000);//设置指定的Key多少毫秒以后失效
+		printTTL(key);//打印Key的存活时间
+		
+		//设置指定的Key在指定的时间点失效，时间点以秒数表示
+		connect.expireat(key, System.currentTimeMillis()/1000 + 1000);
+		printTTL(key);//打印Key的存活时间
+		
+		//设置指定的Key在指定的时间点失效，时间点以毫秒数表示
+		connect.pexpireat(key, System.currentTimeMillis() + 1500 * 1000);
+		printTTL(key);//打印Key的存活时间
+		
+		//设置指定的Key在指定的时间点失效，时间点以java.util.Date表示
+		connect.expireat(key, sdf.parse("2016-09-15 10:30:00"));
+		printTTL(key);//打印Key的存活时间
+		
+		//设置指定的Key在指定的时间点失效，时间点以java.util.Date表示
+		connect.pexpireat(key, sdf.parse("2016-09-15 10:35:00"));
+		printTTL(key);//打印Key的存活时间
+		
+		//如果希望清除指定Key的存活时间，即永不过期，则可以使用persist指令
+		connect.persist(key);
+		printTTL(key);//打印Key的存活时间
+	}
+
+	/**
+	 * 打印指定Key的存活时间
+	 * @param key
+	 */
+	private void printTTL(String key) {
+		Long ttl = connect.ttl(key);
+		LOGGER.info(String.format("Key[%s]的剩余存活时间是[%d]s", key, ttl));
 	}
 	
 	/**
