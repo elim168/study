@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,6 +30,10 @@ public class BasicTest {
 		connect = CLIENT.connect();
 	}
 	
+	@After
+	public void after() {
+		connect.close();
+	}
 
 	/**
 	 * 简单的测试建立Redis链接和获取对应的String类型的Key对应的值

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,6 +37,11 @@ public class PubSubTest {
 	@Before
 	public void before() {
 		pubSubConn = CLIENT.connectPubSub();
+	}
+	
+	@After
+	public void after() {
+		pubSubConn.close();
 	}
 	
 	@Test

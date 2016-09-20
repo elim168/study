@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -46,6 +47,11 @@ public class TransactionTest {
 	@Before
 	public void before() {
 		connect = CLIENT.connect();
+	}
+	
+	@After
+	public void after() {
+		connect.close();
 	}
 	
 	@Test
