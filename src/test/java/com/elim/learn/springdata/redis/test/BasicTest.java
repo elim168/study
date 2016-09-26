@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -31,6 +32,15 @@ public class BasicTest {
 		BoundListOperations<String, String> boundListOps = redisTemplate.boundListOps(key);
 		List<String> elements = boundListOps.range(0, boundListOps.size());
 		System.out.println(elements);
+	}
+	
+	@Test
+	public void test3() {
+		String key = "ABCDE";
+		ValueOperations<String, String> opsForValue = redisTemplate.opsForValue();
+		opsForValue.set(key, "ABCDEFG");
+		String value = opsForValue.get(key);
+		System.out.println(value);
 	}
 	
 }
