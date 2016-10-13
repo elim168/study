@@ -10,4 +10,6 @@ public interface UserService {
 
 	public void sayHello(String name);
 	
+	public String cacheTest(int id);
+	
 }
