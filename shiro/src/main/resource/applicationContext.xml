@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:cache="http://www.springframework.org/schema/cache"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+     http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+     http://www.springframework.org/schema/context
+     http://www.springframework.org/schema/context/spring-context-4.0.xsd
+     http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
+     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+     http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<context:component-scan base-package="com.elim.learn.shiro">
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+	</context:component-scan>
+	
+	<!-- 核心Filter -->
+	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+	    <property name="securityManager" ref="securityManager"/>
+	    <property name="loginUrl" value="/login.jsp"/><!--登录地址-->
+	    <property name="successUrl" value="/"/><!-- 登录成功后跳转的地址 -->
+	    <property name="unauthorizedUrl" value="/unauthorized.jsp"/><!-- 权限不足时的提示页面地址 -->
+	    <!-- 设置路径与Filter之间的关系，形式为 “url=Filter别名1，...Filter别名N”-->
+	    <property name="filterChainDefinitions">
+	        <value>
+	            /admin/** = authc, roles[admin]
+	            /logout = logout
+	            /** = authc, filter1
+	        </value>
+	    </property>
+	    <!-- 注册自定义的Filter -->
+	    <property name="filters">
+	    	<util:map>
+	    		<entry key="filter1" value-ref="selfDefine"/>
+	    	</util:map>
+	    </property>
+	</bean>
+
+	<bean id="selfDefine" class="com.elim.learn.shiro.web.filter.SelfDefineFilter"/>
+
+	<!-- SecurityManager定义，基于Web的必须使用DefaultWebSecurityManager，非Web的使用DefaultSecurityManager -->
+	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+	    <property name="realm" ref="myRealm"/>
+	</bean>
+	
+	<!-- 必须要指定的BeanPostProcessor，用于实现Shiro内部自己的init和destory方法的调用 -->
+	<bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+	
+	<!-- 为了简便起见，这里使用最简单的Realm -->
+	<bean id="myRealm" class="org.apache.shiro.realm.text.TextConfigurationRealm">
+		<!-- 用户定义，一行是一个用户，形式为：username=password,role1,...,roleN -->
+		<property name="userDefinitions">
+			<value>
+				elim = 123, role1, role2
+				admin = 123, admin
+			</value>
+		</property>
+		<!-- 角色定义，一行是一个角色，形式为：rolename=permission1,...,permissionN -->
+		<property name="roleDefinitions">
+			<value>
+				role1 = p1, p2, p3
+				role2 = p3, p4, p5
+				admin = admin
+			</value>
+		</property>
+	</bean>
+	
+	<!-- 下面两个bean定义是启用对Shiro权限控制注解的支持 -->
+	<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" depends-on="lifecycleBeanPostProcessor"/>
+	<bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+	    <property name="securityManager" ref="securityManager"/>
+	</bean>
+
+</beans>
