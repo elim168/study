@@ -3,6 +3,7 @@
  */
 package com.elim.learn.dubbo.service;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -20,6 +21,11 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void sayHello(String name) {
 		System.out.println("Hello " + name);
+		try {
+			TimeUnit.MILLISECONDS.sleep(200);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/* (non-Javadoc)

@@ -11,16 +11,23 @@
 	<dubbo:application name="learn-dubbo-server" />
 
 	<!-- 使用multicast广播注册中心暴露服务地址 -->
-<!-- 	<dubbo:registry address="multicast://224.5.6.7:1234" /> -->
+	<dubbo:registry address="multicast://224.5.6.7:1234" />
 	
-	<dubbo:registry address="zookeeper://localhost:2181" client="zkclient"/>
+	<!-- provider元素用于指定服务提供者的全局配置，可被具体服务或具体的服务方法配置覆盖 -->
+	<dubbo:provider executes="30" accepts="10"/>
+	
+<!-- 	<dubbo:registry address="zookeeper://localhost:2181" client="zkclient"/> -->
 
 	<!-- 用dubbo协议在20880端口暴露服务 -->
 	<dubbo:protocol name="dubbo" port="20880" />
 
 	<!-- 声明需要暴露的服务接口 -->
+	<!-- executes用于指定服务所有方法的并发线程数，并发线程数超出时将抛出RpcException -->
 	<dubbo:service interface="com.elim.learn.dubbo.service.UserService"
-		ref="userService" />
+		stub="com.elim.learn.dubbo.service.UserServiceStub" ref="userService"
+		executes="10">
+		<dubbo:method name="sayHello" />
+	</dubbo:service>
 
 	<!-- 和本地bean一样实现服务 -->
 	<bean id="userService" class="com.elim.learn.dubbo.service.UserServiceImpl" />
