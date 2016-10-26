@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<!-- generatorConfig.xml文件的配置请参考官方文档http://www.mybatis.org/generator/configreference/xmlconfig.html -->
+<generatorConfiguration>
+	<!-- 指定classpath，其主要用来加载驱动文件，所以基本上是对应的驱动的路径 -->
+	<classPathEntry
+		location="D:\work\dev\mvnRepo\mysql\mysql-connector-java\6.0.4\mysql-connector-java-6.0.4.jar" />
+	<!-- 类似分组来指定生成代码时的一些环境信息，可以包含多个context元素 -->
+	<context id="context1">
+		<!-- 默认情况下Mybatis Generator在生成代码时会加上一些标记代码是自动生成的注释信息，可以通过commentGenerator元素调整部分规则 -->
+		<commentGenerator>
+			<!-- 是否忽略所有的注释信息，即不生成注释信息，默认是false -->
+			<property name="suppressAllComments" value="true" />
+		</commentGenerator>
+		<!-- 指定数据库的连接信息（也可以通过connectionFactory元素来指定），笔者这里用到的是mysql5.7，驱动类是新的 -->
+		<jdbcConnection
+			connectionURL="jdbc:mysql://localhost:3306/mybatis?serverTimezone=UTC"
+			driverClass="com.mysql.cj.jdbc.Driver" password="elim" userId="elim" />
+
+		<!-- 指定实体类生成后的包名和对应的存放路径。 -->
+		<!-- targetPackage指定存放的包路径 -->
+		<!-- targetProject是用来指定存放路径的，基于Eclipse插件时这个路径可以是基于Eclipse项目的路径 -->
+		<javaModelGenerator targetPackage="com.elim.learn.mybatis.model"
+			targetProject="mybatis/src/main/java" />
+
+		<!-- 指定Mapper.xml映射文件存放的路径，targetPackage指定存放的包路径 -->
+		<sqlMapGenerator targetPackage="com.elim.learn.mybatis.mapper"
+			targetProject="mybatis/src/main/java" />
+
+		<!-- 指定基于Mapper.xml对应的Mapper接口的存放路径，type属性用于指定Mapper接口生成的规则，是基于Mapper.xml文件生成，还是基于注解生成， 
+			可选值和对应的意义请参考http://www.mybatis.org/generator/configreference/javaClientGenerator.html -->
+		<javaClientGenerator targetPackage="com.elim.learn.mybatis.dao"
+			targetProject="mybatis/src/main/java" type="XMLMAPPER" />
+
+		<!-- 指定需要生成代码的表名 -->
+		<!-- domainObjectName用于指定生成的实体名称（默认是表名首字母大写，去掉下划线进行驼峰标示），
+				mapperName用来指定生成的Mapper文件和接口的名称（默认是domainObjectName+Mapper的形式） -->
+		<table tableName="sys_wf_process" enableDeleteByExample="false"
+			enableSelectByExample="false" enableUpdateByExample="false"
+			enableCountByExample="false" domainObjectName="SysWfProcess"
+			mapperName="SysWfProcessMapper"/>
+		<table tableName="sys_wf_node">
+			<generatedKey column="id" sqlStatement="SELECT LAST_INSERT_ID()+1"
+				identity="true" />
+			<!-- 默认生成代码时会把对应的表列中的下划线去掉，改成驼峰标示的，如node_name正常生成的属性名是nodeName， 可以通过columnOverride元素来改写这种默认的规则，指定自己想要的名称 -->
+			<columnOverride column="id" property="nodeId" />
+		</table>
+
+	</context>
+</generatorConfiguration>

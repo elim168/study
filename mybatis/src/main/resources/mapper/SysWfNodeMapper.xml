@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.elim.learn.mybatis.dao.SysWfNodeMapper">
+	<resultMap id="BaseResultMap" type="com.elim.learn.mybatis.model.SysWfNode">
+		<id column="id" jdbcType="INTEGER" property="nodeId" />
+		<result column="process_id" jdbcType="INTEGER" property="processId" />
+		<result column="node_code" jdbcType="VARCHAR" property="nodeCode" />
+		<result column="node_name" jdbcType="VARCHAR" property="nodeName" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, process_id, node_code, node_name
+	</sql>
+	<select id="selectByPrimaryKey" parameterType="java.lang.Integer"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from sys_wf_node
+		where id = #{nodeId,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from
+		sys_wf_node
+		where id = #{nodeId,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.elim.learn.mybatis.model.SysWfNode"
+		keyProperty="id" useGeneratedKeys="true">
+		insert into sys_wf_node (id,
+		process_id, node_code,
+		node_name)
+		values (#{nodeId,jdbcType=INTEGER},
+		#{processId,jdbcType=INTEGER},
+		#{nodeCode,jdbcType=VARCHAR},
+		#{nodeName,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.elim.learn.mybatis.model.SysWfNode"
+		keyProperty="id" useGeneratedKeys="true">
+		insert into sys_wf_node
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="nodeId != null">
+				id,
+			</if>
+			<if test="processId != null">
+				process_id,
+			</if>
+			<if test="nodeCode != null">
+				node_code,
+			</if>
+			<if test="nodeName != null">
+				node_name,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="nodeId != null">
+				#{nodeId,jdbcType=INTEGER},
+			</if>
+			<if test="processId != null">
+				#{processId,jdbcType=INTEGER},
+			</if>
+			<if test="nodeCode != null">
+				#{nodeCode,jdbcType=VARCHAR},
+			</if>
+			<if test="nodeName != null">
+				#{nodeName,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.elim.learn.mybatis.model.SysWfNode">
+		update sys_wf_node
+		<set>
+			<if test="processId != null">
+				process_id = #{processId,jdbcType=INTEGER},
+			</if>
+			<if test="nodeCode != null">
+				node_code = #{nodeCode,jdbcType=VARCHAR},
+			</if>
+			<if test="nodeName != null">
+				node_name = #{nodeName,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where id = #{nodeId,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.elim.learn.mybatis.model.SysWfNode">
+		update sys_wf_node
+		set process_id = #{processId,jdbcType=INTEGER},
+		node_code =
+		#{nodeCode,jdbcType=VARCHAR},
+		node_name = #{nodeName,jdbcType=VARCHAR}
+		where id = #{nodeId,jdbcType=INTEGER}
+	</update>
+	
+	<!-- 只用一条SQL查出多对一关系 -->
+	<select id="singleSqlNTo1" parameterType="java.lang.Integer" resultMap="SingleSqlNTo1Result">
+		select 
+			a.id,a.node_code,a.node_name,a.process_id, b.template_id,b.creator,b.create_time
+		from
+			sys_wf_node a, sys_wf_process b
+		where
+			a.process_id=b.id and a.id=#{id}
+	</select>
+	
+	<resultMap type="com.elim.learn.mybatis.model.SysWfNode" id="SingleSqlNTo1Result">
+		<id property="nodeId" column="id"/>
+		<result property="nodeCode" column="node_code"/>
+		<result property="nodeName" column="node_name"/>
+		<result property="processId" column="process_id"/>
+		<!-- 单个对象的关联是通过association元素来定义的 -->
+		<association property="process" javaType="com.elim.learn.mybatis.model.SysWfProcess">
+			<id property="id" column="process_id"/>
+			<result property="templateId" column="template_id"/>
+			<result property="creator" column="creator"/>
+			<result property="createTime" column="create_time"/>
+			<collection property="nodes" ofType="com.elim.learn.mybatis.model.SysWfNode">
+				<id property="nodeId" column="id"/>
+				<result property="nodeCode" column="node_code"/>
+				<result property="nodeName" column="node_name"/>
+				<result property="processId" column="process_id"/>
+			</collection>
+		</association>
+	</resultMap>
+	
+	<select id="fuzzyQuery" resultMap="BaseResultMap" parameterType="java.lang.String">  
+		<bind name="titleLike" value="'%'+_parameter+'%'"/>
+        select * from sys_wf_node where node_code like #{titleLike}  
+    </select>
+	
+</mapper>
