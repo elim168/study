@@ -27,11 +27,6 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>javax.servlet.jsp</groupId>
-			<artifactId>jsp-api</artifactId>
-			<version>2.2</version>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.shiro</groupId>
 			<artifactId>shiro-core</artifactId>
 			<version>${shiro.version}</version>
@@ -42,9 +37,9 @@
 			<version>${shiro.version}</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.apache.shiro</groupId>
-		    <artifactId>shiro-spring</artifactId>
-		    <version>${shiro.version}</version>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-spring</artifactId>
+			<version>${shiro.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-logging</groupId>
@@ -56,23 +51,23 @@
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>1.7.18</version>
 		</dependency>
-		
+
 		<!-- Spring Start -->
 		<dependency>
-		    <groupId>org.springframework</groupId>
-		    <artifactId>spring-webmvc</artifactId>
-		    <version>${spring.version}</version>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.springframework</groupId>
-		    <artifactId>spring-jdbc</artifactId>
-		    <version>${spring.version}</version>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+			<version>${spring.version}</version>
 		</dependency>
 		<!-- Spring End -->
 		<dependency>
-		    <groupId>com.fasterxml.jackson.core</groupId>
-		    <artifactId>jackson-databind</artifactId>
-		    <version>2.8.1</version>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.8.1</version>
 		</dependency>
 	</dependencies>
 	<build>
@@ -83,9 +78,22 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>1.8</source>
+					<target>1.8</target>
 					<encoding>UTF8</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<version>9.3.13.v20161014</version>
+				<configuration>
+					<httpConnector>
+						<port>8081</port>
+					</httpConnector>
+					<webApp>
+						<contextPath>/shiro</contextPath>
+					</webApp>
 				</configuration>
 			</plugin>
 		</plugins>
