@@ -21,7 +21,7 @@
 	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
 	    <property name="securityManager" ref="securityManager"/>
 	    <property name="loginUrl" value="/login.jsp"/><!--登录地址-->
-	    <property name="successUrl" value="/"/><!-- 登录成功后跳转的地址 -->
+	    <property name="successUrl" value="/index.jsp"/><!-- 登录成功后跳转的地址 -->
 	    <property name="unauthorizedUrl" value="/unauthorized.jsp"/><!-- 权限不足时的提示页面地址 -->
 	    <!-- 设置路径与Filter之间的关系，形式为 “url=Filter别名1，...Filter别名N”-->
 	    <property name="filterChainDefinitions">
