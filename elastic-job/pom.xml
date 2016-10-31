@@ -2,10 +2,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.elim.learn</groupId>
-	<artifactId>mybatis</artifactId>
+	<artifactId>elastic-job</artifactId>
 	<packaging>war</packaging>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>mybatis Maven Webapp</name>
+	<name>elastic-job Maven Webapp</name>
 	<url>http://elim.iteye.com</url>
 	<properties>
 		<elastic.version>2.0.0</elastic.version>
@@ -43,7 +43,7 @@
 		</dependency>
 	</dependencies>
 	<build>
-		<finalName>mybatis</finalName>
+		<finalName>elastic-job</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -53,14 +53,6 @@
 					<source>1.7</source>
 					<target>1.7</target>
 					<encoding>UTF8</encoding>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.mybatis.generator</groupId>
-				<artifactId>mybatis-generator-maven-plugin</artifactId>
-				<version>1.3.5</version>
-				<configuration>
-					<verbose>true</verbose>
 				</configuration>
 			</plugin>
 		</plugins>
