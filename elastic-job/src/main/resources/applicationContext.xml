@@ -9,30 +9,47 @@
                         http://www.dangdang.com/schema/ddframe/job
                         http://www.dangdang.com/schema/ddframe/job/job.xsd
                         ">
-                        
-    <description>
-    	官方文档：http://dangdangdotcom.github.io/elastic-job/post/user_guide/lite/dev_guide/
-    </description>
-    
-    <!-- 如果需要做分布式作业调度，则对应的实例必须是在多台机器上跑的，因为elastic-job是以IP来区分一个节点的；另外namespace和使用的
-    	zookeeper也必须是一样的 -->
+
+	<description>
+		官方文档：http://dangdangdotcom.github.io/elastic-job/post/user_guide/lite/dev_guide/
+	</description>
+
+	<!-- 如果需要做分布式作业调度，则对应的实例必须是在多台机器上跑的，因为elastic-job是以IP来区分一个节点的；另外namespace和使用的 
+		zookeeper也必须是一样的 -->
 	<!--配置作业注册中心 -->
 	<reg:zookeeper id="regCenter" server-lists="localhost:2181"
 		namespace="dd-job" base-sleep-time-milliseconds="1000"
 		max-sleep-time-milliseconds="3000" max-retries="3" />
 
+	<!-- 可通过在http://repo1.maven.org/maven2/com/dangdang/elastic-job-console/1.1.1/下载对应的war包监控elastic-job的运行状态 -->
+
 	<!-- 配置作业 -->
-	<!-- 参数overwrite为true即允许客户端的作业配置覆盖注册中心的配置，每次启动服务都会将客户端的覆盖注册中心的，
-		默认为false。参数failover表示是否开启失效转移，默认为false，其它参数配置请参考官方文档 -->
-		
-	<!-- sharding-total-count参数用于指定分片数，当分片数大于机器数量的时候，每台机器分配到的片数会是平均的，
-		第一片是从0开始的，比如总共分6片，有两台机器，则第一台机器会分得0,1,2三片，而第二台机器会分得3,4,5三片；当有
-		机器宕机了或者有新机器加入的时候都会触发重新分片。如果有多台机器，而分片总数是1的时候即相当于1主多从的配置。 -->
+	<!-- 参数overwrite为true即允许客户端的作业配置覆盖注册中心的配置，每次启动服务都会将客户端的覆盖注册中心的， 默认为false。参数failover表示是否开启失效转移，默认为false，其它参数配置请参考官方文档 -->
+
+	<!-- sharding-total-count参数用于指定分片数，当分片数大于机器数量的时候，每台机器分配到的片数会是平均的， 第一片是从0开始的，比如总共分6片，有两台机器，则第一台机器会分得0,1,2三片，而第二台机器会分得3,4,5三片；当有 
+		机器宕机了或者有新机器加入的时候都会触发重新分片。如果有多台机器，而分片总数是1的时候即相当于1主多从的配置。 sharding-item-parameters用于指定与分片对应的别名。 
+		job-sharding-strategy-class：可以通过它来指定作业分片策略，可选策略可参考官方文档https://github.com/dangdangdotcom/elastic-job/blob/master/elastic-job-doc/content/post/user_guide/lite/other/lite_job_strategy.md。 -->
+	<!-- SimpleJob的执行可以参考源码com.dangdang.ddframe.job.executor.type.SimpleJobExecutor的处理逻辑 -->
 	<job:simple id="myElasticJob" class="com.elim.learn.elastic.job.MyElasticJob"
 		registry-center-ref="regCenter" cron="0/30 * * * * ?"
-		sharding-total-count="6" sharding-item-parameters="0=A,1=B,2=C,3=D,4=E,5=F" 
-		failover="true"
-		overwrite="true"/>
+		sharding-total-count="6" sharding-item-parameters="0=A,1=B,2=C,3=D,4=E,5=F"
+		failover="true" overwrite="true" />
 
+	<!-- 流式作业。流式作业的说明请参考源码com.elim.learn.elastic.job.MyDataflowJob上面的类说明信息 -->
+	<job:dataflow id="myDataflowJob"
+		class="com.elim.learn.elastic.job.MyDataflowJob" registry-center-ref="regCenter"
+		cron="0 0/2 * * * ?" sharding-total-count="2"
+		sharding-item-parameters="0=A,1=B" failover="true" overwrite="true"
+		streaming-process="true" overwrite="true"/>
+
+	<!-- script作业用于定时执行脚本文件，如windows的cmd，linux上的shell文件，在调度的时候会把当前调度的ShardingContext的转化为一个JSON串作为脚本调度的参数进行传递。
+			其不需要指定作业对应的class，因为我们不是通过我们自己的class来进行调度的。
+			详情可参考官方源码com.dangdang.ddframe.job.executor.type.ScriptJobExecutor。
+			script-command-line属性用于指定该调度对应的脚本文件路径
+	 -->
+	<job:script id="myScriptJob" registry-center-ref="regCenter"
+		cron="0 9 11 * * ?" sharding-total-count="3"
+		sharding-item-parameters="0=shard-0,1=shard-1,2=shard-2"
+		script-command-line="D:\test.cmd" overwrite="true"/>
 
 </beans>
