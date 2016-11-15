@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:reg="http://www.dangdang.com/schema/ddframe/reg"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:reg="http://www.dangdang.com/schema/ddframe/reg"
 	xmlns:job="http://www.dangdang.com/schema/ddframe/job"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
                         http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/context
+					    http://www.springframework.org/schema/context/spring-context.xsd
                         http://www.dangdang.com/schema/ddframe/reg
                         http://www.dangdang.com/schema/ddframe/reg/reg.xsd
                         http://www.dangdang.com/schema/ddframe/job
@@ -13,10 +17,14 @@
 	<description>
 		官方文档：http://dangdangdotcom.github.io/elastic-job/post/user_guide/lite/dev_guide/
 	</description>
+	
+	<context:property-placeholder location="classpath:/jdbc.properties"/>
 
 	<!-- 如果需要做分布式作业调度，则对应的实例必须是在多台机器上跑的，因为elastic-job是以IP来区分一个节点的；另外namespace和使用的 
 		zookeeper也必须是一样的 -->
-	<!--配置作业注册中心 -->
+	<!--配置作业注册中心，server-lists用于指定zookeeper的地址，多个zookeeper之间用逗号分隔；
+		namespace用于指定zookeeper命名空间；
+		max-retries用于指定最大重试次数 -->
 	<reg:zookeeper id="regCenter" server-lists="localhost:2181"
 		namespace="dd-job" base-sleep-time-milliseconds="1000"
 		max-sleep-time-milliseconds="3000" max-retries="3" />
@@ -39,6 +47,9 @@
 			作业开始前和完成后的对应的锁等待最大超时时间 -->	
 		<job:distributed-listener class="com.elim.learn.elastic.job.listener.MyDistributeOnceElasticJobListener" 
 				started-timeout-milliseconds="100" completed-timeout-milliseconds="100"/>
+		<!-- 事件监听，默认是启用日志文件的进行监听记录，如果需要进行数据库的记录，则配置job:event-rdb，其会自动创建需要的表 -->
+		<job:event-rdb driver="${jdbc.driver}" url="${jdbc.url}" username="${jdbc.username}" password="${jdbc.password}" log-level="DEBUG"/>
+		<job:event-log />
 	</job:simple>
 
 	<!-- 流式作业。流式作业的说明请参考源码com.elim.learn.elastic.job.MyDataflowJob上面的类说明信息 -->
@@ -46,7 +57,11 @@
 		class="com.elim.learn.elastic.job.MyDataflowJob" registry-center-ref="regCenter"
 		cron="0 0/2 * * * ?" sharding-total-count="2"
 		sharding-item-parameters="0=广州,1=深圳" failover="true" overwrite="true"
-		streaming-process="true" />
+		streaming-process="true">
+		<!-- 事件监听，默认是启用日志文件的进行监听记录，如果需要进行数据库的记录，则配置job:event-rdb，其会自动创建需要的表 -->
+		<job:event-rdb driver="${jdbc.driver}" url="${jdbc.url}" username="${jdbc.username}" password="${jdbc.password}" log-level="DEBUG"/>
+		<job:event-log />
+	</job:dataflow>
 
 	<!-- script作业用于定时执行脚本文件，如windows的cmd，linux上的shell文件，在调度的时候会把当前调度的ShardingContext的转化为一个JSON串作为脚本调度的参数进行传递。
 			其不需要指定作业对应的class，因为我们不是通过我们自己的class来进行调度的。
