@@ -19,7 +19,7 @@
 	</description>
 	
 	<context:property-placeholder location="classpath:/jdbc.properties"/>
-
+	
 	<!-- 如果需要做分布式作业调度，则对应的实例必须是在多台机器上跑的，因为elastic-job是以IP来区分一个节点的；另外namespace和使用的 
 		zookeeper也必须是一样的 -->
 	<!--配置作业注册中心，server-lists用于指定zookeeper的地址，多个zookeeper之间用逗号分隔；
@@ -39,7 +39,7 @@
 		job-sharding-strategy-class：可以通过它来指定作业分片策略，可选策略可参考官方文档https://github.com/dangdangdotcom/elastic-job/blob/master/elastic-job-doc/content/post/user_guide/lite/other/lite_job_strategy.md。 -->
 	<!-- SimpleJob的执行可以参考源码com.dangdang.ddframe.job.executor.type.SimpleJobExecutor的处理逻辑 -->
 	<job:simple id="myElasticJob" class="com.elim.learn.elastic.job.MyElasticJob"
-		registry-center-ref="regCenter" cron="0/30 * * * * ?"
+		registry-center-ref="regCenter" cron="0/30 * 1 * * ?"
 		sharding-total-count="6" sharding-item-parameters="0=A,1=B,2=C,3=D,4=E,5=F"
 		failover="true" overwrite="true" >
 		<job:listener class="com.elim.learn.elastic.job.listener.MyElasticJobListener" />
@@ -48,17 +48,25 @@
 		<job:distributed-listener class="com.elim.learn.elastic.job.listener.MyDistributeOnceElasticJobListener" 
 				started-timeout-milliseconds="100" completed-timeout-milliseconds="100"/>
 		<!-- 事件监听，默认是启用日志文件的进行监听记录，如果需要进行数据库的记录，则配置job:event-rdb，其会自动创建需要的表 -->
-		<job:event-rdb driver="${jdbc.driver}" url="${jdbc.url}" username="${jdbc.username}" password="${jdbc.password}" log-level="DEBUG"/>
+		<job:event-rdb driver="${jdbc.driver}" url="${jdbc.url}" username="${jdbc.username}" password="${jdbc.password}" log-level="TRACE"/>
 		<job:event-log />
 	</job:simple>
+
+	<!-- 执行过程中会抛异常的作业 -->
+	<job:simple id="myExceptionJob" class="com.elim.learn.elastic.job.MyExceptionJob" cron="0/30 * * * * ?"
+		registry-center-ref="regCenter" sharding-total-count="4" overwrite="true" 
+	 	job-exception-handler="com.elim.learn.elastic.job.MyJobExceptionHandler" />
+
 
 	<!-- 流式作业。流式作业的说明请参考源码com.elim.learn.elastic.job.MyDataflowJob上面的类说明信息 -->
 	<job:dataflow id="myDataflowJob"
 		class="com.elim.learn.elastic.job.MyDataflowJob" registry-center-ref="regCenter"
-		cron="0 0/2 * * * ?" sharding-total-count="2"
+		cron="0 0/2 1 * * ?" sharding-total-count="2"
 		sharding-item-parameters="0=广州,1=深圳" failover="true" overwrite="true"
 		streaming-process="true">
-		<!-- 事件监听，默认是启用日志文件的进行监听记录，如果需要进行数据库的记录，则配置job:event-rdb，其会自动创建需要的表 -->
+		<!-- 事件监听，默认是启用日志文件的进行监听记录，如果需要进行数据库的记录，则配置job:event-rdb，其会自动创建需要的表 。
+			这个设计的不是很好，必须每个作业单独配置监听，没有全局的。
+		-->
 		<job:event-rdb driver="${jdbc.driver}" url="${jdbc.url}" username="${jdbc.username}" password="${jdbc.password}" log-level="DEBUG"/>
 		<job:event-log />
 	</job:dataflow>
