@@ -179,6 +179,7 @@ public class PubSubTest {
 	 * 当我们使用程序时我们的订阅也是通过一个Connection订阅的，然后该Connection就一直在等待消息的到来。
 	 * 消息来了后对应的消息处理也是基于当前的Connection的。所以在一个Connection中订阅的所有Channel的消息
 	 * 将被在该Connection中定义的所有的RedisPubSubListener处理。所以在使用的时候一定要注意这种方式是否满足你的需要。
+	 * 具体的可以参考RedisPubSubConnection的源码。
 	 * @throws Exception
 	 */
 	@Test
