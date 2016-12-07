@@ -172,4 +172,33 @@ public class PubSubTest {
 		TimeUnit.MINUTES.sleep(30);
 	}
 	
+	/**
+	 * 当一个RedisPubSubConnection中同时订阅了多个Channel（调用一次subscribe或者分多次调用），
+	 * 当收到了来自其订阅的Channel的消息时，其所有的RedisPubSubListener都将被回调。其实这也很好理解，
+	 * 我们在使用redis的客户端时当我们订阅了某个Channel后，我们的命令窗口就一直在等待订阅的消息的到来。
+	 * 当我们使用程序时我们的订阅也是通过一个Connection订阅的，然后该Connection就一直在等待消息的到来。
+	 * 消息来了后对应的消息处理也是基于当前的Connection的。所以在一个Connection中订阅的所有Channel的消息
+	 * 将被在该Connection中定义的所有的RedisPubSubListener处理。所以在使用的时候一定要注意这种方式是否满足你的需要。
+	 * @throws Exception
+	 */
+	@Test
+	public void subscribe5() throws Exception {
+		//同时监听两个Channel
+		RedisFuture<Void> future = pubSubConn.subscribe(CHANNEL, CHANNEL_2);
+		future.get();
+		pubSubConn.addListener(new RedisPubSubAdapter<String, String>() {
+
+			/* (non-Javadoc)
+			 * @see com.lambdaworks.redis.pubsub.RedisPubSubAdapter#message(java.lang.Object, java.lang.Object)
+			 */
+			@Override
+			public void message(String channel, String message) {
+				//直接通过channel订阅的将回调此方法
+				logger.info(String.format("收到一条信息，channel: %s, message: %s", channel, message));
+			}
+			
+		});
+		TimeUnit.MINUTES.sleep(30);
+	}
+	
 }
