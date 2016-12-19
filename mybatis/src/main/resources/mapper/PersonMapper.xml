@@ -12,7 +12,7 @@
 	</resultMap>
 	
 	<select id="findById" resultMap="baseResultMap" parameterType="java.lang.Long">
-		select id,name,org_type,parent_id,email,mobile from t_org where id=#{id}
+		select a.id,a.name,a.org_type,a.parent_id,b.email,b.mobile from t_org a left join t_person b on a.id=b.id where a.id=#{id}
 	</select>
 	
 	<insert id="insert" parameterType="com.elim.learn.mybatis.model.Person">
