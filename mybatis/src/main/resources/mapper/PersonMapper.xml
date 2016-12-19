@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.elim.learn.mybatis.dao.PersonMapper">
+	
+	<resultMap type="com.elim.learn.mybatis.model.Person" id="baseResultMap">
+		<id column="id" property="id"/>
+		<result column="name" property="name"/>
+		<result column="parent_id" property="parentId" />
+		<result column="org_type" property="type" />
+		<result column="email" property="email"/>
+		<result column="mobile" property="mobile" />
+	</resultMap>
+	
+	<select id="findById" resultMap="baseResultMap" parameterType="java.lang.Long">
+		select id,name,org_type,parent_id,email,mobile from t_org where id=#{id}
+	</select>
+	
+	<insert id="insert" parameterType="com.elim.learn.mybatis.model.Person">
+		insert into t_person(id,email,mobile) values(#{id},#{email},#{mobile})
+	</insert>
+	
+	<insert id="delete" parameterType="java.lang.Long">
+		delete t_person where id=#{id}
+	</insert>
+	
+	<update id="update" parameterType="com.elim.learn.mybatis.model.Person">
+		update t_person
+		<set>
+			<if test="email != null">
+				email = #{email},
+			</if>
+			<if test="mobile != null">
+				mobile = #{mobile},
+			</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	
+</mapper>

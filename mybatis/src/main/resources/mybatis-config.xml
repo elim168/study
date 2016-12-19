@@ -18,8 +18,8 @@
             </dataSource>  
         </environment>  
     </environments>  
-    <mappers>  
+   <!--  <mappers>  
         <mapper resource="mapper/SysWfProcessMapper.xml"/>  
         <mapper resource="mapper/SysWfNodeMapper.xml"/> 
-    </mappers>  
+    </mappers> -->  
 </configuration>  
