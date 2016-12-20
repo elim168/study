@@ -12,6 +12,11 @@ import com.elim.learn.mybatis.constants.OrgType;
  */
 public class Post extends OrganizationBase {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -9076217740054430073L;
+
 	public Post() {
 		super(OrgType.POST);
 	}

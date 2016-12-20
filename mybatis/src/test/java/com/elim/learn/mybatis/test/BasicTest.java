@@ -4,17 +4,21 @@
 package com.elim.learn.mybatis.test;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.cache.Cache;
+import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.elim.learn.mybatis.dao.PersonMapper;
 import com.elim.learn.mybatis.dao.SysWfNodeMapper;
 import com.elim.learn.mybatis.dao.SysWfProcessMapper;
 import com.elim.learn.mybatis.model.SysWfNode;
@@ -117,6 +121,34 @@ public class BasicTest {
 		SysWfNodeMapper mapper = session.getMapper(SysWfNodeMapper.class);
 		List<SysWfNode> list = mapper.fuzzyQuery("N1");
 		System.out.println(list.size());
+	}
+	
+	/**
+	 * 默认是有一级缓存的，一级缓存只针对于使用同一个SqlSession的情况。<br/>
+	 * 注意：当使用Spring整合后的Mybatis，即使是同一个Mapper接口对应的操作也是没有一级缓存的，因为它们是对应不同的SqlSession
+	 */
+	@Test
+	public void testCache() {
+		PersonMapper mapper = session.getMapper(PersonMapper.class);
+		mapper.findById(5L);
+		mapper.findById(5L);
+	}
+	
+	@Test
+	public void testCache2() {
+		SqlSession session1 = this.sessionFactory.openSession();
+		SqlSession session2 = this.sessionFactory.openSession();
+		session1.getMapper(PersonMapper.class).findById(5L);
+		session1.commit();
+		session2.getMapper(PersonMapper.class).findById(5L);
+	}
+	
+	@Test
+	public void testGetCache() {
+		Configuration configuration = this.session.getConfiguration();
+//		this.sessionFactory.getConfiguration();
+		Collection<Cache> caches = configuration.getCaches();
+		System.out.println(caches);
 	}
 	
 }

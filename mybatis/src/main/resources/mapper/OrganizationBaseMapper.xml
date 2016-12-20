@@ -2,6 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.elim.learn.mybatis.dao.OrganizationBaseMapper">
 
+	<cache />
+
 	<resultMap type="com.elim.learn.mybatis.model.OrganizationBase" id="baseResultMap">
 		<id column="id" property="id" />
 		<result column="name" property="name" />

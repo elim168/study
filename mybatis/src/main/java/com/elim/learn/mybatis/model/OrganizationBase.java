@@ -3,13 +3,19 @@
  */
 package com.elim.learn.mybatis.model;
 
+import java.io.Serializable;
+
 /**
  * 组织基类
  * 
  * @author Elim 2016年12月17日
  */
-public abstract class OrganizationBase {
+public abstract class OrganizationBase implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2274163544287419899L;
 	/**
 	 * 主键
 	 */

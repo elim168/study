@@ -6,6 +6,7 @@
     <properties resource="jdbc.properties"/>  
 	<settings>
 		<setting name="logImpl" value="LOG4J"/>
+		<setting name="cacheEnabled" value="true" />
 	</settings>
     <environments default="development">  
         <environment id="development">  
@@ -18,9 +19,10 @@
             </dataSource>  
         </environment>  
     </environments>  
-<!--     <mappers>  
+    <mappers>  
         <mapper resource="mapper/SysWfProcessMapper.xml"/>  
         <mapper resource="mapper/SysWfNodeMapper.xml"/> 
+        <mapper resource="mapper/OrganizationBaseMapper.xml"/>
         <mapper resource="mapper/PersonMapper.xml"/> 
-    </mappers>   -->
+    </mappers>  
 </configuration>  

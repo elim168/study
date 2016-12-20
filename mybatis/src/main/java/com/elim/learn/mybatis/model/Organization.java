@@ -12,6 +12,11 @@ import com.elim.learn.mybatis.constants.OrgType;
  */
 public class Organization extends OrganizationBase {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7365400612704649240L;
+
 	public Organization() {
 		super(OrgType.ORG);
 	}

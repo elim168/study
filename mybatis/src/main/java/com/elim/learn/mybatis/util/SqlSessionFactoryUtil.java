@@ -20,7 +20,7 @@ public class SqlSessionFactoryUtil {
 
 	static {
 		try {
-			InputStream is = Resources.getResourceAsStream("mybatis-config.xml");
+			InputStream is = Resources.getResourceAsStream("mybatis-config-single.xml");
 			sqlSessionFactory = new SqlSessionFactoryBuilder().build(is);
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -13,6 +13,10 @@ import com.elim.learn.mybatis.constants.OrgType;
 public class Person extends OrganizationBase {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1258186455048072583L;
+	/**
 	 * 员工的手机号码
 	 */
 	private String mobile;

@@ -58,4 +58,11 @@ public class OrgTest {
 		System.out.println(((Person)person).getEmail());
 	}
 	
+	@Test
+	public void testCache() {
+		//在整合Spring后使用Mapper操作时即使在一个线程中，同一个操作也是没有一级缓存的，因为它们对应底层的两个SqlSession
+		this.personMapper.findById(5L);
+		this.personMapper.findById(5L);
+	}
+	
 }

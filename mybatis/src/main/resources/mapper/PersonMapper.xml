@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.elim.learn.mybatis.dao.PersonMapper">
+
+<!-- 	<cache blocking="true" eviction="LRU" flushInterval="60000" readOnly="true" size="100">
+	
+	</cache> -->
+	
+	<cache type="com.elim.learn.mybatis.cache.MyCache">
+		<property name="name" value="调用setName()方法需要传递的参数值"/>
+	</cache>
+<!-- 	<cache-ref namespace="com.elim.learn.mybatis.dao.OrganizationBaseMapper"/> -->
 	
 	<resultMap type="com.elim.learn.mybatis.model.Person" id="baseResultMap">
 		<id column="id" property="id"/>
@@ -11,7 +20,7 @@
 		<result column="mobile" property="mobile" />
 	</resultMap>
 	
-	<select id="findById" resultMap="baseResultMap" parameterType="java.lang.Long">
+	<select id="findById" resultMap="baseResultMap" parameterType="java.lang.Long" >
 		select a.id,a.name,a.org_type,a.parent_id,b.email,b.mobile from t_org a left join t_person b on a.id=b.id where a.id=#{id}
 	</select>
 	
@@ -19,7 +28,7 @@
 		insert into t_person(id,email,mobile) values(#{id},#{email},#{mobile})
 	</insert>
 	
-	<insert id="delete" parameterType="java.lang.Long">
+	<insert id="delete" parameterType="java.lang.Long" flushCache="false">
 		delete t_person where id=#{id}
 	</insert>
 	
