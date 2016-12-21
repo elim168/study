@@ -21,6 +21,7 @@ import org.junit.Test;
 import com.elim.learn.mybatis.dao.PersonMapper;
 import com.elim.learn.mybatis.dao.SysWfNodeMapper;
 import com.elim.learn.mybatis.dao.SysWfProcessMapper;
+import com.elim.learn.mybatis.model.Person;
 import com.elim.learn.mybatis.model.SysWfNode;
 import com.elim.learn.mybatis.model.SysWfProcess;
 import com.elim.learn.mybatis.util.SqlSessionFactoryUtil;
@@ -138,9 +139,17 @@ public class BasicTest {
 	public void testCache2() {
 		SqlSession session1 = this.sessionFactory.openSession();
 		SqlSession session2 = this.sessionFactory.openSession();
-		session1.getMapper(PersonMapper.class).findById(5L);
+		SqlSession session3 = this.sessionFactory.openSession();
+		Person person1 = session1.getMapper(PersonMapper.class).findById(5L);
+		person1.setEmail("Email1123");
 		session1.commit();
-		session2.getMapper(PersonMapper.class).findById(5L);
+		Person person2 = session2.getMapper(PersonMapper.class).findById(5L);
+		person2.setMobile("18188888888");
+		System.out.println(person2.getEmail());
+		System.out.println(person1 == person2);
+		Person person3 = session3.getMapper(PersonMapper.class).findById(5L);
+		System.out.println(person3.getEmail());
+		System.out.println(person3.getMobile());
 	}
 	
 	@Test

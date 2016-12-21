@@ -2,13 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.elim.learn.mybatis.dao.PersonMapper">
 
-<!-- 	<cache blocking="true" eviction="LRU" flushInterval="60000" readOnly="true" size="100">
-	
-	</cache> -->
-	
-	<cache type="com.elim.learn.mybatis.cache.MyCache">
+	<cache size="500" readOnly="true"/>	
+<!-- 	<cache type="com.elim.learn.mybatis.cache.MyCache">
 		<property name="name" value="调用setName()方法需要传递的参数值"/>
-	</cache>
+	</cache> -->
 <!-- 	<cache-ref namespace="com.elim.learn.mybatis.dao.OrganizationBaseMapper"/> -->
 	
 	<resultMap type="com.elim.learn.mybatis.model.Person" id="baseResultMap">
