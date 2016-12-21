@@ -32,7 +32,7 @@ public class UserTest {
 		User user = null;
 		String[] names = new String[]{"zhuoyi", "maer", "zhangsan", "lisi", "wangwu", "zhaoliu", "tianqi", "wangba"};
 		DecimalFormat mobile = new DecimalFormat("15888880000");
-		for (int i=0; i<1000; i++) {
+		for (int i=10000; i<10001; i++) {
 			user = new User();
 			user.setName("User_" + names[i%8] + i/8);
 			user.setEmail(user.getName() + "@Email.com");
