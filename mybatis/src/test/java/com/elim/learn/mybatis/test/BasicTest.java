@@ -160,4 +160,26 @@ public class BasicTest {
 		System.out.println(caches);
 	}
 	
+	@Test
+	public void testLazyLoad1() {
+		SysWfProcessMapper mapper = this.session.getMapper(SysWfProcessMapper.class);
+		SysWfProcess process = mapper.selectByPrimaryKey(1);
+		System.out.println(process.getClass());
+		System.out.println(process);
+//		System.out.println(Thread.currentThread().getName() + "=========================" + new Date());
+//		System.out.println(process.getNodes().iterator().next().getClass());
+//		System.out.println(process.getTemplateId());
+//		System.out.println(process.getId());
+//		System.out.println(process.getNodes().size());
+//		System.out.println(process);
+	}
+	
+	@Test
+	public void testLazyLoad2() {
+		SysWfNodeMapper mapper = this.session.getMapper(SysWfNodeMapper.class);
+		SysWfNode node = mapper.selectByPrimaryKey(1);
+		System.out.println(node.getClass());
+		System.out.println(node.getProcess().getClass());
+	}
+	
 }

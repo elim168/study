@@ -6,6 +6,15 @@
 		<result column="process_id" jdbcType="INTEGER" property="processId" />
 		<result column="node_code" jdbcType="VARCHAR" property="nodeCode" />
 		<result column="node_name" jdbcType="VARCHAR" property="nodeName" />
+		<association property="process" fetchType="lazy"
+			javaType="com.elim.learn.mybatis.model.SysWfProcess" column="process_id"
+			select="selectProcess" />
+	</resultMap>
+	<resultMap id="SysWfProcessResult" type="com.elim.learn.mybatis.model.SysWfProcess">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="template_id" jdbcType="INTEGER" property="templateId" />
+		<result column="creator" jdbcType="INTEGER" property="creator" />
+		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
 	</resultMap>
 	<sql id="Base_Column_List">
 		id, process_id, node_code, node_name
@@ -16,6 +25,9 @@
 		<include refid="Base_Column_List" />
 		from sys_wf_node
 		where id = #{nodeId,jdbcType=INTEGER}
+	</select>
+	<select id="selectProcess" resultMap="SysWfProcessResult">
+		select id, template_id, creator, create_time from sys_wf_process where id=#{id}
 	</select>
 	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
 		delete from
@@ -87,40 +99,43 @@
 		node_name = #{nodeName,jdbcType=VARCHAR}
 		where id = #{nodeId,jdbcType=INTEGER}
 	</update>
-	
+
 	<!-- 只用一条SQL查出多对一关系 -->
-	<select id="singleSqlNTo1" parameterType="java.lang.Integer" resultMap="SingleSqlNTo1Result">
-		select 
-			a.id,a.node_code,a.node_name,a.process_id, b.template_id,b.creator,b.create_time
+	<select id="singleSqlNTo1" parameterType="java.lang.Integer"
+		resultMap="SingleSqlNTo1Result">
+		select
+		a.id,a.node_code,a.node_name,a.process_id, b.template_id,b.creator,b.create_time
 		from
-			sys_wf_node a, sys_wf_process b
+		sys_wf_node a, sys_wf_process b
 		where
-			a.process_id=b.id and a.id=#{id}
+		a.process_id=b.id and a.id=#{id}
 	</select>
-	
+
 	<resultMap type="com.elim.learn.mybatis.model.SysWfNode" id="SingleSqlNTo1Result">
-		<id property="nodeId" column="id"/>
-		<result property="nodeCode" column="node_code"/>
-		<result property="nodeName" column="node_name"/>
-		<result property="processId" column="process_id"/>
+		<id property="nodeId" column="id" />
+		<result property="nodeCode" column="node_code" />
+		<result property="nodeName" column="node_name" />
+		<result property="processId" column="process_id" />
 		<!-- 单个对象的关联是通过association元素来定义的 -->
-		<association property="process" javaType="com.elim.learn.mybatis.model.SysWfProcess">
-			<id property="id" column="process_id"/>
-			<result property="templateId" column="template_id"/>
-			<result property="creator" column="creator"/>
-			<result property="createTime" column="create_time"/>
-			<collection property="nodes" ofType="com.elim.learn.mybatis.model.SysWfNode">
-				<id property="nodeId" column="id"/>
-				<result property="nodeCode" column="node_code"/>
-				<result property="nodeName" column="node_name"/>
-				<result property="processId" column="process_id"/>
+		<association property="process"
+			javaType="com.elim.learn.mybatis.model.SysWfProcess">
+			<id property="id" column="process_id" />
+			<result property="templateId" column="template_id" />
+			<result property="creator" column="creator" />
+			<result property="createTime" column="create_time" />
+			<collection property="nodes"
+				ofType="com.elim.learn.mybatis.model.SysWfNode">
+				<id property="nodeId" column="id" />
+				<result property="nodeCode" column="node_code" />
+				<result property="nodeName" column="node_name" />
+				<result property="processId" column="process_id" />
 			</collection>
 		</association>
 	</resultMap>
-	
-	<select id="fuzzyQuery" resultMap="BaseResultMap" parameterType="java.lang.String">  
-		<bind name="titleLike" value="'%'+_parameter+'%'"/>
-        select * from sys_wf_node where node_code like #{titleLike}  
-    </select>
-	
+
+	<select id="fuzzyQuery" resultMap="BaseResultMap" parameterType="java.lang.String">
+		<bind name="titleLike" value="'%'+_parameter+'%'" />
+		select * from sys_wf_node where node_code like #{titleLike}
+	</select>
+
 </mapper>

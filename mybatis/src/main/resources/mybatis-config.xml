@@ -6,6 +6,7 @@
     <properties resource="jdbc.properties"/>  
 	<settings>
 		<setting name="logImpl" value="LOG4J"/>
+		<setting name="cacheEnabled" value="false" />
 	</settings>
     <environments default="development">  
         <environment id="development">  

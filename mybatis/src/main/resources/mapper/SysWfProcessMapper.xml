@@ -6,6 +6,14 @@
 		<result column="template_id" jdbcType="INTEGER" property="templateId" />
 		<result column="creator" jdbcType="INTEGER" property="creator" />
 		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+		<collection property="nodes" column="id"
+			ofType="com.elim.learn.mybatis.model.SysWfNode" select="selectNodes" fetchType="lazy" />
+	</resultMap>
+	<resultMap id="SysWfNodeResult" type="com.elim.learn.mybatis.model.SysWfNode">
+		<id column="id" jdbcType="INTEGER" property="nodeId" />
+		<result column="process_id" jdbcType="INTEGER" property="processId" />
+		<result column="node_code" jdbcType="VARCHAR" property="nodeCode" />
+		<result column="node_name" jdbcType="VARCHAR" property="nodeName" />
 	</resultMap>
 	<sql id="Base_Column_List">
 		id, template_id, creator, create_time
@@ -17,6 +25,11 @@
 		from sys_wf_process
 		where id = #{id,jdbcType=INTEGER}
 	</select>
+	<select id="selectNodes" 
+		resultMap="SysWfNodeResult">
+		select id, process_id, node_code, node_name from sys_wf_node
+		where process_id=#{id}
+	</select>
 	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
 		delete from
 		sys_wf_process
@@ -24,9 +37,11 @@
 	</delete>
 	<insert id="insert" parameterType="com.elim.learn.mybatis.model.SysWfProcess"
 		keyProperty="id" useGeneratedKeys="true">
-		insert into sys_wf_process (id, template_id, creator,
+		insert into sys_wf_process (id,
+		template_id, creator,
 		create_time)
-		values (#{id,jdbcType=INTEGER}, #{templateId,jdbcType=INTEGER},
+		values (#{id,jdbcType=INTEGER},
+		#{templateId,jdbcType=INTEGER},
 		#{creator,jdbcType=INTEGER},
 		#{createTime,jdbcType=TIMESTAMP})
 	</insert>
@@ -86,69 +101,74 @@
 		#{createTime,jdbcType=TIMESTAMP}
 		where id = #{id,jdbcType=INTEGER}
 	</update>
-	
-	
-	
-	
-	
+
+
+
+
+
 	<resultMap id="SingleSql1ToNResult" type="com.elim.learn.mybatis.model.SysWfProcess">
 		<!-- id非常重要，用来区分记录 -->
-		<id property="id" column="id"/>
-		<result property="creator" column="creator"/>
-		<result property="templateId" column="template_id"/>
-		<result property="createTime" column="create_time"/>
+		<id property="id" column="id" />
+		<result property="creator" column="creator" />
+		<result property="templateId" column="template_id" />
+		<result property="createTime" column="create_time" />
 		<!-- 指定关联的集合属性的数据映射，ofType属性指定集合元素对应的数据类型 -->
-		<collection property="nodes" ofType="com.elim.learn.mybatis.model.SysWfNode">
-			<id property="nodeId" column="node_id"/>
-			<result property="nodeCode" column="node_code"/>
-			<result property="nodeName" column="node_name"/>
-			<result property="processId" column="id"/>
-			<association property="process" javaType="com.elim.learn.mybatis.model.SysWfProcess" resultMap="SysWfProcess"/>
+		<collection property="nodes"
+			ofType="com.elim.learn.mybatis.model.SysWfNode">
+			<id property="nodeId" column="node_id" />
+			<result property="nodeCode" column="node_code" />
+			<result property="nodeName" column="node_name" />
+			<result property="processId" column="id" />
+			<association property="process"
+				javaType="com.elim.learn.mybatis.model.SysWfProcess" resultMap="SysWfProcess" />
 		</collection>
 	</resultMap>
-	
+
 	<resultMap id="SysWfProcess" type="com.elim.learn.mybatis.model.SysWfProcess">
-		<id property="id" column="id"/>
-		<result property="creator" column="creator"/>
-		<result property="templateId" column="template_id"/>
-		<result property="createTime" column="create_time"/>
+		<id property="id" column="id" />
+		<result property="creator" column="creator" />
+		<result property="templateId" column="template_id" />
+		<result property="createTime" column="create_time" />
 	</resultMap>
-	
+
 	<!-- 只用一条SQL查出一对多关系 -->
-	<select id="singleSql1ToN" parameterType="java.lang.Integer" resultMap="SingleSql1ToNResult">
-		select 
-			a.id,a.template_id,a.creator,a.create_time,b.id node_id,b.node_code, b.node_name 
-		from sys_wf_process a 
-			left join sys_wf_node b 
-				on a.id=b.process_id 
+	<select id="singleSql1ToN" parameterType="java.lang.Integer"
+		resultMap="SingleSql1ToNResult">
+		select
+		a.id,a.template_id,a.creator,a.create_time,b.id node_id,b.node_code, b.node_name
+		from sys_wf_process a
+		left join sys_wf_node b
+		on a.id=b.process_id
 		where a.id=#{id}
 	</select>
-	
-	
-	
-	
+
+
+
+
 	<select id="findByForEach" resultMap="BaseResultMap">
-		select * from sys_wf_process 
+		select * from sys_wf_process
 		where id in
 		<!-- 遍历的对象是Map.Entry时，index代表对应的key，item代表对应的value -->
-		<foreach collection="collection" index="key" item="value" open="(" close=")" separator=",">
+		<foreach collection="collection" index="key" item="value"
+			open="(" close=")" separator=",">
 			#{key},#{value}
 		</foreach>
 	</select>
-	
+
 	<select id="findByForEach2" resultMap="BaseResultMap">
-		select * from sys_wf_process 
+		select * from sys_wf_process
 		where id in
 		<!-- 遍历的对象是Map.Entry时，index代表对应的key，item代表对应的value -->
-		<foreach collection="list" item="value" open="(" close=")" separator=",">
+		<foreach collection="list" item="value" open="(" close=")"
+			separator=",">
 			#{value}
 		</foreach>
 	</select>
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
 </mapper>

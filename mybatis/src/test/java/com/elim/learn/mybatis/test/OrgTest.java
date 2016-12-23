@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.elim.learn.mybatis.dao.OrganizationBaseMapper;
 import com.elim.learn.mybatis.dao.PersonMapper;
@@ -58,9 +59,12 @@ public class OrgTest {
 		System.out.println(((Person)person).getEmail());
 	}
 	
+	
+	@Transactional
 	@Test
 	public void testCache() {
-		//在整合Spring后使用Mapper操作时即使在一个线程中，同一个操作也是没有一级缓存的，因为它们对应底层的两个SqlSession
+		//在整合Spring后使用Mapper操作时如果它们不是在一个事务中也是没有一级缓存的，因为它们对应底层的两个SqlSession，
+		//只有在一个事务中才是对应的同一个SqlSession
 		this.personMapper.findById(5L);
 		this.personMapper.findById(5L);
 	}
