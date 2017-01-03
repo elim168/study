@@ -3,6 +3,7 @@
  */
 package com.elim.learn.spring.aop.service;
 
+import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Service;
 
 /**
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class MyService {
 
+	@Pointcut("execution(* add(..))")
 	public void add() {
 		System.out.println("add……");
 	}
