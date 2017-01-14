@@ -21,7 +21,7 @@ public class UserServiceImpl implements IUserService {
 	 */
 	@Override
 	@MyAnnotation
-	public void add() {
+	public void add() throws Exception {
 		System.out.println("--------add user----------");
 	}
 

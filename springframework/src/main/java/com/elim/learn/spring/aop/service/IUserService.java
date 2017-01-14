@@ -11,7 +11,7 @@ import com.elim.learn.spring.support.ArgWithAnnotation;
  */
 public interface IUserService {
 
-	public void add();
+	public void add() throws Exception;
 	
 	public void add(int orgId, String name);
 	

@@ -36,8 +36,9 @@ public class PointcutTest {
 	}
 	
 	@Test
-	public void testExpression() {
+	public void testExpression() throws Exception {
 		this.userService.add();
+		
 	}
 	
 	/**

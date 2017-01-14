@@ -33,7 +33,7 @@ public class MyAspect {
 	/**
 	 * 所有的add方法的外部执行时
 	 */
-	@Before("execution(* add(..))")
+	@Before("execution(* add() throws Exception)")
 	public void beforeExecution() {
 		System.out.println("-------------before execution---------------");
 	}
@@ -41,7 +41,7 @@ public class MyAspect {
 	/**
 	 * com.elim.learn包及其子包下所有类的非私有方法的外部执行时
 	 */
-	@Before("within(com.elim.learn..*)")
+	@Before("within(com.elim.learn.spring.aop.service.UserServiceImpl)")
 	public void beforeWithin() {
 		System.out.println("-------------before within---------------");
 	}
@@ -82,7 +82,7 @@ public class MyAspect {
 	/**
 	 * 当调用的方法是没有参数时
 	 */
-	@Before("args()")
+	@Before("args(..)")
 	public void beforeArgs() {
 		System.out.println("-------------before args no argument---------------");
 	}
@@ -94,6 +94,15 @@ public class MyAspect {
 	public void beforeArgs2() {
 		System.out.println("-------------before args with Integer and String---------------");
 	}
+	
+	/**
+	 * 匹配任意参数
+	 */
+	@Before("args(..)")
+	public void beforeArgs3() {
+		System.out.println("-------------before args with any argument---------------");
+	}
+	
 	
 	/**
 	 * 当代理的目标对象所在类上拥有MyAnnotation注解时
@@ -135,6 +144,34 @@ public class MyAspect {
 	@Before("bean(userService)")
 	public void beforeBeanName() {
 		System.out.println("-------------before beanIdOrName--------------");
+	}
+	
+	/**
+	 * 当执行的是id或name为以user开头的bean的方法时
+	 */
+	@Before("bean(user*)")
+	public void beforeBeanName2() {
+		System.out.println("-------------before bean(user*)--------------");
+	}
+	
+	@Before("!bean(userService1)")
+	public void beforeBeanName3() {
+		System.out.println("-------------before !bean(userService1)--------------");
+	}
+	
+	@Before("bean(userService) && args()")
+	public void beforeCombination1() {
+		System.out.println("---------bean(userService) && args()---------");
+	}
+	
+	@Before("bean(userService) && !args()")
+	public void beforeCombination2() {
+		System.out.println("---------bean(userService) && !args()---------");
+	}
+	
+	@Before("bean(userService1) || args()")
+	public void beforeCombination3() {
+		System.out.println("---------------bean(userService1) || args()----------------");
 	}
 	
 }
