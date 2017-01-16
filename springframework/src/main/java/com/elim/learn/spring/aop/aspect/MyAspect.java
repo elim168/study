@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
  * @author Elim
  * 2016年12月30日
  */
-@Component
+//@Component
 @Aspect
 public class MyAspect {
 
@@ -21,7 +21,7 @@ public class MyAspect {
 	private void beforeAdd() {}
 	
 	@Before("beforeAdd()")
-	public void before() {
+	public void before1() {
 		System.out.println("-----------before-----------");
 	}
 	

@@ -5,6 +5,7 @@ package com.elim.learn.spring.aop.service;
 
 import org.springframework.stereotype.Service;
 
+import com.elim.learn.spring.common.model.User;
 import com.elim.learn.spring.support.ArgWithAnnotation;
 import com.elim.learn.spring.support.MyAnnotation;
 
@@ -39,6 +40,20 @@ public class UserServiceImpl implements IUserService {
 	@Override
 	public void add(ArgWithAnnotation arg) {
 		System.out.println("--------add 方法参数类型上是有注解的----------");
+	}
+
+	/* (non-Javadoc)
+	 * @see com.elim.learn.spring.aop.service.IUserService#findById(java.lang.Integer)
+	 */
+	@Override
+	public User findById(Integer id) {
+		if (id == null) {
+			throw new IllegalArgumentException("[id] must not be null.");
+		}
+		User user = new User();
+		user.setId(id);
+		user.setName("Name-" + id);
+		return user;
 	}
 
 }
