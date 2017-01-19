@@ -11,6 +11,7 @@ import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
@@ -29,16 +30,22 @@ public class AdviceAspect {
 	@Before("bean(userService)")
 	public void before(JoinPoint joinPoint) {
 		System.out.println("-----before with pointcut expression: bean(userService)------");
-		joinPoint.getArgs();//获取当前目标方法调用传递的参数
+		/*joinPoint.getArgs();//获取当前目标方法调用传递的参数
 		joinPoint.getSignature();//获取当前目标方法的签名，通过它可以获取到目标方法名
 		joinPoint.getThis();//获取AOP生成的代理对象
-		joinPoint.getTarget();//获取被代理对象
+		joinPoint.getTarget();//获取被代理对象，即目标对象
 		System.out.println(joinPoint.getArgs());
 		System.out.println(joinPoint.getSignature().getName());
 		System.out.println(joinPoint.getThis().getClass());
 		System.out.println(joinPoint.getTarget().getClass());
-		System.out.println(joinPoint.toString());
+		System.out.println(joinPoint.toString());*/
 	}
+	
+	@Before("bean(userService)")
+	public void before2(JoinPoint joinPoint) {
+		System.out.println("-----before2 with pointcut expression: bean(userService)------");
+	}
+	
 	
 	/**
 	 * AfterReturning将在切入点方法正常执行完后执行，如果需要在Advice中获取返回值，则可以给该Advice方法加上一个参数，同时指定@AfterReturning的returning属性的值为参数名
@@ -57,6 +64,7 @@ public class AdviceAspect {
 	 * 的Advice是不会执行的。换句话说我们在Around Advice中抛出的异常也将触发AfterThrowing类型的Advice的执行。
 	 * @param ex
 	 */
+	@Order(1)
 	@AfterThrowing(value="bean(userService)", throwing="ex")
 	public void afterThrowing(Exception ex) {
 		System.out.println("-----after throwing with pointcut expression: bean(userService)------" + ex);
@@ -72,7 +80,6 @@ public class AdviceAspect {
 	
 	/**
 	 * 
-	 * 如果某个方法的执行既可以匹配before又可以匹配around，则只匹配around，忽略before。
 	 * Around类型的Advice我们应该给定一个ProceedingJoinPoint参数，而且这个参数必须是Advice方法的第一个参数，
 	 * 然后在自己的方法体里面调用ProceedingJoinPoint参数 的proceed()方法以便目标方法能顺利的执行。
 	 * 我们也可以根据需要调用ProceedingJoinPoint参数的proceed(Object[] args)方法，这种情况将改变原有方法调用的
@@ -81,7 +88,7 @@ public class AdviceAspect {
 	 * Advice中改变目标方法的返回值。
 	 * @throws Throwable 
 	 */
-//	@Around("bean(userService)")
+	@Around("bean(userService)")
 	public Object around(ProceedingJoinPoint pjp) throws Throwable {
 		System.out.println("-----around with pointcut expression: bean(userService)------");
 		System.out.println("---------------------调用前---------------------");
