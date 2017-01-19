@@ -12,19 +12,19 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
 
 /**
  * 介绍Advice类型
  * @author Elim
  * 2017年1月14日
  */
-@Component
+//@Component
 @Aspect
 public class AdviceAspect {
 
 	/**
-	 * before将在切入点方法执行前执行
+	 * before将在切入点方法执行前执行。
+	 * 在beforeAdvice中除了抛出异常外是不能阻止程序继续往下执行的
 	 * @param joinPoint 所有的Advice都可以把它的第一个参数定义为JoinPoint，通过它我们可以获取到一些与当前目标方法调用有关的信息
 	 */
 	@Before("bean(userService)")
@@ -39,6 +39,7 @@ public class AdviceAspect {
 		System.out.println(joinPoint.getThis().getClass());
 		System.out.println(joinPoint.getTarget().getClass());
 		System.out.println(joinPoint.toString());*/
+//		throw new RuntimeException("before");
 	}
 	
 	@Before("bean(userService)")

@@ -6,7 +6,6 @@ package com.elim.learn.spring.aop.aspect;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.stereotype.Component;
 
 /**
  * pointcut表达式有execution、within、this、target、args、@target、@args、@within、@annotation
