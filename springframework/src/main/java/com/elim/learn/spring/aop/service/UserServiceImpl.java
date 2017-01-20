@@ -56,4 +56,13 @@ public class UserServiceImpl implements IUserService {
 		return user;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.elim.learn.spring.aop.service.IUserService#delete(java.lang.String, int)
+	 */
+	@Override
+	@MyAnnotation
+	public void delete(String name, int sex) {
+		System.out.println("--------deleting with param[name=" + name + ", sex=" + sex + "]");
+	}
+
 }

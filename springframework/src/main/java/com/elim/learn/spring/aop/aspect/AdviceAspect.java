@@ -11,7 +11,6 @@ import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import org.springframework.core.annotation.Order;
 
 /**
  * 介绍Advice类型
@@ -29,7 +28,7 @@ public class AdviceAspect {
 	 */
 	@Before("bean(userService)")
 	public void before(JoinPoint joinPoint) {
-		System.out.println("-----before with pointcut expression: bean(userService)------");
+		System.out.println(this.getClass().getName()+"-----before with pointcut expression: bean(userService)------");
 		/*joinPoint.getArgs();//获取当前目标方法调用传递的参数
 		joinPoint.getSignature();//获取当前目标方法的签名，通过它可以获取到目标方法名
 		joinPoint.getThis();//获取AOP生成的代理对象
@@ -44,7 +43,7 @@ public class AdviceAspect {
 	
 	@Before("bean(userService)")
 	public void before2(JoinPoint joinPoint) {
-		System.out.println("-----before2 with pointcut expression: bean(userService)------");
+		System.out.println(this.getClass().getName()+"-----before2 with pointcut expression: bean(userService)------");
 	}
 	
 	
@@ -54,8 +53,8 @@ public class AdviceAspect {
 	 */
 	@AfterReturning(value="bean(userService)", returning="returnValue")
 	public void afterReturning(Object returnValue) {
-		System.out.println("-----after returning with pointcut expression: bean(userService)------");
-		System.out.println("-----return value is: " + returnValue);
+		System.out.println(this.getClass().getName()+"-----after returning with pointcut expression: bean(userService)------");
+		System.out.println(this.getClass().getName()+"-----return value is: " + returnValue);
 	}
 	
 	/**
@@ -65,10 +64,9 @@ public class AdviceAspect {
 	 * 的Advice是不会执行的。换句话说我们在Around Advice中抛出的异常也将触发AfterThrowing类型的Advice的执行。
 	 * @param ex
 	 */
-	@Order(1)
 	@AfterThrowing(value="bean(userService)", throwing="ex")
 	public void afterThrowing(Exception ex) {
-		System.out.println("-----after throwing with pointcut expression: bean(userService)------" + ex);
+		System.out.println(this.getClass().getName()+"-----after throwing with pointcut expression: bean(userService)------" + ex);
 	}
 	
 	/**
@@ -76,7 +74,7 @@ public class AdviceAspect {
 	 */
 	@After("bean(userService)")
 	public void after() {
-		System.out.println("-----after with pointcut expression: bean(userService)------");
+		System.out.println(this.getClass().getName()+"-----after with pointcut expression: bean(userService)------");
 	}
 	
 	/**
@@ -91,8 +89,8 @@ public class AdviceAspect {
 	 */
 	@Around("bean(userService)")
 	public Object around(ProceedingJoinPoint pjp) throws Throwable {
-		System.out.println("-----around with pointcut expression: bean(userService)------");
-		System.out.println("---------------------调用前---------------------");
+		System.out.println(this.getClass().getName()+"-----around with pointcut expression: bean(userService)------");
+		System.out.println(this.getClass().getName()+"---------------------调用前---------------------");
 		Object result = null;
 		Object[] args = pjp.getArgs();
 		if (args.length == 1 && args[0] == null) {
@@ -106,7 +104,7 @@ public class AdviceAspect {
 			Object[] params = new Object[]{15};
 			result = pjp.proceed(params);//可以调整目标方法调用时传递的参数
 		}
-		System.out.println("---------------------调用后---------------------");
+		System.out.println(this.getClass().getName()+"---------------------调用后---------------------");
 		return result;
 	}
 	

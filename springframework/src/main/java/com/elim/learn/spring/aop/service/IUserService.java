@@ -20,4 +20,6 @@ public interface IUserService {
 	
 	public User findById(Integer id);
 	
+	public void delete(String name, int sex);
+	
 }
