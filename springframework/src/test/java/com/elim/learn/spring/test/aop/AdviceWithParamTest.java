@@ -48,4 +48,10 @@ public class AdviceWithParamTest {
 		this.userService.delete("张三", 1);
 	}
 	
+	@Test
+	public void testParam() {
+		Integer id = 123;
+		this.userService.testParam(id);
+	}
+	
 }

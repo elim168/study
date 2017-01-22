@@ -50,7 +50,7 @@ public class AdviceWithParamAspect {
 	 * Advice方法参数的顺序
 	 * @param id
 	 */
-	@Before(value="bean(userService) && args(id,..)", argNames="id")
+	@Before(value="bean(userService) && args(id)", argNames="id")
 	public void beforeWithParam2(int id) {
 		System.out.println(this.getClass().getName()+" ID is : " + id);
 	}
@@ -99,6 +99,15 @@ public class AdviceWithParamAspect {
 	@Before("@annotation(annotation)")
 	public void beforeWithParam7(MyAnnotation annotation) {
 		System.out.println(this.getClass().getName()+"==============传递标注在方法上的annotation： " + annotation.annotationType().getName());
+	}
+	
+	/**
+	 * 只拦截调用时泛型类型传递的参数类型为Integer的情形
+	 * @param param
+	 */
+	@Before("execution(void testParam(..)) && args(param)")
+	public void beforeWithParam8(Integer param) {
+		System.out.println("pointcut expression[args(param)]--------------param:" + param);
 	}
 	
 	/**

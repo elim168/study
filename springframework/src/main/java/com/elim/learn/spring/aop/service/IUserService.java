@@ -22,4 +22,6 @@ public interface IUserService {
 	
 	public void delete(String name, int sex);
 	
+	public <T> void testParam(T param);
+	
 }

@@ -65,4 +65,12 @@ public class UserServiceImpl implements IUserService {
 		System.out.println("--------deleting with param[name=" + name + ", sex=" + sex + "]");
 	}
 
+	/* (non-Javadoc)
+	 * @see com.elim.learn.spring.aop.service.IUserService#testParam(java.lang.Object)
+	 */
+	@Override
+	public <T> void testParam(T param) {
+		System.out.println("================传递的param是=======" + param);
+	}
+
 }
