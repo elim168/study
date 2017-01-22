@@ -8,7 +8,6 @@ import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
 
 import com.elim.learn.spring.aop.service.IUserService;
 import com.elim.learn.spring.support.MyAnnotation;
@@ -18,7 +17,7 @@ import com.elim.learn.spring.support.MyAnnotation;
  * @author Elim
  * 2017年1月19日
  */
-@Component
+//@Component
 @Aspect
 @Order(1)
 public class AdviceWithParamAspect {
