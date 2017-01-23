@@ -41,6 +41,7 @@ public class SchemaBasedAspect {
 		System.out.println("=================Around Start=================");
 		try {
 			Object result = pjp.proceed();
+			System.out.println(pjp.getThis().getClass());
 			System.out.println("==================成功执行了");
 			return result;
 		} catch (Exception e) {
