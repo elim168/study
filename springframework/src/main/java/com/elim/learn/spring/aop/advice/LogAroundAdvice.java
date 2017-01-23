@@ -10,7 +10,7 @@ import org.aopalliance.intercept.MethodInvocation;
  * @author Elim
  * 2017年1月23日
  */
-public class LogMethodInterceptor implements MethodInterceptor {
+public class LogAroundAdvice implements MethodInterceptor {
 
 	/* (non-Javadoc)
 	 * @see org.aopalliance.intercept.MethodInterceptor#invoke(org.aopalliance.intercept.MethodInvocation)

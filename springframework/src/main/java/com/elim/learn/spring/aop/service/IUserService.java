@@ -24,4 +24,6 @@ public interface IUserService {
 	
 	public <T> void testParam(T param);
 	
+	public void throwException(Exception e) throws Exception;
+	
 }

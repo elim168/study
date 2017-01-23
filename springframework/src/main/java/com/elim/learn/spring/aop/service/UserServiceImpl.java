@@ -73,4 +73,12 @@ public class UserServiceImpl implements IUserService {
 		System.out.println("================传递的param是=======" + param);
 	}
 
+	/* (non-Javadoc)
+	 * @see com.elim.learn.spring.aop.service.IUserService#throwException(java.lang.Exception)
+	 */
+	@Override
+	public void throwException(Exception e) throws Exception {
+		throw e;
+	}
+
 }
