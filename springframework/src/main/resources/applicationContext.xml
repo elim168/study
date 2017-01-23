@@ -2,21 +2,45 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:p="http://www.springframework.org/schema/p" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:cache="http://www.springframework.org/schema/cache" xmlns:aop="http://www.springframework.org/schema/aop"
-	xmlns:util="http://www.springframework.org/schema/util"
-	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
      http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
      http://www.springframework.org/schema/context
      http://www.springframework.org/schema/context/spring-context-4.1.xsd
-     http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache-4.1.xsd
-     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd
-     http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.1.xsd
-     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd">
+     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd">
 
-	<context:annotation-config/>
-	<context:component-scan base-package="com.elim.learn.spring"/>
+	<context:annotation-config />
+	<context:component-scan base-package="com.elim.learn.spring" />
 	<!-- 启用对AOP Aspectj注解的支持 -->
-	<aop:aspectj-autoproxy proxy-target-class="true"/>
+	<aop:aspectj-autoproxy proxy-target-class="true" />
+
+	<bean id="schemaBasedAspect" class="com.elim.learn.spring.aop.aspect.SchemaBasedAspect" />
+	<bean id="commonParent" class="com.elim.learn.spring.aop.service.CommonParentImpl" />
+	<!-- 基于XML的AOP配置是基于config元素开始的 -->
+	<aop:config>
+		<aop:pointcut expression="bean(userService)" id="userServicePointCut2" />
+		<aop:pointcut
+			expression="com.elim.learn.spring.aop.aspect.SchemaBasedAspect.pointcut()"
+			id="pointcut" />
+		<aop:advisor advice-ref="logMethodInterceptor" pointcut="bean(userService)"/>
+		<!-- 定义切面 -->
+		<aop:aspect id="aspect1" ref="schemaBasedAspect" order="1">
+			<!-- 定义一个Around Advice -->
+			<aop:before method="doBefore" pointcut-ref="userServicePointCut" />
+			<aop:around method="doAround" pointcut="bean(userService)" />
+			<aop:pointcut expression="bean(userService) and this(commonParent) and !execution(void com.elim.learn.spring.aop.service.CommonParent.doSomething())"
+				id="userServicePointCut" />
+			<!-- 加上通用的父类 -->
+			<aop:declare-parents types-matching="com.elim.learn.spring.aop.service..*"
+				implement-interface="com.elim.learn.spring.aop.service.CommonParent"
+				delegate-ref="commonParent"/>
+		</aop:aspect>
+		<!-- <aop:aspect id="aspect2" ref="schemaBasedAspect" order="2"> 定义一个Advice，引用前一个aspect1中定义的Pointcut 
+			<aop:before method="doBefore" pointcut-ref="userServicePointCut" /> 引用全局的Pointcut 
+			<aop:around method="doAround" pointcut-ref="userServicePointCut2"/> </aop:aspect> -->
+	</aop:config>
+
+	<bean id="logMethodInterceptor" class="com.elim.learn.spring.aop.advice.LogMethodInterceptor"/>
+
 
 </beans>
