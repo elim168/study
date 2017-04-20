@@ -1,7 +1,13 @@
 package com.elim.learn.springdata.redis.model;
 
-public class User {
+import java.io.Serializable;
 
+public class User implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2416883424185481438L;
 	private Long id;
 	private String name;
 	private int age;
@@ -60,6 +66,14 @@ public class User {
 	 */
 	public void setAge(int age) {
 		this.age = age;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", name=" + name + ", age=" + age + "]";
 	}
 
 }

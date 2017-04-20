@@ -1,5 +1,7 @@
 package com.elim.learn.springdata.redis.test;
 
+import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,6 +114,33 @@ public class BasicTest {
 		
 		Map<Object, Object> entries = boundHashOps.entries();
 		System.out.println(entries);
+	}
+	
+	/**
+	 * 测试，试验对象的序列化
+	 */
+	@SuppressWarnings("unchecked")
+	@Test
+	public void test6() {
+		List<User> users = new ArrayList<>();
+		for (int i=0; i<100; i++) {
+			User user = new User();
+			user.setId(i+1L);
+			user.setName("Name_" + i);
+			user.setAge(30+i%10);
+			users.add(user);
+		}
+		BoundListOperations<String, String> listOps = this.redisTemplate.boundListOps("users_list");
+//		JdkSerializationRedisSerializer serializer = new JdkSerializationRedisSerializer();
+//		byte[] serializedBytes = serializer.serialize(users);
+//		listOps.rightPush(Base64.getEncoder().encodeToString(serializedBytes));
+		
+		RedisSerializer<Object> valueSerializer = (RedisSerializer<Object>) this.redisTemplate.getValueSerializer();
+		byte[] serializedBytes = valueSerializer.serialize(users);
+		listOps.rightPush(Base64.getEncoder().encodeToString(serializedBytes));
+		String encodedStr = listOps.rightPop();
+		List<User> cachedUsers = (List<User>) valueSerializer.deserialize(Base64.getDecoder().decode(encodedStr));
+		System.out.println(cachedUsers);
 	}
 	
 }
