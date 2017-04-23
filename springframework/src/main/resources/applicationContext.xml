@@ -17,7 +17,7 @@
 	<bean id="schemaBasedAspect" class="com.elim.learn.spring.aop.aspect.SchemaBasedAspect" />
 	<bean id="commonParent" class="com.elim.learn.spring.aop.service.CommonParentImpl" />
 	<!-- 基于XML的AOP配置是基于config元素开始的 -->
-	<aop:config>
+	<aop:config proxy-target-class="true">
 		<aop:pointcut expression="bean(userService)" id="userServicePointCut2" />
 		<aop:pointcut
 			expression="com.elim.learn.spring.aop.aspect.SchemaBasedAspect.pointcut()"

@@ -60,4 +60,10 @@ public class PointcutTest {
 		this.userService.add(arg);
 	}
 	
+	@Test
+	public void testProxy() {
+		this.service.add();
+		System.out.println(this.service.getClass());
+	}
+	
 }

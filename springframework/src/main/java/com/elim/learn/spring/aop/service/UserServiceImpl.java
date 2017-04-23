@@ -3,6 +3,7 @@
  */
 package com.elim.learn.spring.aop.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.elim.learn.spring.common.model.User;
@@ -16,6 +17,9 @@ import com.elim.learn.spring.support.MyAnnotation;
 @Service("userService")
 @MyAnnotation
 public class UserServiceImpl implements IUserService {
+	
+	@Autowired
+	private IUserService self;//自己注入自己，在真实对象里面需要使用代理对象的时候可以这样做，这样可以解决内部调用时AOP不生效的问题。
 
 	/* (non-Javadoc)
 	 * @see com.elim.learn.spring.aop.service.IUserService#add()
@@ -24,6 +28,7 @@ public class UserServiceImpl implements IUserService {
 	@MyAnnotation
 	public void add() throws Exception {
 		System.out.println("--------add user----------");
+		System.out.println("--------self class is : " + self.getClass());
 	}
 
 	/* (non-Javadoc)
