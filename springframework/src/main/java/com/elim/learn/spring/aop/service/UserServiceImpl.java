@@ -19,7 +19,7 @@ import com.elim.learn.spring.support.MyAnnotation;
 public class UserServiceImpl implements IUserService {
 	
 	@Autowired
-	private IUserService self;//自己注入自己，在真实对象里面需要使用代理对象的时候可以这样做，这样可以解决内部调用时AOP不生效的问题。
+	private IUserService self;//不能自己注入自己，这里注入的是它自己的子类
 
 	/* (non-Javadoc)
 	 * @see com.elim.learn.spring.aop.service.IUserService#add()
