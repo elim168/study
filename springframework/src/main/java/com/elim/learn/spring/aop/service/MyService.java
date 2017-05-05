@@ -18,4 +18,8 @@ public class MyService {
 		System.out.println("add……");
 	}
 	
+	public void find() {
+		System.out.println("调用方法find--------------------");
+	}
+	
 }

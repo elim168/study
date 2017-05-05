@@ -28,7 +28,7 @@
 		<aop:aspect id="aspect1" ref="schemaBasedAspect" order="1">
 			<!-- 定义一个Around Advice -->
 			<aop:before method="doBefore" pointcut-ref="userServicePointCut" />
-			<aop:around method="doAround" pointcut="execution(* *(..))" />
+<!-- 			<aop:around method="doAround" pointcut="execution(* *(..))" /> -->
 			<aop:pointcut expression="bean(userService) and this(commonParent) and !execution(void com.elim.learn.spring.aop.service.CommonParent.doSomething())"
 				id="userServicePointCut" />
 			<!-- 加上通用的父类 -->
@@ -50,11 +50,17 @@
 		<aop:advisor advice-ref="logAroundAdvice" pointcut-ref="userServicePointcut"/>
 	</aop:config>
  -->
+ 	<aop:config>
+ 		<aop:advisor advice-ref="logAroundAdvice" pointcut-ref="findMethodMatcherPointcut"/>
+ 	</aop:config>
+ 
 	<!-- 自定义Advisor -->
 	<bean id="logBeforeAdvice" class="com.elim.learn.spring.aop.advice.LogBeforeAdvice" />
 	<bean id="logThrowsAdvice" class="com.elim.learn.spring.aop.advice.LogThrowsAdvice" />
 	<bean id="logAfterReturningAdvice" class="com.elim.learn.spring.aop.advice.LogAfterReturningAdvice" />
 	<bean id="logAroundAdvice" class="com.elim.learn.spring.aop.advice.LogAroundAdvice"/>
 
+	<!-- 自定义pointcut -->
+	<bean id="findMethodMatcherPointcut" class="com.elim.learn.spring.aop.pointcut.FindMethodMatcherPointcut" />
 
 </beans>

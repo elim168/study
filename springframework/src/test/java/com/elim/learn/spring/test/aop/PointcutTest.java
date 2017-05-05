@@ -66,4 +66,9 @@ public class PointcutTest {
 		System.out.println(this.service.getClass());
 	}
 	
+	@Test
+	public void testFind() {
+		this.service.find();
+	}
+	
 }
