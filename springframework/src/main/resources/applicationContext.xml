@@ -52,6 +52,7 @@
  -->
  	<aop:config>
  		<aop:advisor advice-ref="logAroundAdvice" pointcut-ref="findMethodMatcherPointcut"/>
+ 		<aop:advisor advice-ref="logBeforeAdvice" pointcut-ref="regexPointcut"/>
  	</aop:config>
  
 	<!-- 自定义Advisor -->
@@ -62,5 +63,15 @@
 
 	<!-- 自定义pointcut -->
 	<bean id="findMethodMatcherPointcut" class="com.elim.learn.spring.aop.pointcut.FindMethodMatcherPointcut" />
+	<!-- 基于正则表达式的Pointcut定义，可以指定pattern，也可以指定patterns，针对JdkRegexpMethodPointcut有一个专门的Advisor，
+		org.springframework.aop.support.RegexpMethodPointcutAdvisor，使用该Advisor可以直接同时指定Advice和匹配的正则表达式。
+	 -->
+	<bean id="regexPointcut" class="org.springframework.aop.support.JdkRegexpMethodPointcut">
+		<property name="patterns">
+	        <list>
+	            <value>find.*</value><!-- 所有方法名以find开始的方法 -->
+	        </list>
+	    </property>
+	</bean>
 
 </beans>
