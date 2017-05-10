@@ -51,8 +51,9 @@
 	</aop:config>
  -->
  	<aop:config>
- 		<aop:advisor advice-ref="logAroundAdvice" pointcut-ref="findMethodMatcherPointcut"/>
- 		<aop:advisor advice-ref="logBeforeAdvice" pointcut-ref="regexPointcut"/>
+<!--  		<aop:advisor advice-ref="logAroundAdvice" pointcut-ref="findMethodMatcherPointcut"/> -->
+<!--  		<aop:advisor advice-ref="logBeforeAdvice" pointcut-ref="regexPointcut"/> -->
+ 		<aop:advisor advice-ref="logAroundAdvice" pointcut-ref="myCustomPointcut"/>
  	</aop:config>
  
 	<!-- 自定义Advisor -->
@@ -60,6 +61,8 @@
 	<bean id="logThrowsAdvice" class="com.elim.learn.spring.aop.advice.LogThrowsAdvice" />
 	<bean id="logAfterReturningAdvice" class="com.elim.learn.spring.aop.advice.LogAfterReturningAdvice" />
 	<bean id="logAroundAdvice" class="com.elim.learn.spring.aop.advice.LogAroundAdvice"/>
+
+	<bean id="myCustomPointcut" class="com.elim.learn.spring.aop.pointcut.MyCustomPointcut"/>
 
 	<!-- 自定义pointcut -->
 	<bean id="findMethodMatcherPointcut" class="com.elim.learn.spring.aop.pointcut.FindMethodMatcherPointcut" />
@@ -72,6 +75,11 @@
 	            <value>find.*</value><!-- 所有方法名以find开始的方法 -->
 	        </list>
 	    </property>
+	</bean>
+	
+	<bean class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+		<property name="advice" ref="logBeforeAdvice"/>
+		<property name="pattern" value="find.*"/>
 	</bean>
 
 </beans>

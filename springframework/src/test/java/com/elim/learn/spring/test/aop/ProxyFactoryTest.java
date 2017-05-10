@@ -10,6 +10,7 @@ import org.springframework.aop.MethodBeforeAdvice;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 import org.springframework.aop.framework.ProxyFactory;
 
+import com.elim.learn.spring.aop.advisor.MyAdvisor;
 import com.elim.learn.spring.aop.aspect.MyAspect;
 import com.elim.learn.spring.aop.service.MyService;
 
@@ -27,7 +28,8 @@ public class ProxyFactoryTest {
 		MyService myService = new MyService();
 		AspectJProxyFactory proxyFactory = new AspectJProxyFactory(myService);
 		proxyFactory.addAspect(MyAspect.class);
-		proxyFactory.setProxyTargetClass(true);
+//		proxyFactory.addAspect(aspectInstance);//指定一个切面实例也是ok的
+		proxyFactory.setProxyTargetClass(true);//是否需要使用CGLIB代理
 		MyService proxy = proxyFactory.getProxy();
 		proxy.add();
 	}
@@ -39,7 +41,6 @@ public class ProxyFactoryTest {
 	public void testProxyFactory() {
 		MyService myService = new MyService();
 		ProxyFactory proxyFactory = new ProxyFactory(myService);
-		proxyFactory.setProxyTargetClass(true);
 		proxyFactory.addAdvice(new MethodBeforeAdvice() {
 
 			@Override
@@ -49,6 +50,16 @@ public class ProxyFactoryTest {
 			}
 			
 		});;
+		MyService proxy = (MyService) proxyFactory.getProxy();
+		proxy.add();
+	}
+	
+	@Test
+	public void testProxyFactory2() {
+		MyService myService = new MyService();
+		ProxyFactory proxyFactory = new ProxyFactory(myService);
+		proxyFactory.addAdvisor(new MyAdvisor());
+		proxyFactory.addAdvisor(new MyAdvisor());//多次指定Advisor将同时应用多个Advisor
 		MyService proxy = (MyService) proxyFactory.getProxy();
 		proxy.add();
 	}
