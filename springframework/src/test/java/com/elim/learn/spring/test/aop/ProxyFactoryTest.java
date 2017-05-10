@@ -58,6 +58,7 @@ public class ProxyFactoryTest {
 	public void testProxyFactory2() {
 		MyService myService = new MyService();
 		ProxyFactory proxyFactory = new ProxyFactory(myService);
+		proxyFactory.setExposeProxy(true);//指定对外发布代理对象，即在目标对象方法中可以通过AopContext.currentProxy()访问当前代理对象。
 		proxyFactory.addAdvisor(new MyAdvisor());
 		proxyFactory.addAdvisor(new MyAdvisor());//多次指定Advisor将同时应用多个Advisor
 		MyService proxy = (MyService) proxyFactory.getProxy();

@@ -82,4 +82,17 @@
 		<property name="pattern" value="find.*"/>
 	</bean>
 
+	<!-- FactoryBean -->
+	<bean id="proxyFactoryBeanTestService" class="org.springframework.aop.framework.ProxyFactoryBean">
+		<property name="target"><!-- 指定被代理的对象 -->
+			<bean class=" com.elim.learn.spring.aop.service.ProxyFactoryBeanTestService"/>
+		</property>
+		<property name="proxyTargetClass" value="true"/><!-- 指定启用基于Class的代理 -->
+		<property name="interceptorNames"><!-- 指定生成的代理对象需要绑定的Advice或Advisor在bean容器中的名称 -->
+			<list>
+				<value>logAroundAdvice</value>
+			</list>
+		</property>
+	</bean>
+
 </beans>
