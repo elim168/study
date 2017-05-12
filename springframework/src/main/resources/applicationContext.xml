@@ -79,7 +79,7 @@
 	
 	<bean class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
 		<property name="advice" ref="logBeforeAdvice"/>
-		<property name="pattern" value="find.*"/>
+		<property name="pattern" value=".*\.find"/>
 	</bean>
 
 	<!-- FactoryBean -->

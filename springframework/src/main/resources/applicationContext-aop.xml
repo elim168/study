@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:cache="http://www.springframework.org/schema/cache"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+     http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+     http://www.springframework.org/schema/context
+     http://www.springframework.org/schema/context/spring-context-4.1.xsd
+     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd
+     http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache-4.1.xsd" >
+
+	<context:annotation-config />
+	<context:component-scan base-package="com.elim.learn.spring" />
+	
+	<bean id="userService" class="com.elim.learn.spring.aop.service.UserServiceImpl"/>
+	<bean id="myService" class="com.elim.learn.spring.aop.service.MyService"/>
+	
+<!-- 	<bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+		匹配userService和所有名称以my开头的bean
+		<property name="beanNames" value="userService, my*"/>
+		interceptorNames中不能使用通配符，只能是精确匹配，即精确指定Advisor/Advice的bean名称
+		<property name="interceptorNames" value="logBeforeAdvice, myAdvisor "/>
+	</bean> -->
+	
+	<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator">
+		<property name="usePrefix" value="true" />
+		<!-- 匹配所有bean名称以my开始的Advisor -->
+		<property name="advisorBeanNamePrefix" value="my" />
+	</bean>
+	
+	<bean id="logBeforeAdvice" class="com.elim.learn.spring.aop.advice.LogBeforeAdvice" />
+	 
+	<bean id="myAdvisor" class="com.elim.learn.spring.aop.advisor.MyAdvisor"/>
+	
+</beans>
