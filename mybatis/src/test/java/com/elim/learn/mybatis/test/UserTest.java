@@ -14,6 +14,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.elim.learn.mybatis.dao.UserMapper;
 import com.elim.learn.mybatis.model.User;
+import com.elim.learn.mybatis.service.UserServiceImpl;
 
 /**
  * 
@@ -26,6 +27,9 @@ public class UserTest {
 
 	@Autowired
 	private UserMapper userMapper;
+	@Autowired
+	private UserServiceImpl userService;
+	
 	
 	@Test
 	public void testInsert() {
@@ -55,5 +59,18 @@ public class UserTest {
 		this.userMapper.findByNameAndMobile(name, mobile);
 	}
 	
+	/**
+	 * 测试嵌套批处理时的事务情况
+	 */
+	@Test
+	public void testTransaction() {
+		this.userService.add();
+	}
 	
-}
+	@Test
+	public void testAutoMapping() {
+		User user = this.userMapper.findById(1L);
+		System.out.println(user);
+	}
+	
+}  

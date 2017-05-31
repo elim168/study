@@ -39,5 +39,6 @@
         <mapper resource="mapper/SysWfNodeMapper.xml"/> 
         <mapper resource="mapper/OrganizationBaseMapper.xml"/>
         <mapper resource="mapper/PersonMapper.xml"/> 
+        <mapper resource="mapper/UserMapper.xml"/> 
     </mappers>  
 </configuration>  
