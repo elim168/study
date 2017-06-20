@@ -18,7 +18,9 @@
 	<select id="findByNameAndMobile" resultType="com.elim.learn.mybatis.model.User">
 		select id,name,username,email,mobile from t_user where name=#{name} and mobile=#{1}
 	</select>
-	
+	<select id="findAll" resultMap="BaseResult">
+		select id,name,username,email,mobile from t_user
+	</select>
 <!-- 	<resultMap type="com.elim.learn.mybatis.model.Department" id="BaseResultMap">
 		<id column="id" property="id"/>
 		<result column="name" property="name"/>

@@ -50,6 +50,7 @@ public class UserTest {
 	public void testFind() {
 		User user = this.userMapper.findById(1L);
 		Assert.assertNotNull(user);
+		System.out.println(user);
 	}
 	
 	@Test
