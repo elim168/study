@@ -37,8 +37,9 @@ public class MyAdvisor implements PointcutAdvisor {
 
 	@Override
 	public Pointcut getPointcut() {
-		//匹配所有的方法调用
-//		return Pointcut.TRUE;
+		/**
+		 * 简单的Pointcut定义，匹配所有类的find方法调用。
+		 */
 		return new Pointcut() {
 
 			@Override
@@ -52,7 +53,6 @@ public class MyAdvisor implements PointcutAdvisor {
 
 					@Override
 					public boolean matches(Method method, Class<?> targetClass) {
-						System.out.println("------matches------" + method.getDeclaringClass().getName() + "." + method.getName());
 						String methodName = method.getName();
 						if ("find".equals(methodName)) {
 							return true;
