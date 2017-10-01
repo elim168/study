@@ -17,9 +17,6 @@ public class MyElasticJob implements SimpleJob {
 	
 	private static final Logger LOGGER = Logger.getLogger(MyElasticJob.class);
 
-	/* (non-Javadoc)
-	 * @see com.dangdang.ddframe.job.api.simple.SimpleJob#execute(com.dangdang.ddframe.job.api.ShardingContext)
-	 */
 	@Override
 	public void execute(ShardingContext context) {
 		//当你的作业是分片的时候，你需要在你的Job的execute方法中根据当前的分片shardingItem的不同取值实现不同的逻辑，

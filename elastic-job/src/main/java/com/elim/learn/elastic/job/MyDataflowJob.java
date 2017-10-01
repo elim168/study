@@ -27,9 +27,6 @@ public class MyDataflowJob implements DataflowJob<String> {
 	private static final int LOOP_TIMES = 10;//每次获取流处理循环次数
 	private static final AtomicInteger COUNTER = new AtomicInteger(1);//计数器
 
-	/* (non-Javadoc)
-	 * @see com.dangdang.ddframe.job.api.dataflow.DataflowJob#fetchData(com.dangdang.ddframe.job.api.ShardingContext)
-	 */
 	@Override
 	public List<String> fetchData(ShardingContext shardingContext) {
 		Integer current = LOOP_COUNTER.get();
@@ -54,9 +51,6 @@ public class MyDataflowJob implements DataflowJob<String> {
 		return shardingItem + "-" + COUNTER.getAndIncrement();
 	}
 
-	/* (non-Javadoc)
-	 * @see com.dangdang.ddframe.job.api.dataflow.DataflowJob#processData(com.dangdang.ddframe.job.api.ShardingContext, java.util.List)
-	 */
 	@Override
 	public void processData(ShardingContext shardingContext, List<String> data) {
 		System.out.println(Thread.currentThread() + "--------" +data);

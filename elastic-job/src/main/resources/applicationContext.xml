@@ -15,7 +15,7 @@
                         ">
 
 	<description>
-		官方文档：http://dangdangdotcom.github.io/elastic-job/post/user_guide/lite/dev_guide/
+		官方文档：http://elasticjob.io/
 	</description>
 	
 	<context:property-placeholder location="classpath:/jdbc.properties"/>
@@ -28,6 +28,7 @@
 	<reg:zookeeper id="regCenter" server-lists="localhost:2181"
 		namespace="dd-job" base-sleep-time-milliseconds="1000"
 		max-sleep-time-milliseconds="3000" max-retries="3" />
+	<bean id="simpleJob" class="com.elim.learn.elastic.job.MyElasticJob"/>
 
 	<!-- 可通过在http://repo1.maven.org/maven2/com/dangdang/elastic-job-console/1.1.1/下载对应的war包监控elastic-job的运行状态 -->
 
@@ -38,8 +39,8 @@
 		机器宕机了或者有新机器加入的时候都会触发重新分片。如果有多台机器，而分片总数是1的时候即相当于1主多从的配置。 sharding-item-parameters用于指定与分片对应的别名。 
 		job-sharding-strategy-class：可以通过它来指定作业分片策略，可选策略可参考官方文档https://github.com/dangdangdotcom/elastic-job/blob/master/elastic-job-doc/content/post/user_guide/lite/other/lite_job_strategy.md。 -->
 	<!-- SimpleJob的执行可以参考源码com.dangdang.ddframe.job.executor.type.SimpleJobExecutor的处理逻辑 -->
-	<job:simple id="myElasticJob" class="com.elim.learn.elastic.job.MyElasticJob"
-		registry-center-ref="regCenter" cron="0/30 * 1 * * ?"
+	<job:simple id="myElasticJob" job-ref="simpleJob"
+		registry-center-ref="regCenter" cron="0/30 * * * * ?"
 		sharding-total-count="6" sharding-item-parameters="0=A,1=B,2=C,3=D,4=E,5=F"
 		failover="true" overwrite="true" >
 		<job:listener class="com.elim.learn.elastic.job.listener.MyElasticJobListener" />
@@ -48,33 +49,34 @@
 		<job:distributed-listener class="com.elim.learn.elastic.job.listener.MyDistributeOnceElasticJobListener" 
 				started-timeout-milliseconds="100" completed-timeout-milliseconds="100"/>
 		<!-- 事件监听，默认是启用日志文件的进行监听记录，如果需要进行数据库的记录，则配置job:event-rdb，其会自动创建需要的表 -->
-		<job:event-rdb driver="${jdbc.driver}" url="${jdbc.url}" username="${jdbc.username}" password="${jdbc.password}" log-level="TRACE"/>
-		<job:event-log />
+<!-- 		<job:event-rdb driver="${jdbc.driver}" url="${jdbc.url}" username="${jdbc.username}" password="${jdbc.password}" log-level="TRACE"/> -->
+<!-- 		<job:event-log /> -->
 	</job:simple>
+	
 
 	<!-- 执行过程中会抛异常的作业 -->
-	<job:simple id="myExceptionJob" class="com.elim.learn.elastic.job.MyExceptionJob" cron="0/30 * * * * ?"
+	<!-- <job:simple id="myExceptionJob" class="com.elim.learn.elastic.job.MyExceptionJob" cron="0/30 * * * * ?"
 		registry-center-ref="regCenter" sharding-total-count="4" overwrite="true" 
-	 	job-exception-handler="com.elim.learn.elastic.job.MyJobExceptionHandler" />
+	 	job-exception-handler="com.elim.learn.elastic.job.MyJobExceptionHandler" /> -->
 
 
 	<!-- 流式作业。流式作业的说明请参考源码com.elim.learn.elastic.job.MyDataflowJob上面的类说明信息 -->
 	<job:dataflow id="myDataflowJob"
 		class="com.elim.learn.elastic.job.MyDataflowJob" registry-center-ref="regCenter"
-		cron="0 0/2 1 * * ?" sharding-total-count="2"
+		cron="0 0/2 * * * ?" sharding-total-count="2"
 		sharding-item-parameters="0=广州,1=深圳" failover="true" overwrite="true"
 		streaming-process="true">
 		<!-- 事件监听，默认是启用日志文件的进行监听记录，如果需要进行数据库的记录，则配置job:event-rdb，其会自动创建需要的表 。
 			这个设计的不是很好，必须每个作业单独配置监听，没有全局的。
 		-->
-		<job:event-rdb driver="${jdbc.driver}" url="${jdbc.url}" username="${jdbc.username}" password="${jdbc.password}" log-level="DEBUG"/>
-		<job:event-log />
+<!-- 		<job:event-rdb driver="${jdbc.driver}" url="${jdbc.url}" username="${jdbc.username}" password="${jdbc.password}" log-level="DEBUG"/> -->
+<!-- 		<job:event-log /> -->
 	</job:dataflow>
 
 	<!-- script作业用于定时执行脚本文件，如windows的cmd，linux上的shell文件，在调度的时候会把当前调度的ShardingContext的转化为一个JSON串作为脚本调度的参数进行传递。
 			其不需要指定作业对应的class，因为我们不是通过我们自己的class来进行调度的。
 			详情可参考官方源码com.dangdang.ddframe.job.executor.type.ScriptJobExecutor。
-			script-command-line属性用于指定该调度对应的脚本文件路径
+			script-command-line属性用于指定该调度对应的脚本文件路径或某个可执行的指令。
 	 -->
 	<job:script id="myScriptJob" registry-center-ref="regCenter"
 		cron="0 9 11 * * ?" sharding-total-count="3"
