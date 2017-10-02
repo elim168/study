@@ -55,9 +55,9 @@
 	
 
 	<!-- 执行过程中会抛异常的作业 -->
-	<!-- <job:simple id="myExceptionJob" class="com.elim.learn.elastic.job.MyExceptionJob" cron="0/30 * * * * ?"
+	<job:simple id="myExceptionJob" class="com.elim.learn.elastic.job.MyExceptionJob" cron="0/30 * * * * ?"
 		registry-center-ref="regCenter" sharding-total-count="4" overwrite="true" 
-	 	job-exception-handler="com.elim.learn.elastic.job.MyJobExceptionHandler" /> -->
+	 	job-exception-handler="com.elim.learn.elastic.job.MyJobExceptionHandler" />
 
 
 	<!-- 流式作业。流式作业的说明请参考源码com.elim.learn.elastic.job.MyDataflowJob上面的类说明信息 -->
@@ -79,8 +79,8 @@
 			script-command-line属性用于指定该调度对应的脚本文件路径或某个可执行的指令。
 	 -->
 	<job:script id="myScriptJob" registry-center-ref="regCenter"
-		cron="0 9 11 * * ?" sharding-total-count="3"
+		cron="0/30 * * * * ?" sharding-total-count="3"
 		sharding-item-parameters="0=shard-0,1=shard-1,2=shard-2"
-		script-command-line="D:\test.cmd" overwrite="true"/>
+		script-command-line="echo hello" overwrite="true"/>
 
 </beans>

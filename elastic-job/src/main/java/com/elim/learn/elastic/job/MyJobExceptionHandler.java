@@ -16,9 +16,6 @@ public class MyJobExceptionHandler implements JobExceptionHandler {
 
 	private static final Logger logger = Logger.getLogger(MyJobExceptionHandler.class);
 	
-	/* (non-Javadoc)
-	 * @see com.dangdang.ddframe.job.executor.handler.JobExceptionHandler#handleException(java.lang.String, java.lang.Throwable)
-	 */
 	@Override
 	public void handleException(String jobName, Throwable cause) {
 		logger.error(String.format("任务[%s]调度异常", jobName), cause);

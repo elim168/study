@@ -28,17 +28,11 @@ public class MyDistributeOnceElasticJobListener extends AbstractDistributeOnceEl
 		super(startedTimeoutMilliseconds, completedTimeoutMilliseconds);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.dangdang.ddframe.job.lite.api.listener.AbstractDistributeOnceElasticJobListener#doBeforeJobExecutedAtLastStarted(com.dangdang.ddframe.job.executor.ShardingContexts)
-	 */
 	@Override
 	public void doBeforeJobExecutedAtLastStarted(ShardingContexts shardingContexts) {
 		logger.info("分布式监听器开始……");
 	}
 
-	/* (non-Javadoc)
-	 * @see com.dangdang.ddframe.job.lite.api.listener.AbstractDistributeOnceElasticJobListener#doAfterJobExecutedAtLastCompleted(com.dangdang.ddframe.job.executor.ShardingContexts)
-	 */
 	@Override
 	public void doAfterJobExecutedAtLastCompleted(ShardingContexts shardingContexts) {
 		logger.info("分布式监听器结束……");

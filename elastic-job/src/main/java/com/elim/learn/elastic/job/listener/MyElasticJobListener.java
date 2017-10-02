@@ -18,17 +18,11 @@ public class MyElasticJobListener implements ElasticJobListener {
 
 	private static final Logger LOGGER = Logger.getLogger(MyElasticJobListener.class);
 	
-	/* (non-Javadoc)
-	 * @see com.dangdang.ddframe.job.lite.api.listener.ElasticJobListener#beforeJobExecuted(com.dangdang.ddframe.job.executor.ShardingContexts)
-	 */
 	@Override
 	public void beforeJobExecuted(ShardingContexts shardingContexts) {
 		LOGGER.info(String.format("开始调度任务[%s]", shardingContexts.getJobName()));
 	}
 
-	/* (non-Javadoc)
-	 * @see com.dangdang.ddframe.job.lite.api.listener.ElasticJobListener#afterJobExecuted(com.dangdang.ddframe.job.executor.ShardingContexts)
-	 */
 	@Override
 	public void afterJobExecuted(ShardingContexts shardingContexts) {
 		LOGGER.info(String.format("任务[%s]调度完成", shardingContexts.getJobName()));
