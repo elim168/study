@@ -45,6 +45,7 @@ public class BeanScopeTest {
 	@Test
 	public void test08_1() {
 		Object user = new Object() {
+			@SuppressWarnings("unused")
 			public List<String> getInterests() {
 				List<String> interests = Arrays.asList(new String[] {"BasketBall", "FootBall"});
 				return interests;
@@ -58,6 +59,7 @@ public class BeanScopeTest {
 	@Test
 	public void test08_2() {
 		Object user = new Object() {
+			@SuppressWarnings("unused")
 			public String[] getInterests() {
 				return new String[] {"BasketBall", "FootBall"};
 			}
