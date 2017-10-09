@@ -11,12 +11,15 @@ public class PathMatchingResourcePatternResolverTest {
 	public void test() throws Exception {
 		PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 		//从classpath下获取单个的资源文件，classpath下没有将尝试把资源当做一个UrlResource
-		Resource resource = resolver.getResource("applicationContext.xml");
+		Resource resource = resolver.getResource("classpath:META-INF/spring/applicationContext.xml");
 		Assert.assertNotNull(resource);
 		Assert.assertNotNull(resource.getInputStream());
 		
+		Resource[] resources = resolver.getResources("classpath*:META-INF/spring/applicationContext.xml");
+		Assert.assertNotNull(resources);
+		Assert.assertTrue(resources.length == 1);
 		
-		Resource[] resources = resolver.getResources("classpath*:applicationContext*.xml");
+		resources = resolver.getResources("classpath*:applicationContext*.xml");
 		Assert.assertNotNull(resources);
 		//笔者的classpath下一共有三个满足applicationContext*.xml的资源文件
 		Assert.assertTrue(resources.length == 3);
@@ -40,6 +43,11 @@ public class PathMatchingResourcePatternResolverTest {
 		Assert.assertNotNull(resources);
 		//com.elim.learn.spring和com.elim2.learn.spring下各有三个applicationContext*.xml形式的资源文件
 		Assert.assertTrue(resources.length == 6);
+		
+		//当前用户目录下取pom.xml文件。
+		resource = resolver.getResource("file:pom.xml");
+		Assert.assertNotNull(resource);
+		Assert.assertNotNull(resource.getInputStream());
 	}
 	
 }
