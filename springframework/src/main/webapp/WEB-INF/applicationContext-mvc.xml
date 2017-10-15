@@ -18,6 +18,14 @@
 	<context:component-scan base-package="com.elim.learn.spring.mvc" use-default-filters="false">
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
     </context:component-scan>
+    
+    <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="mappings">
+            <props>
+                <prop key="/abc">abcController</prop>
+            </props>
+        </property>
+    </bean>
 
 	<bean
 		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
