@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
- * 验证RedirectAttributes
+ * 验证RedirectAttributes。RedirectAttributes只在使用RedirectView时才生效，即返回的
+ * 视图名以redirect:打头时才生效。
  * @author Elim
  * 2017年10月19日
  */
