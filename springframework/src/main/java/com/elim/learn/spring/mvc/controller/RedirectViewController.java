@@ -29,4 +29,13 @@ public class RedirectViewController {
         return "redirect:/" + redirectTo;
     }
     
+    @RequestMapping("/pathvar")
+    public String redirectToPathVariable(Map<String, Object> model) {
+        /**
+         * redirect时redirect中包含的路径变量会自动的被Model中的对应变量替换
+         */
+        model.put("pathVar", "hellopath");
+        return "redirect:/{pathVar}";
+    }
+    
 }

@@ -4,6 +4,7 @@
 package com.elim.learn.spring.mvc.controller;
 
 import java.util.Arrays;
+import java.util.Map;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -39,6 +40,19 @@ public class RedirectAttributesController {
         redirectAttributes.addFlashAttribute("modelAttr1", "modelAttr1Value1")
             .addFlashAttribute("modelAttr2", "modelAttr1Value2")
             .addFlashAttribute("listAttr", Arrays.asList(1, 2, 3));
+        return "redirect:/redirectattributes/target";
+    }
+    
+    @RequestMapping("/src2")
+    public String src2(Map<String, Object> model) {
+        /**
+         * 当redirect时，Model中包含的基本类型的属性或基本类型对应的Collection/Array会自动作为redirect后的URL的查询参数
+         * 一起传递过去。而非基本类型的属性就传递不过去，如果需要传递则可以用RedirectAttributes。
+         */
+        model.put("key1", "value1");
+        model.put("key2", "value2");
+        model.put("modelAttr1", "modelAttr1Value1");
+        model.put("listAttr", Arrays.asList(Arrays.asList(1, 2, 3)));
         return "redirect:/redirectattributes/target";
     }
     
