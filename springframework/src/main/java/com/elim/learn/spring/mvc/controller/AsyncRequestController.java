@@ -11,9 +11,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.async.DeferredResult;
+import org.springframework.web.context.request.async.WebAsyncTask;
 
 /**
- * SpringMVC对Servlet3异步请求的支持有两种方式，分别是返回Callable和返回DeferredResult
+ * SpringMVC对Servlet3异步请求的支持有两种方式，分别是返回Callable和返回DeferredResult。
+ * You can also register a CallableProcessingInterceptor or a DeferredResultProcessingInterceptor 
+ * globally through the MVC Java config or the MVC namespace. Those interceptors provide a full set 
+ * of callbacks and apply every time a Callable or a DeferredResult is used.
  * @author Elim
  * 2017年10月19日
  */
@@ -40,6 +44,31 @@ public class AsyncRequestController {
     }
     
     /**
+     * 对于callable响应是可以指定超时处理和调用完成后的回调处理的，这些只需要把Callable用WebAsyncTask包起来，并返回WebAsyncTask。
+     * @param model
+     * @param writer
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/callable/timeout")
+    public WebAsyncTask<String> forCallableWithTimeout(Model model, Writer writer) throws Exception {
+        long timeout = 5 * 1000L;
+        WebAsyncTask<String> asyncTask = new WebAsyncTask<>(timeout, () -> {
+            TimeUnit.MILLISECONDS.sleep(timeout + 10);
+            model.addAttribute("a", "aaaaaaa");
+            return "async_request_callable";
+        });
+        asyncTask.onTimeout(() -> {
+            System.out.println("响应超时回调");
+            return "async_request_callable_timeout";
+        });
+        asyncTask.onCompletion(() -> {
+            System.out.println("响应callable调用完成的回调");
+        });
+        return asyncTask;
+    }
+    
+    /**
      * 使用DeferredResult的返回结果的编程通常是中处理器方法中创建一个DeferredResult实例，把它保存起来后再进行返回，比如保存到一个队列中，
      * 然后在另外的一个线程中会从这个队列中拿到相应的DeferredResult对象进行相应的业务处理后会往DeferredResult中设置对应的返回值。
      * 返回了DeferredResult后SpringMVC将创建一个DeferredResultHandler用于监听DeferredResult，一旦DeferredResult中设置了返回值后，
@@ -58,6 +87,30 @@ public class AsyncRequestController {
             }
             result.setResult("async_request_deferredresult");
         }).start();
+        return result;
+    }
+    
+    @RequestMapping("/deferredresult/timeout")
+    public DeferredResult<String> forDeferredResultWithTimeout() throws Exception {
+        DeferredResult<String> result = new DeferredResult<>();
+        new Thread(() -> {
+            try {
+                TimeUnit.SECONDS.sleep(31);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            result.setResult("async_request_deferredresult");
+        }).start();
+        
+        
+        result.onTimeout(() -> {
+            System.out.println("响应超时回调函数");
+        });
+        
+        result.onCompletion(() -> {
+            System.out.println("响应完成的回调函数");
+        });
+        
         return result;
     }
     
