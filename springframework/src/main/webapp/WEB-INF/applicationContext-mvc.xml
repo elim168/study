@@ -27,9 +27,10 @@
         </mvc:interceptor>
         <!-- 没有用interceptor包裹起来的表示对所有的请求生效 -->
         <bean class="com.elim.learn.spring.mvc.interceptor.MyInterceptor" />
-        <!-- 响应theme变更的拦截器，这里配置的是对所有的请求都生效，而实际应用中可能会弄一个特定的URL进行theme的变更，以便校验指定的
-        theme的有效性或者保存当前用户选择的theme到数据库等 -->
-        <bean class="org.springframework.web.servlet.theme.ThemeChangeInterceptor"/>
+        <!-- 响应theme变更的拦截器，这里配置的是对所有的请求都生效，而实际应用中可能会弄一个特定的URL进行theme的变更，以便校验指定的 
+            theme的有效性或者保存当前用户选择的theme到数据库等 -->
+        <bean
+            class="org.springframework.web.servlet.theme.ThemeChangeInterceptor" />
         <mvc:interceptor>
             <mvc:mapping path="/interceptor/**" /><!-- 匹配的 -->
             <mvc:exclude-mapping path="/interceptor/b" /><!-- 
@@ -62,8 +63,17 @@
         <property name="suffix" value=".jsp" />
     </bean>
 
-    <bean id="themeSource" class="org.springframework.ui.context.support.ResourceBundleThemeSource" p:basenamePrefix="META-INF/theme/"/>
+    <bean id="themeSource"
+        class="org.springframework.ui.context.support.ResourceBundleThemeSource"
+        p:basenamePrefix="META-INF/theme/" />
     <!-- 默认不指定默认的theme名称时，默认的theme名称是theme -->
-    <bean id="themeResolver" class="org.springframework.web.servlet.theme.SessionThemeResolver" p:defaultThemeName="default"/>
+    <bean id="themeResolver"
+        class="org.springframework.web.servlet.theme.SessionThemeResolver"
+        p:defaultThemeName="default" />
+
+    <!-- 上传文件的解析器 -->
+    <bean id="multipartResolver"
+        class="org.springframework.web.multipart.support.StandardServletMultipartResolver">
+    </bean>
 
 </beans>
