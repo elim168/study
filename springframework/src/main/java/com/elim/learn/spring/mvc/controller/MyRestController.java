@@ -24,4 +24,9 @@ public class MyRestController {
         return Arrays.asList(1, 2, 3, 4, 5);
     }
     
+    @RequestMapping("/string")
+    public Object string() {
+        return "this is a string. 这是一个字符串。";
+    }
+    
 }
