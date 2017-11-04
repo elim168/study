@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -34,6 +36,13 @@ public class MyResponseEntityExceptionHandler extends ResponseEntityExceptionHan
         Map<String, Object> map = new HashMap<>();
         map.put("body", body);
         return super.handleExceptionInternal(ex, body, headers, status, request);
+    }
+    
+    @ExceptionHandler(NumberFormatException.class)
+    @ResponseStatus(value=HttpStatus.CONFLICT, reason="test reason")
+    public void handleNumberFormat() {
+        //直接通过@ResponseStatus指定返回的Http状态码和对应的提示信息
+        //@ResponseStatus也可以直接加到异常类上，这样就可以不用定义ExceptionHandler了。
     }
     
 }
