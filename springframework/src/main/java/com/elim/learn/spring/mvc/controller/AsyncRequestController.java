@@ -18,6 +18,7 @@ import org.springframework.web.context.request.async.WebAsyncTask;
  * You can also register a CallableProcessingInterceptor or a DeferredResultProcessingInterceptor 
  * globally through the MVC Java config or the MVC namespace. Those interceptors provide a full set 
  * of callbacks and apply every time a Callable or a DeferredResult is used.
+ * 需要开启DispatcherServlet和在DispatcherServlet之前的Filter对异步请求的支持。
  * @author Elim
  * 2017年10月19日
  */
