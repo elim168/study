@@ -87,7 +87,7 @@ public class JobRegister implements BeanDefinitionRegistryPostProcessor {
      */
     private JobCoreConfiguration buildCoreConfiguration(String jobName, String cron, int shardingTotalCount) {
         Builder builder = JobCoreConfiguration.newBuilder(jobName, cron, shardingTotalCount);
-        builder.failover(true);
+        builder.failover(true).description("测试自动注册任务");
         return builder.build();
     }
     

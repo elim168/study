@@ -42,7 +42,7 @@
 	<job:simple id="myElasticJob" job-ref="simpleJob"
 		registry-center-ref="regCenter" cron="0/30 * * * * ?"
 		sharding-total-count="6" sharding-item-parameters="0=A,1=B,2=C,3=D,4=E,5=F"
-		failover="true" overwrite="true" >
+		failover="true" overwrite="true" description="简单任务示例">
 		<job:listener class="com.elim.learn.elastic.job.listener.MyElasticJobListener" />
 		<!-- 分布式监听器用到了锁的等待和通知，started-timeout-milliseconds和completed-timeout-milliseconds分别用来指定
 			作业开始前和完成后的对应的锁等待最大超时时间 -->	
