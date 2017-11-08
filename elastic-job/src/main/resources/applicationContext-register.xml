@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:reg="http://www.dangdang.com/schema/ddframe/reg" xmlns:job="http://www.dangdang.com/schema/ddframe/job"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/context
+					    http://www.springframework.org/schema/context/spring-context.xsd
+                        http://www.dangdang.com/schema/ddframe/reg
+                        http://www.dangdang.com/schema/ddframe/reg/reg.xsd
+                        http://www.dangdang.com/schema/ddframe/job
+                        http://www.dangdang.com/schema/ddframe/job/job.xsd
+                        ">
+
+    <description>官方文档：http://elasticjob.io/</description>
+
+    <!-- 如果需要做分布式作业调度，则对应的实例必须是在多台机器上跑的，因为elastic-job是以IP来区分一个节点的；另外namespace和使用的 
+        zookeeper也必须是一样的 -->
+    <!--配置作业注册中心，server-lists用于指定zookeeper的地址，多个zookeeper之间用逗号分隔； namespace用于指定zookeeper命名空间； 
+        max-retries用于指定最大重试次数 -->
+    <reg:zookeeper id="regCenter" server-lists="localhost:2181"
+        namespace="dd-job" base-sleep-time-milliseconds="1000"
+        max-sleep-time-milliseconds="3000" max-retries="3" />
+
+    <bean class="com.elim.learn.elastic.JobRegister"/>
+
+</beans>
