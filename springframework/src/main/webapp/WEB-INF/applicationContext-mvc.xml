@@ -48,15 +48,17 @@
     <context:property-placeholder location="classpath:application.properties" />
 
     <context:component-scan base-package="com.elim.learn.spring.mvc"/>
-
+<!-- 
     <bean
         class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
         <property name="mappings">
             <props>
+            value是对应的处理器bean的id
                 <prop key="/abc">abcController</prop>
             </props>
         </property>
     </bean>
+ -->
 
     <bean
         class="org.springframework.web.servlet.view.InternalResourceViewResolver">
