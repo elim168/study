@@ -34,6 +34,9 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
         &lt;url-pattern>/&lt;/url-pattern>
     &lt;/servlet-mapping>
     </pre>
+    
+ * 使用了@EnableWebMvc后会自动包含一些默认配置，如果需要自定义一些配置，可以通过实现WebMvcConfigurer接口或者
+ * 继承WebMvcConfigurerAdapter覆写对应的方法。
  * @author Elim
  * 2017年11月11日
  */
