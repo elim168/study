@@ -64,7 +64,7 @@
     <mvc:view-controller path="/static_resource" view-name="static_resource"/>
     <!-- 快速注册视图解析器 -->
     <mvc:view-resolvers>
-        <mvc:jsp prefix="/WEB-INF/views/" suffix=".jsp"/>
+        <mvc:jsp prefix="/WEB-INF/view/" suffix=".jsp"/>
     </mvc:view-resolvers>
 
     <context:property-placeholder location="classpath:application.properties" />
