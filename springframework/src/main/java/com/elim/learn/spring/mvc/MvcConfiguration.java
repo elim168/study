@@ -4,9 +4,6 @@
 package com.elim.learn.spring.mvc;
 
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
@@ -40,9 +37,9 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
  * @author Elim
  * 2017年11月11日
  */
-@Configuration
-@EnableWebMvc
-@ComponentScan(basePackages="com.elim.learn.spring.mvc.controller")
+//@Configuration
+//@EnableWebMvc
+//@ComponentScan(basePackages="com.elim.learn.spring.mvc.controller")
 public class MvcConfiguration extends WebMvcConfigurerAdapter {
 
     @Bean
