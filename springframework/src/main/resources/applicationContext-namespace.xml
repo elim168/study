@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+     http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+     http://www.springframework.org/schema/util
+     http://www.springframework.org/schema/util/spring-util-4.1.xsd">
+
+
+<util:properties id="utilProperties" location="classpath:util.properties,classpath:application.properties" 
+    local-override="true" ignore-resource-not-found="true">
+    <prop key="a">a</prop>
+    <prop key="b">b</prop>
+</util:properties>
+
+
+<util:list id="utilList" value-type="java.lang.Integer" list-class="java.util.LinkedList">
+    <value>1</value>
+    <value>2</value>
+</util:list>
+
+<util:set id="utilSet" value-type="java.lang.Integer" set-class="java.util.HashSet">
+    <value>1</value>
+    <value>2</value>
+</util:set>
+
+<util:map id="utilMap">
+    <entry key="a" value="1"/>
+    <entry key-ref="utilList" value="2" value-type="java.lang.Integer"/>
+    <entry key="utilSet" value-ref="utilSet"/>
+    <entry>
+        <key>
+            <value>b</value>
+        </key>
+        <value>2</value>
+    </entry>
+    <entry>
+        <key>
+            <ref bean="utilSet"/>
+        </key>
+        <ref bean="utilList"/>
+    </entry>
+</util:map>
+
+<util:constant static-field="com.elim.learn.spring.Constant.ABC" id="abc"/>
+
+<util:property-path path="utilNamespaceBean.abc" id="beanABC"/>
+
+<bean class="com.elim.learn.spring.bean.UtilNamespaceBean" id="utilNamespaceBean">
+    <property name="properties">
+        <util:properties location="classpath:util.properties">
+            <prop key="a">a</prop>
+            <prop key="b">b</prop>
+        </util:properties>
+    </property>
+    <property name="list">
+        <list>
+            <value>1</value>
+            <value>2</value>
+        </list>
+    </property>
+    <property name="set">
+        <set>
+            <value>1</value>
+            <value>2</value>
+        </set>
+    </property>
+    <property name="map">
+        <map>
+            <entry>
+                <key>
+                    <value>a</value>
+                </key>
+                <value>1</value>
+            </entry>
+            <entry key="b" value="2"/>
+            <entry key="c" value="3"/>
+        </map>
+    </property>
+</bean>
+
+</beans>
