@@ -24,25 +24,9 @@
             <bean class="org.springframework.http.converter.StringHttpMessageConverter" c:defaultCharset="UTF-8"/>
         </mvc:message-converters>
     </mvc:annotation-driven>
-    <mvc:interceptors>
-        <mvc:interceptor>
-            <mvc:mapping path="/**" />
-            <bean
-                class="com.elim.learn.spring.mvc.interceptor.MyAsyncHandlerInterceptor" />
-        </mvc:interceptor>
-        <!-- 没有用interceptor包裹起来的表示对所有的请求生效 -->
-        <bean class="com.elim.learn.spring.mvc.interceptor.MyInterceptor" />
-        <!-- 响应theme变更的拦截器，这里配置的是对所有的请求都生效，而实际应用中可能会弄一个特定的URL进行theme的变更，以便校验指定的 
-            theme的有效性或者保存当前用户选择的theme到数据库等 -->
-        <bean
-            class="org.springframework.web.servlet.theme.ThemeChangeInterceptor" />
-        <mvc:interceptor>
-            <mvc:mapping path="/interceptor/**" /><!-- 匹配的 -->
-            <mvc:exclude-mapping path="/interceptor/b" /><!-- 
-                不匹配的 -->
-            <bean class="com.elim.learn.spring.mvc.interceptor.MyInterceptor" />
-        </mvc:interceptor>
-    </mvc:interceptors>
+<mvc:interceptors>
+    <bean class="org.springframework.web.servlet.theme.ThemeChangeInterceptor" />
+</mvc:interceptors>
     <!-- 指定映射静态资源，可以直接通过cache-period指定缓存时间，单位是秒。location指定资源的真实路径，
     可以通过classpath:META-INF/static/这种方式指定类路径下的资源，如果有多个路径，可以通过英文逗号分隔。 -->
     <mvc:resources location="/static/" mapping="/static/**" cache-period="600">

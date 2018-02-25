@@ -31,6 +31,11 @@ public class ExceptionHandlerController {
         return Integer.parseInt("abc");
     }
     
+    @RequestMapping("/illegalstate")
+    public void illegalState() {
+        throw new IllegalStateException("State is not Correct!");
+    }
+    
     @RequestMapping("/responsestatus")
     public void responseStatusException() {
         throw new ResponseStatusException();

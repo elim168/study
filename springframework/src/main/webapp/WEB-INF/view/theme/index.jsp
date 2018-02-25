@@ -6,6 +6,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" type="text/css" href="<spring:theme code='style'/>">
+
 <title>Test Theme Function</title>
 </head>
 <body>

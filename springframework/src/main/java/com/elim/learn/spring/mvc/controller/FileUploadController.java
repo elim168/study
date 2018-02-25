@@ -4,6 +4,7 @@
 package com.elim.learn.spring.mvc.controller;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,10 +29,10 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
  */
 @RequestMapping("/fileupload")
 @Controller
-public class FileUploadController {
+public class FileUploadController extends BaseController {
 
     @RequestMapping(method=RequestMethod.GET)
-    public String index() {
+    public String index(@RequestParam(value="date", required=false) Date date) {
         return "file_upload_index";
     }
 
