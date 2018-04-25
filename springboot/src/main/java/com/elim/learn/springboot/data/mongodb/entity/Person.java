@@ -6,6 +6,7 @@ package com.elim.learn.springboot.data.mongodb.entity;
 import java.math.BigInteger;
 
 import org.springframework.data.annotation.Version;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Data;
 
@@ -14,6 +15,7 @@ import lombok.Data;
  * 2018年3月24日
  */
 @Data
+@Document
 public class Person {
 
     private BigInteger id;
@@ -23,6 +25,10 @@ public class Person {
     private Integer age;
     
     @Version
-    private int version;
+    private Integer version;
+    /**
+     * 照片
+     */
+    private byte[] picture;
     
 }
