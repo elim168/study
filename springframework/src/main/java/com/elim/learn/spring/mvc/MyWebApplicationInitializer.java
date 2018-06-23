@@ -23,13 +23,13 @@ public class MyWebApplicationInitializer implements WebApplicationInitializer {
 
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
-        /*XmlWebApplicationContext appContext = new XmlWebApplicationContext();
+/*        XmlWebApplicationContext appContext = new XmlWebApplicationContext();
         appContext.setConfigLocation("/WEB-INF/applicationContext-mvc.xml");
         ServletRegistration.Dynamic registration = servletContext.addServlet("dispatcher", new
         DispatcherServlet(appContext));
         registration.setLoadOnStartup(1);
         registration.setAsyncSupported(true);
-        registration.addMapping("/springmvc/*");*/
-    }
+        registration.addMapping("/springmvc/*");
+*/    }
 
 }
