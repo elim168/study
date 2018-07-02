@@ -110,8 +110,8 @@ public class MongodbTest {
         String path = "/home/elim/jmeter.log";
         try (InputStream content = new FileInputStream(path)) {
             Document metadata = new Document();
-            metadata.put("key1", "value1");
-            this.gridFsTemplate.store(content, "jmeter.log", metadata);
+//            metadata.put("key1", "value1");
+//            this.gridFsTemplate.store(content, "jmeter.log", metadata);
         }
     }
     

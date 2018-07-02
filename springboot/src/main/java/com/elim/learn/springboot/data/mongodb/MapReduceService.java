@@ -1,7 +1,5 @@
 package com.elim.learn.springboot.data.mongodb;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.mapreduce.MapReduceResults;
@@ -26,7 +24,7 @@ public class MapReduceService {
     @Autowired
     private MongoTemplate mongoTemplate;
     
-    @PostConstruct
+//    @PostConstruct
     public void post() {
         MapReduceResults<ValueObject> results = this.mongoTemplate.mapReduce("jmr1", "classpath:mongo/map.js", "classpath:mongo/reduce.js", ValueObject.class);
         for (ValueObject value : results) {

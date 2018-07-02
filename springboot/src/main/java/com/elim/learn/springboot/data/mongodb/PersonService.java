@@ -3,8 +3,6 @@
  */
 package com.elim.learn.springboot.data.mongodb;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -28,7 +26,7 @@ public class PersonService {
     @Autowired
     private PersonRepository personRepository;
     
-    @PostConstruct
+//    @PostConstruct
     public void post() {
         Query query = new Query(Criteria.where("id").lt(3));
         Person person = this.mongoTemplate.findOne(query, Person.class);
