@@ -33,14 +33,25 @@ public class AnnotationTasks {
     private void async() {
         try {
             TimeUnit.SECONDS.sleep(3);
+            System.out.println(Thread.currentThread() + "-----------");
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
     
-    @Scheduled(fixedRate = 5000)
-    public void schdule() {
-        System.out.println("当前时间是：" + LocalDateTime.now());
+    @Async("executor2")
+    public void testAsync2() {
+        try {
+            TimeUnit.SECONDS.sleep(3);
+            System.out.println(Thread.currentThread() + "-----------");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
+    
+@Scheduled(fixedRate = 5000)
+public void schdule() {
+    System.out.println("当前时间是：" + LocalDateTime.now());
+}
     
 }
