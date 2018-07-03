@@ -1,4 +1,4 @@
-package com.elim.learn.springboot.spring.core;
+package com.elim.springboot.spring.core;
 
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;

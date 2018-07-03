@@ -1,4 +1,4 @@
-package com.elim.learn.springboot.spring.core;
+package com.elim.springboot.spring.core;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;

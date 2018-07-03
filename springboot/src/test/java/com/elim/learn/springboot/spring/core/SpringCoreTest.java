@@ -9,6 +9,9 @@ import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.elim.springboot.spring.core.NullableService;
+import com.elim.springboot.spring.core.SpringCoreConfiguration;
+
 /**
  * 
  * @author Elim
