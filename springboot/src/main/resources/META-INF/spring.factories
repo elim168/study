@@ -1,0 +1,2 @@
+org.springframework.context.ApplicationListener=com.elim.springboot.listener.ApplicationStartingEventListener,\
+com.elim.springboot.listener.ApplicationReadyEventListener
