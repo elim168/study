@@ -1,5 +1,40 @@
-spring.data.mongodb:
-  host: localhost
-  port: 27017
-  database: springdata
-  gridFsDatabase: files
+test.prop:
+  a: valueA
+  b: valueB
+  c: ${test.prop.a}C
+  list:
+    - ABC
+    - DEF
+  
+test.random:
+  int: ${random.int}
+  int10: ${random.int(10)}
+  int10-100: ${random.int(10,100)}
+  long: ${random.long}
+  long-100: ${random.long(100)}
+  uuid: ${random.uuid}
+  bytes: ${random.bytes}
+  
+#test.config.list: ABC,DEF,GHI
+
+
+#test.config.map:
+#  key1:
+#    username: u1
+#    password: p1
+#  key2:
+#    username: u2
+#    password: p2
+
+
+#test.config.inner:
+#  username: u1
+#  password: p11
+
+test.config.list:
+  -
+    username: u1
+    password: p1
+  -
+    username: u2
+    password: p2p
