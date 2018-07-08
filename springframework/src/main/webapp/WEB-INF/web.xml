@@ -32,7 +32,9 @@
     </filter-mapping>
     
 
-<servlet>
+
+
+<!-- <servlet>
     <servlet-name>springmvc</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <init-param>
@@ -40,16 +42,16 @@
         <param-value>/WEB-INF/applicationContext-mvc.xml</param-value>
     </init-param>
     <load-on-startup>1</load-on-startup>
-    <!-- 启用异步支持 -->
+    启用异步支持
     <async-supported>true</async-supported>
-    <!-- 启用Servlet3文件上传支持 -->
+    启用Servlet3文件上传支持
     <multipart-config>
     </multipart-config>
 </servlet>
 <servlet-mapping>
     <servlet-name>springmvc</servlet-name>
     <url-pattern>/</url-pattern>
-</servlet-mapping>
+</servlet-mapping> -->
 
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
