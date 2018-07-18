@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +28,8 @@ import com.elim.springboot.core.json.RootObject;
 import com.elim.springboot.core.json.Shape;
 import com.elim.springboot.core.json.Square;
 import com.elim.springboot.core.json.Triangle;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author Elim 2017年5月16日
@@ -38,6 +41,9 @@ public class SampleController {
     private String appId;
     @Autowired
     private ApplicationArguments arguments;
+    
+    @Autowired
+    private ApplicationContext applicationContext;
 
     @Autowired
     private Environment environment;
@@ -90,7 +96,7 @@ public class SampleController {
 
     @GetMapping("/sample/json/serializer")
     @ResponseBody
-    public RootObject jsonObject() {
+    public RootObject jsonObject() throws Exception {
         RootObject rootObject = new RootObject();
         rootObject.setId(1);
         rootObject.setCode("A00110101");
@@ -106,6 +112,18 @@ public class SampleController {
         shapes.add(square);
         
         rootObject.setShapes(shapes);
+        
+        ObjectMapper objectMapper = this.applicationContext.getBean(ObjectMapper.class);
+        /**
+         * 直接通过ObjectMapper转换是有效果的，通过ResponseBody自动转换时又没效果。
+         */
+        System.out.println(objectMapper.writeValueAsString(rootObject));
+        
+        
+        
+        JsonGenerator gen = objectMapper.getFactory().createGenerator(System.out);
+        objectMapper.writer().writeValue(gen, rootObject);
+        
         return rootObject;
     }
     
