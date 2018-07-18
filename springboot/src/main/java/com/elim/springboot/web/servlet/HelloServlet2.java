@@ -9,12 +9,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @Component("hello2")
 @WebServlet("/servlet_hello2")
 public class HelloServlet2 extends HttpServlet {
 
+    @Autowired
+    private ApplicationContext applicationContext;
+    
     /**
      * 
      */
@@ -23,7 +28,10 @@ public class HelloServlet2 extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter writer = resp.getWriter();
-        writer.write("hello");
+        writer.println("bean names: ");
+        for (String name : this.applicationContext.getBeanDefinitionNames()) {
+            writer.println(name);
+        }
         writer.flush();
     }
 

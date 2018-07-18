@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.stereotype.Component;
 
-@Component("hello")
+@Component("servlet/hello")
 public class HelloServlet extends HttpServlet {
 
     /**
