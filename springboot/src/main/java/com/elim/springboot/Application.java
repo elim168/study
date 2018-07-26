@@ -11,7 +11,7 @@ import org.springframework.cache.annotation.EnableCaching;
 /**
  * @author Elim 2018年3月24日
  */
-@SpringBootApplication
+@SpringBootApplication(exclude= {})
 @ServletComponentScan
 @EnableCaching
 public class Application {
