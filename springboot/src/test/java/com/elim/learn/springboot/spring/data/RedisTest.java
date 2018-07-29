@@ -11,6 +11,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.BoundListOperations;
 import org.springframework.data.redis.core.BoundValueOperations;
 import org.springframework.data.redis.core.ListOperations;
+import org.springframework.data.redis.core.ReactiveListOperations;
+import org.springframework.data.redis.core.ReactiveRedisTemplate;
+import org.springframework.data.redis.core.ReactiveValueOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -19,6 +22,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.elim.springboot.Application;
 
 import lombok.Data;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @SpringBootTest(classes=Application.class)
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -26,6 +31,9 @@ public class RedisTest {
 
     @Autowired
     private RedisTemplate<Object, Object> redisTemplate;
+    
+    @Autowired
+    private ReactiveRedisTemplate<Object, Object> reactiveRedisTemplate;
     
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
@@ -73,6 +81,28 @@ public class RedisTest {
         object = opsForValue.get("user::" + user.getId());
         System.out.println(object);
         
+    }
+    
+    @Test
+    public void testReactive() throws Exception {
+        ReactiveValueOperations<Object, Object> opsForValue = this.reactiveRedisTemplate.opsForValue();
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("zhangsan");
+        user.setName("张三");
+        String key = "user::" + user.getId();
+        Mono<Boolean> mono = opsForValue.set(key, user);
+        if (mono.block()) {
+            Mono<Object> mono2 = opsForValue.get(key);
+            mono2.blockOptional().ifPresent(System.out::println);
+        }
+        
+        
+        ReactiveListOperations<Object, Object> opsForList = this.reactiveRedisTemplate.opsForList();
+        String listKey = "list1";
+        opsForList.leftPushAll(listKey, "A", "B", "C", "D", "E").subscribe();
+        Flux<Object> flux = opsForList.range(listKey, 0, 10);
+        flux.subscribe(System.out::println);
     }
     
     @Data
