@@ -70,7 +70,7 @@ public class GitbookGeneSummary {
                         continue;
                     }
                     name = ++i + "." + name.replaceFirst("(\\d+\\.)+", "");
-                    String linkPath = ROOT.relativize(path).toString();
+                    String linkPath = ROOT.relativize(path).toString().replaceAll("\\\\", "/");
                     System.out.println(this.build(level, name, linkPath));
                 }
             }
