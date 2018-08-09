@@ -110,11 +110,18 @@
             <artifactId>pagehelper-spring-boot-starter</artifactId>
             <version>1.2.5</version>
         </dependency>
-        <dependency>
+        <!-- <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid-spring-boot-starter</artifactId>
             <version>1.1.10</version>
+        </dependency> -->
+        
+        <dependency>
+            <groupId>org.python</groupId>
+            <artifactId>jython</artifactId>
+            <version>2.7.1b1</version>
         </dependency>
+        
     </dependencies>
 
     <!-- <properties> <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding> 

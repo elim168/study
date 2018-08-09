@@ -1,4 +1,4 @@
-package com.elim.learn.springboot.spring.core;
+package com.elim.learn.springboot;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
