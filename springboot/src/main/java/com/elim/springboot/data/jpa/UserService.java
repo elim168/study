@@ -2,8 +2,6 @@ package com.elim.springboot.data.jpa;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 
@@ -34,9 +32,9 @@ public class UserService {
     
     @PostConstruct
     public void init() {
-        Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
+        /*Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
             this.findById(10L);
-        }, 10, 20, TimeUnit.SECONDS);
+        }, 10, 20, TimeUnit.SECONDS);*/
     }
     
 }
