@@ -1,4 +1,22 @@
 
+app:
+  ip: 10.10.10.1
+
+---
+
+spring:
+  profiles: dev
+  
+app:
+  ip: 10.10.10.2
+  
+---
+
+spring:
+  profiles: test
+  
+app:
+  ip: 10.10.10.3
 
 
 
@@ -9,10 +27,7 @@
 
 
 
-
-
-
-
+---
 
 
 
