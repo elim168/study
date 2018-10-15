@@ -1,6 +1,11 @@
+
+spring.application.name: spring-cloud-eureka-server
+
+---
+
 spring.profiles: default
 
-server.port: 8761
+server.port: 8089
 eureka:
   client:
     registerWithEureka: false
@@ -13,39 +18,36 @@ eureka:
 
 ---
 
-spring.profiles: peer1
+spring.profiles: localhost1
 server.port: 8081
 eureka:
   client:
-    registerWithEureka: false
-    fetchRegistry: false
     serviceUrl:
       defaultZone: http://localhost:8082/eureka/
   instance:
     preferIpAddress: true
+    instanceId: ${spring.cloud.client.ip-address}:${server.port}
 
 ---
 
-spring.profiles: peer2
+spring.profiles: localhost2
 server.port: 8082
 eureka:
   client:
-    registerWithEureka: false
-    fetchRegistry: false
     serviceUrl:
       defaultZone: http://localhost:8081/eureka/
   instance:
     preferIpAddress: true
+    instanceId: ${spring.cloud.client.ip-address}:${server.port}
     
 ---
 
-spring.profiles: peer3
+spring.profiles: localhost
 server.port: 8083
 eureka:
   client:
-    registerWithEureka: false
-    fetchRegistry: false
     serviceUrl:
-      defaultZone: http://localhost:8081/eureka/
+      defaultZone: http://localhost1:8081/eureka/
   instance:
     preferIpAddress: true
+    instanceId: ${spring.cloud.client.ip-address}:${server.port}
