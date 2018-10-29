@@ -24,7 +24,6 @@ public class HelloController {
     private int count;
 
     @HystrixCommand(fallbackMethod = "fallback", commandProperties = {
-            @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "${circuitBreaker.requestVolumeThreshold}"),
             @HystrixProperty(name = "metrics.rollingStats.timeInMilliseconds", value = "30000"),
             @HystrixProperty(name = "circuitBreaker.sleepWindowInMilliseconds", value = "15000") })
     @GetMapping("error")

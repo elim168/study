@@ -7,10 +7,10 @@
         <artifactId>spring-cloud</artifactId>
         <version>1.0.0</version>
     </parent>
-    <artifactId>spring-cloud-service-provider</artifactId>
+    <artifactId>spring-cloud-hystrix-turbine</artifactId>
     <packaging>jar</packaging>
 
-    <name>spring-cloud-service-provider</name>
+    <name>spring-cloud-hystrix-turbine</name>
 
     <dependencies>
         <dependency>
@@ -27,14 +27,8 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-netflix-hystrix-stream</artifactId>
+            <artifactId>spring-cloud-starter-netflix-turbine</artifactId>
         </dependency>
-<dependency>
-    <groupId>org.springframework.cloud.stream.app</groupId>
-    <artifactId>spring-cloud-starter-stream-processor-httpclient</artifactId>
-    <version>2.0.1.RELEASE</version>
-</dependency>
-        
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>

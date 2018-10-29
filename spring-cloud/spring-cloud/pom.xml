@@ -18,6 +18,7 @@
         <module>spring-cloud-eureka-server</module>
         <module>spring-cloud-service-provider</module>
         <module>spring-cloud-service-client</module>
+		<module>spring-cloud-hystrix-turbine</module>
     </modules>
 
     <build>
