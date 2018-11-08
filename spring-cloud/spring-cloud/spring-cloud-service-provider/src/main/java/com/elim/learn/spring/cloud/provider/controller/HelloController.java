@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,10 +16,13 @@ import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 @RestController
 @RequestMapping("hello")
 public class HelloController {
+    
+    @Value("${eureka.instance.instanceId}")
+    private String instanceId;
 
     @GetMapping
     public String sayHelloWorld() {
-        return "hello world.  -- " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        return this.instanceId + " hello world.  -- " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
     private int count;

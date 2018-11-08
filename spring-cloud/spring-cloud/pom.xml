@@ -19,6 +19,7 @@
         <module>spring-cloud-service-provider</module>
         <module>spring-cloud-service-client</module>
 		<module>spring-cloud-hystrix-turbine</module>
+        <module>spring-cloud-ribbon</module>
     </modules>
 
     <build>
