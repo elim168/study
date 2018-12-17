@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
@@ -25,6 +26,11 @@ public class HelloController {
         return this.instanceId + " hello world.  -- " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
+    @GetMapping("redirect")
+    public RedirectView redirect() {
+        return new RedirectView("/hello");
+    }
+    
     private int count;
 
     @HystrixCommand(fallbackMethod = "fallback", commandProperties = {

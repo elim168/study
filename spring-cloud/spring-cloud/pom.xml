@@ -20,6 +20,7 @@
         <module>spring-cloud-service-client</module>
 		<module>spring-cloud-hystrix-turbine</module>
         <module>spring-cloud-ribbon</module>
+        <module>spring-cloud-zuul</module>
     </modules>
 
     <build>

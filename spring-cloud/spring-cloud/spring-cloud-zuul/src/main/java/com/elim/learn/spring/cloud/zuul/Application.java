@@ -1,12 +1,11 @@
-package com.elim.learn.spring.cloud.ribbon;
+package com.elim.learn.spring.cloud.zuul;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.netflix.ribbon.RibbonClient;
+import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
 
+@EnableZuulProxy
 @SpringBootApplication
-@RibbonClient(value="hello")
-//@RibbonClients(defaultConfiguration=RibbonConfiguration.class)
 public class Application {
 
     public static void main(String[] args) {
