@@ -2,11 +2,14 @@ package com.elim.learn.spring.cloud.provider.controller;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
@@ -135,6 +138,23 @@ public class HelloController {
             e.printStackTrace();
         }
         return "configureInstanceInfoWithSpringCloud";
+    }
+    
+    @GetMapping("path_variable/{pathVariable}")
+    public String pathVariable(@PathVariable("pathVariable") String pathVariable) {
+        return LocalDateTime.now() + "----pathVariable: " + pathVariable;
+    }
+    
+    @PostMapping("request_body")
+    public String requestBody(@RequestBody Map<String, Object> body) {
+        return LocalDateTime.now() + "----Size: " + body.size() + "---" + body;
+    }
+    
+    @PostMapping("converter")
+    public String converter(@RequestBody String body) {
+        String result = LocalDateTime.now() + "From Server : " + body;
+        System.out.println(result);
+        return result;
     }
 
 }
