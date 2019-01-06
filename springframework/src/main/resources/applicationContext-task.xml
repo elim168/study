@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:p="http://www.springframework.org/schema/p" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:task="http://www.springframework.org/schema/task"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+     http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+     http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.1.xsd
+     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd">
+
+    <context:component-scan base-package="com.elim.learn.spring.task" />
+    <!-- <context:component-scan base-package="com.elim.learn.spring.task" 
+        /> <task:annotation-driven executor="myExecutor" scheduler="myScheduler" 
+        /> <task:executor id="myExecutor" pool-size="5" /> <task:scheduler id="myScheduler" 
+        pool-size="10" /> -->
+    <!-- 该配置不能作为顶级配置 -->
+    <!-- <aop:scoped-proxy/> -->
+
+    <!-- <bean id="myExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor" 
+        p:core-pool-size="10" p:maxPoolSize="50" p:queueCapacity="10000" /> -->
+
+    <task:scheduler id="myScheduler" pool-size="1" />
+
+    <task:annotation-driven executor="myExecutor"
+        scheduler="myScheduler" exception-handler="myAsyncExceptionHandler"
+        mode="proxy" proxy-target-class="false" />
+
+    <!-- <task:scheduled-tasks scheduler="myScheduler"> 每5秒中执行一次 <task:scheduled 
+        ref="scheduledTasks" method="printTime" cron="*/5 * * * * ?"/> 每秒执行一次，相当于scheduleWithFixedDelay() 
+        <task:scheduled ref="scheduledTasks" method="printTime" fixed-delay="1000"/> 
+        每秒钟执行一次，初次调度将在5秒后进行，相当于scheduleAtFixedRate() <task:scheduled ref="scheduledTasks" 
+        method="printTime" fixed-rate="1000" initial-delay="5000"/> </task:scheduled-tasks> -->
+
+    <task:executor id="executor2" />
+
+    <task:executor id="myExecutor" keep-alive="120"
+        pool-size="10" queue-capacity="10000" rejection-policy="CALLER_RUNS" />
+
+
+    <bean id="quartzTasks" class="com.elim.learn.spring.task.QuartzTasks" />
+
+    <bean id="quartzTasksJobDetail"
+        class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"
+        p:targetObject-ref="quartzTasks" p:targetMethod="print"
+        p:concurrent="false" />
+
+    <bean id="cronTrigger"
+        class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"
+        p:jobDetail-ref="quartzTasksJobDetail" p:cronExpression="0 * * * * ?" />
+
+    <bean id="simpleTrigger"
+        class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean"
+        p:jobDetail-ref="quartzTasksJobDetail" p:startDelay="2000"
+        p:repeatInterval="3000" p:repeatCount="5" />
+
+    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean"
+        p:taskExecutor-ref="myExecutor">
+        <property name="triggers">
+            <list>
+                <ref bean="cronTrigger" />
+                <ref bean="simpleTrigger" />
+            </list>
+        </property>
+    </bean>
+
+</beans>

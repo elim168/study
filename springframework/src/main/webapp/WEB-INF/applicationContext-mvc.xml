@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:p="http://www.springframework.org/schema/p" 
+    xmlns:c="http://www.springframework.org/schema/c"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:cache="http://www.springframework.org/schema/cache"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+     http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+     http://www.springframework.org/schema/context
+     http://www.springframework.org/schema/context/spring-context-4.1.xsd
+     http://www.springframework.org/schema/mvc
+     http://www.springframework.org/schema/mvc/spring-mvc-4.1.xsd
+     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd
+     http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache-4.1.xsd">
+
+    <mvc:annotation-driven
+        enable-matrix-variables="true">
+        <!-- <mvc:async-support default-timeout="10000" task-executor=""> 
+            <mvc:callable-interceptors> <bean/> </mvc:callable-interceptors> <mvc:deferred-result-interceptors> 
+            <bean/> </mvc:deferred-result-interceptors> </mvc:async-support> -->
+        <mvc:message-converters>
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter" c:defaultCharset="UTF-8"/>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+<mvc:interceptors>
+    <bean class="org.springframework.web.servlet.theme.ThemeChangeInterceptor" />
+</mvc:interceptors>
+
+
+<bean class="org.springframework.web.servlet.resource.ResourceUrlEncodingFilter"/>
+    <!-- 指定映射静态资源，可以直接通过cache-period指定缓存时间，单位是秒。location指定资源的真实路径，
+    可以通过classpath:META-INF/static/这种方式指定类路径下的资源，如果有多个路径，可以通过英文逗号分隔。 -->
+    <mvc:resources location="/static/" mapping="/static/**" cache-period="600">
+        <!-- 指定静态资源缓存，有版本更新时通过版本号来更新 -->
+        <mvc:resource-chain resource-cache="true">
+            <mvc:resolvers>
+                <mvc:version-resolver>
+                    <mvc:fixed-version-strategy version="1.0" patterns="/**" />
+                </mvc:version-resolver>
+            </mvc:resolvers>
+        </mvc:resource-chain>
+    </mvc:resources>
+    <!-- 当SpringMVC的DispatcherServlet拦截的是/时，加上<mvc:default-servlet-handler/>启用默认的servlet处理器
+    后也可以正常访问静态资源，此时SpringMVC不能处理的请求将交给容器本身处理。（考虑基于Java类配置的SpringMVC启用defaultServletHandler的配置） -->
+<!--     <mvc:default-servlet-handler/> -->
+    
+    <!-- 直接指定访问路径对应的视图名称。 -->
+    <mvc:view-controller path="/" view-name="index"/>
+    <mvc:view-controller path="/static_resource" view-name="static_resource"/>
+    <mvc:view-controller path="/redirect_view" view-name="redirect:/hello"/>
+    
+    <mvc:redirect-view-controller redirect-url="/target" path="/redirect_view2"/>
+    
+    <mvc:status-controller status-code="400" path="/bad_request"/>
+    
+    <!-- 快速注册视图解析器 -->
+    <mvc:view-resolvers>
+        <mvc:jsp prefix="/WEB-INF/view/" suffix=".jsp"/>
+    </mvc:view-resolvers>
+
+    <context:property-placeholder location="classpath:application.properties" />
+
+    <context:component-scan base-package="com.elim.learn.spring.mvc"/>
+<!-- 
+    <bean
+        class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="mappings">
+            <props>
+            value是对应的处理器bean的id
+                <prop key="/abc">abcController</prop>
+            </props>
+        </property>
+    </bean>
+ -->
+
+<!--     <bean
+        class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/view/" />
+        <property name="suffix" value=".jsp" />
+    </bean> -->
+
+    <bean id="themeSource"
+        class="org.springframework.ui.context.support.ResourceBundleThemeSource"
+        p:basenamePrefix="META-INF/theme/" />
+    <!-- 默认不指定默认的theme名称时，默认的theme名称是theme -->
+    <bean id="themeResolver"
+        class="org.springframework.web.servlet.theme.SessionThemeResolver"
+        p:defaultThemeName="default" />
+
+    <!-- 上传文件的解析器 -->
+    <bean id="multipartResolver"
+        class="org.springframework.web.multipart.support.StandardServletMultipartResolver">
+    </bean>
+
+</beans>
