@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+     http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+     http://www.springframework.org/schema/tx  
+     http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
+     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd
+     http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa-1.8.xsd
+     http://www.springframework.org/schema/context
+     http://www.springframework.org/schema/context/spring-context-4.1.xsd">
+
+	<context:annotation-config />
+
+	<context:component-scan base-package="com.elim.learn.jpa">
+		<context:exclude-filter type="annotation"
+			expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+	<!-- 创建一个默认的JpaTransactionManager -->
+<!-- 	<tx:jta-transaction-manager/> -->
+
+	<context:property-placeholder location="classpath:jdbc.properties" />
+
+	<!-- 如果需要在Dao中使使用了@PersistenceContext标注的属性能够自动注入EntityManager，则需要在Spring的bean容器中定义一个
+		PersistenceAnnotationBeanPostProcessor，如果定义了<context:annotation-config/>则会自动定义该类型的BeanPostProcessor。
+		 -->
+	<bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
+
+	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="${jdbc.driverClassName}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+	</bean>
+	
+	<!-- 可以定义自己的DataSource，也可以直接使用persistence.xml中persistence-unit中定义的 -->
+	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"></bean>
+	
+	<!-- 使用JPA时要加入支持JPA的事务管理器 -->
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager"/>
+	
+	<!-- JPA整合Spring Data通过引入Spring Data支持JPA的namespace，然后定义jpa:repositories，并指定需要扫描的基包，这样Spring Data将扫描该包及其
+		子包下面所有的继承了org.springframework.data.repository.Repository接口的接口，自动生成它们的代理实现类并纳入到Spring的bean容器中，我们可以在继承了
+		Repository接口的接口中参照Spring Data的规范来定义一些Spring Data会自动帮我们实现的对数据库对象的操作。Repository接口只是一个用来标记的接口，
+		Spring Data也为我们提供了一些它的子接口，里面为我们预定义了一些操作，比如CrudRepository提供的对对象的增、删、改、查 -->
+	<jpa:repositories base-package="com.elim.learn.jpa.spring" entity-manager-factory-ref="entityManagerFactory"></jpa:repositories>
+	
+</beans>
