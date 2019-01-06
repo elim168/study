@@ -1,0 +1,3 @@
+org.springframework.context.ApplicationListener=com.elim.springboot.listener.ApplicationStartingEventListener,\
+com.elim.springboot.listener.ApplicationReadyEventListener
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.elim.autoconfigure.HelloAutoConfiguration
