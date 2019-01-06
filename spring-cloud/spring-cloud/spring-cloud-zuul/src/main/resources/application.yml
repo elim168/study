@@ -1,0 +1,21 @@
+#zuul.prefix: /api
+#zuul.routes.hello:
+#  path: /hello/**
+#  serviceId: hello
+#  
+#hello.ribbon.listOfServers: localhost:8900,localhost:8901
+
+
+
+#zuul.prefix=/api
+#zuul.stripPrefix=false
+
+
+#zuul.prefix=/api
+#zuul.routes.hello.path=/hello/**
+#zuul.routes.hello.serviceId=hello
+#hello.ribbon.listOfServers=localhost:8900,localhost:8901
+
+#zuul.routes.hello.path=/hello/**
+#zuul.routes.hello.serviceId=hello
+#zuul.routes.hello.stripPrefix=false
