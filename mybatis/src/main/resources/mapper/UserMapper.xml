@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.elim.learn.mybatis.dao.UserMapper">
+
+    <resultMap type="com.elim.learn.mybatis.model.User" id="BaseResult"
+        autoMapping="true">
+        <result column="user_name" property="username" />
+    </resultMap>
+
+    <select id="findById" resultMap="BaseResult" parameterType="java.lang.Long">
+        select id,name,username user_name,email,mobile from t_user where
+        id=#{id}
+    </select>
+
+    <!-- <select id="findById" resultType="com.elim.learn.mybatis.model.User" 
+        parameterType="java.lang.Long" > select id,name,username,email,mobile from 
+        t_user where id=#{id} </select> -->
+    <!-- 当对应的接口方法传递多个参数时，可以不指定parameterType参数，就算指定了也没用，因为这个时候默认是Map -->
+    <select id="findByNameAndMobile" resultType="com.elim.learn.mybatis.model.User">
+        select
+        id,name,username,email,mobile from t_user where name=#{name} and
+        mobile=#{1}
+    </select>
+    <select id="findAll" resultMap="BaseResult">
+        select
+        id,name,username,email,mobile from t_user
+    </select>
+
+<!-- 
+指定statementType为CALLABLE，通过mode指定参数类型，可选值有IN、OUT和INOUT。当mode为OUT或INOUT时必须指定jdbcType。
+存储过程调用完成后会把输出参数赋值给入参，所以我们可以通过Map或实体类来接收输出参数，比如这里的name。
+ -->
+
+    <select id="findName" statementType="CALLABLE">
+        {call findName(
+            #{username, mode=IN},
+            #{name, mode=OUT, jdbcType=VARCHAR}
+        )}
+    </select>
+    
+
+    <!-- <resultMap type="com.elim.learn.mybatis.model.Department" id="BaseResultMap"> 
+        <id column="id" property="id"/> <result column="name" property="name"/> <association 
+        property="manager" javaType="com.elim.learn.mybatis.model.Person"> <id column="manager_id" 
+        property="id"/> <id column="manager_no" property="no"/> <id column="manager_name" 
+        property="name"/> </association> <association property="viceManager" javaType="com.elim.learn.mybatis.model.Person"> 
+        <id column="vice_manager_id" property="id"/> <id column="vice_manager_no" 
+        property="no"/> <id column="vice_manager_name" property="name"/> </association> 
+        </resultMap> <resultMap type="com.elim.learn.mybatis.model.Department" id="BaseResultMap"> 
+        <id column="id" property="id"/> <result column="name" property="name"/> <association 
+        property="manager" resultMap="PersonResultMap" columnPrefix="manager"/> <association 
+        property="viceManager" resultMap="PersonResultMap" columnPrefix="vice_manager"/> 
+        </resultMap> <resultMap type="com.elim.learn.mybatis.model.Person" id="PersonResultMap"> 
+        <id column="id" property="id"/> <result column="no" property="no"/> <result 
+        column="name" property="name"/> </resultMap> <select id="findById" parameterType="java.lang.Long" 
+        resultMap="BaseResultMap"> SELECT id, name, manager_id, vice_manager_id, 
+        b.no manager_no, b.name manager_name, c.no vice_manager_no, c.name vice_manager_name 
+        FROM t_dept a LEFT JOIN t_person b ON a.manager_id = b.id LEFT JOIN t_person 
+        c ON a.vice_manager_id = c.id WHERE a.id=#{id} </select> -->
+
+    <insert id="insert" parameterType="com.elim.learn.mybatis.model.User"
+        useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into
+        t_user(name,username,email,mobile)
+        values(#{name},#{username},#{email},#{mobile})
+    </insert>
+
+    <insert id="delete" parameterType="java.lang.Long"
+        flushCache="false">
+        delete t_user where id=#{id}
+    </insert>
+
+    <update id="update" parameterType="com.elim.learn.mybatis.model.User">
+        update t_user set
+        name=#{name},username=#{username},email=#{email},mobile=#{mobile}
+        where id=#{id}
+    </update>
+</mapper>

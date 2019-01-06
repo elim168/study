@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.elim.learn.mybatis.dao.PersonMapper">
+
+	<cache size="500" readOnly="true"/>	
+<!-- 	<cache type="com.elim.learn.mybatis.cache.MyCache">
+		<property name="name" value="调用setName()方法需要传递的参数值"/>
+	</cache> -->
+<!-- 	<cache-ref namespace="com.elim.learn.mybatis.dao.OrganizationBaseMapper"/> -->
+	
+	<resultMap type="com.elim.learn.mybatis.model.Person" id="baseResultMap">
+		<id column="id" property="id"/>
+		<result column="name" property="name"/>
+		<result column="parent_id" property="parentId" />
+		<result column="org_type" property="type" />
+		<result column="email" property="email"/>
+		<result column="mobile" property="mobile" />
+	</resultMap>
+	
+	<select id="findById" resultMap="baseResultMap" parameterType="java.lang.Long" >
+		select a.id,a.name,a.org_type,a.parent_id,b.email,b.mobile from t_org a left join t_person b on a.id=b.id where a.id=#{id}
+	</select>
+	
+	<insert id="insert" parameterType="com.elim.learn.mybatis.model.Person">
+		insert into t_person(id,email,mobile) values(#{id},#{email},#{mobile})
+	</insert>
+	
+	<insert id="delete" parameterType="java.lang.Long" flushCache="false">
+		delete t_person where id=#{id}
+	</insert>
+	
+	<update id="update" parameterType="com.elim.learn.mybatis.model.Person">
+		update t_person
+		<set>
+			<if test="email != null">
+				email = #{email},
+			</if>
+			<if test="mobile != null">
+				mobile = #{mobile},
+			</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	
+</mapper>

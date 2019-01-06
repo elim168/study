@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE configuration  
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">  
+<configuration>  
+    <properties resource="jdbc.properties"/>  
+	<settings>
+		<!-- 日志实现，内置的有SLF4J、COMMONS_LOGGING、LOG4J、LOG4J2、JDK_LOGGING、STDOUT_LOGGING、NO_LOGGING，
+			不指定时会按照一定的顺序一个个试，直到获取到为止，可以参考LogFactory -->
+		<setting name="logImpl" value="LOG4J"/>
+		<setting name="cacheEnabled" value="true" />
+		<setting name="proxyFactory" value="CGLIB"/>
+		<setting name="lazyLoadingEnabled" value="true"/>
+		<!-- 当访问代理对象方法时是否一次加载懒加载对象的所有属性，默认是true -->
+		<setting name="aggressiveLazyLoading" value="fasle"/>
+		<!-- 当为懒加载时触发加载对象所有属性的方法，默认是下面四个方法 -->
+		<setting name="lazyLoadTriggerMethods" value="equals,clone,hashCode,toString" />
+		<!-- 自动映射类型，可选值为NONE、PARTIAL和FULL，参考AutoMappingBehavior枚举 -->
+		<setting name="autoMappingBehavior" value="PARTIAL"/>
+		<!-- 默认的Executor类型，取值参考ExecutorType枚举 -->
+		<setting name="defaultExecutorType" value="SIMPLE"/>
+		<!-- 默认的语句超时时间 ，单位是秒。默认是null，不超时-->
+		<setting name="defaultStatementTimeout" value="10"/>
+		<setting name="localCacheScope" value="SESSION"/>
+	</settings>
+	<plugins>  
+       <plugin interceptor="com.github.pagehelper.PageHelper"/>  
+    </plugins>  
+    <environments default="development">  
+        <environment id="development">  
+            <transactionManager type="JDBC" />  
+            <dataSource type="POOLED">  
+                <property name="driver" value="${jdbc.driver}" />  
+                <property name="url" value="${jdbc.url}" />  
+                <property name="username" value="${jdbc.username}" />  
+                <property name="password" value="${jdbc.password}" />  
+            </dataSource>    
+        </environment>  
+    </environments>  
+    <mappers>  
+        <mapper resource="mapper/SysWfProcessMapper.xml"/>  
+        <mapper resource="mapper/SysWfNodeMapper.xml"/> 
+        <mapper resource="mapper/OrganizationBaseMapper.xml"/>
+        <mapper resource="mapper/PersonMapper.xml"/> 
+        <mapper resource="mapper/UserMapper.xml"/> 
+    </mappers>  
+</configuration>  

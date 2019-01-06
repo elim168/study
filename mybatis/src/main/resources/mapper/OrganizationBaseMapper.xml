@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.elim.learn.mybatis.dao.OrganizationBaseMapper">
+
+	<cache />
+
+	<resultMap type="com.elim.learn.mybatis.model.OrganizationBase" id="baseResultMap">
+		<id column="id" property="id" />
+		<result column="name" property="name" />
+		<result column="parent_id" property="parentId" />
+		<discriminator javaType="java.lang.Integer" column="org_type">
+			<case value="1" resultType="com.elim.learn.mybatis.model.Organization" />
+			<case value="2" resultType="com.elim.learn.mybatis.model.Department" />
+			<case value="3" resultType="com.elim.learn.mybatis.model.Post" />
+<!-- 			<case value="4" resultMap="PersonResultMap" /> -->
+			<case value="4" resultType="com.elim.learn.mybatis.model.Person">
+				<result column="mobile" property="mobile"/>
+				<result column="email" property="email"/>
+			</case>
+		</discriminator>
+	</resultMap>
+<!-- 	<resultMap type="com.elim.learn.mybatis.model.Person" id="PersonResultMap">
+		<result column="email" property="email" />
+		<result column="mobile" property="mobile" />
+	</resultMap>
+ -->
+	<resultMap type="com.elim.learn.mybatis.model.OrganizationBase"
+		id="baseResultMap1">
+		<discriminator javaType="java.lang.Integer" column="org_type">
+			<case value="1" resultMap="OrganizationResultMap" />
+			<case value="2" resultMap="DepartmentResultMap" />
+			<case value="3" resultMap="PostResultMap" />
+			<case value="4" resultMap="PersonResultMap" />
+		</discriminator>
+	</resultMap>
+
+	<!-- 公共部分的结果集映射 -->
+	<resultMap type="com.elim.learn.mybatis.model.OrganizationBase"
+		id="OrganizationBaseResultMap">
+		<id column="id" property="id" />
+		<result column="name" property="name" />
+		<result column="org_type" property="type" />
+		<result column="parent_id" property="parentId" />
+	</resultMap>
+
+	<!-- 机构结果映射，继承自OrganizationBaseResultMap -->
+	<resultMap type="com.elim.learn.mybatis.model.Organization"
+		id="OrganizationResultMap" extends="OrganizationBaseResultMap" />
+	<resultMap type="com.elim.learn.mybatis.model.Department" id="DepartmentResultMap"
+		extends="OrganizationBaseResultMap" />
+	<resultMap type="com.elim.learn.mybatis.model.Post" id="PostResultMap"
+		extends="OrganizationBaseResultMap" />
+	<resultMap type="com.elim.learn.mybatis.model.Person" id="PersonResultMap">
+		<result column="email" property="email" />
+		<result column="mobile" property="mobile" />
+	</resultMap>
+
+
+	<!-- <select id="findById" resultMap="baseResultMap" parameterType="java.lang.Long"> 
+		select id,name,org_type,parent_id from t_org where id=#{id} </select> -->
+
+	<select id="findById" resultMap="baseResultMap1" parameterType="java.lang.Long">
+		select a.id,a.name,a.org_type,a.parent_id,b.mobile,b.email from t_org a left join t_person b on a.id=b.id where a.id=#{id}
+	</select>
+
+	<insert id="insert" parameterType="com.elim.learn.mybatis.model.OrganizationBase"
+		useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+		insert into
+		t_org(id,name,org_type,parent_id)
+		values(#{id},#{name},#{type},#{parentId})
+	</insert>
+
+	<insert id="delete" parameterType="java.lang.Long">
+		delete t_org where id=#{id}
+	</insert>
+
+	<update id="update" parameterType="com.elim.learn.mybatis.model.OrganizationBase">
+		update t_org
+		<set>
+			<if test="name != null">
+				name = #{name},
+			</if>
+			<if test="type != null">
+				org_type = #{type},
+			</if>
+			<if test="parentId != null">
+				parent_id = #{parentId}
+			</if>
+		</set>
+		where id = #{id}
+	</update>
+
+
+</mapper>
