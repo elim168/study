@@ -6,12 +6,18 @@ import org.springframework.messaging.SubscribableChannel;
 public interface Inputs {
 
     String INPUT1 = "input1";
-    String INPUT2 = "input2";
+    String INPUT3 = "input3";
     
-    @Input(Inputs.INPUT1)
+/*    @Input(Inputs.INPUT1)
     SubscribableChannel input1();
     
-    @Input(Inputs.INPUT2)
-    SubscribableChannel input2();
+    @Input
+    SubscribableChannel userInput();
+    
+    @Input
+    SubscribableChannel userInput2();
+    */
+    @Input(INPUT3)
+    SubscribableChannel userInput3();
     
 }
