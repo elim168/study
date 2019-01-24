@@ -13,6 +13,7 @@ import com.elim.learn.spring.cloud.client.config.MyHttpMessageConverter.MyObj;
 //@FeignClient(name="${feign.client.hello}", configuration=HelloFeignConfiguration.class)
 //@FeignClient(name="${feign.client.hello}", fallback=HelloServiceFallback.class)
 @FeignClient(name="${feign.client.hello}", fallback=HelloServiceFallback.class, fallbackFactory=HelloServiceFallbackFactory.class)
+//@FeignClient(name="${feign.client.hello}", url = "localhost:8900")//指定了url的将访问指定的Url，而不是从Eureka获取服务地址
 public interface HelloService {
 
     @GetMapping("hello")

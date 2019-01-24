@@ -8,12 +8,12 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.openfeign.ribbon.LoadBalancerFeignClient;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -69,7 +69,7 @@ public class HelloController {
     public String instanceUrl2() {
         String serviceId = "spring-cloud-service-provider";
         List<ServiceInstance> instances = this.discoveryClient.getInstances(serviceId);
-        if (CollectionUtils.isNotEmpty(instances)) {
+        if (!CollectionUtils.isEmpty(instances)) {
             return instances.get(0).getUri().toString();
         }
         return null;
