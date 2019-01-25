@@ -21,10 +21,10 @@ public class SinkConsumer {
         log.info("从Binding-{}收到信息-{}， headers：{}", Sink.INPUT, payload, headers);
     }
     
-/*    @StreamListener(CustomBinding.INPUT1)
-    public void input1Consumer(String message) {
-        log.info("从Binding-{}收到信息-{}", CustomBinding.INPUT1, message);
-    }*/
+    @StreamListener(CustomBinding.INPUT1)
+    public void input1Consumer(Message<String> message) {
+        log.info("从Binding-{}收到信息-{}，headers：{}", CustomBinding.INPUT1, message.getPayload(), message.getHeaders());
+    }
     
     
 /*    @StreamListener(Sink.INPUT)
