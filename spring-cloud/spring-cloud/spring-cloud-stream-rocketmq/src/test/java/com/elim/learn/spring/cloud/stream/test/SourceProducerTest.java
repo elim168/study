@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 
 @RunWith(SpringRunner.class)
@@ -24,7 +25,7 @@ public class SourceProducerTest {
     @Test
     public void test() throws Exception {
         for (int i=0; i<10; i++) {
-            this.producer.sendMessages("Message-" + i);
+            this.producer.sendMessages(LocalDateTime.now().toString() + "Message-" + i);
         }
         TimeUnit.SECONDS.sleep(10);
     }

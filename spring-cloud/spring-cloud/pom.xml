@@ -22,7 +22,18 @@
         <module>spring-cloud-ribbon</module>
         <module>spring-cloud-zuul</module>
         <module>spring-cloud-stream-rocketmq</module>
+        <module>spring-cloud-consul-server</module>
+        <module>spring-cloud-consul-client</module>
+        <module>spring-cloud-consul-hystrix-turbine</module>
     </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
     <dependencyManagement>
         <dependencies>
