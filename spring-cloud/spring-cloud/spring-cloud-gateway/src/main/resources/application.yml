@@ -1,0 +1,49 @@
+#server:
+#  ssl:
+#    enabled: true
+#    key-alias: spring
+#    key-store-password: spring
+#    key-store: classpath:keystore.p12
+#    key-store-type: PKCS12
+spring:
+  cloud:
+    gateway:
+#      httpclient:
+#        ssl:
+#          trustedX509Certificates:
+#            - classpath:public_localhost.cert
+#            - cert2.pem
+#          useInsecureTrustManager: true
+      routes:
+        - id: route_id
+          uri: http://localhost:8900
+          predicates:
+#            - Path=/hello/**
+            - My=abc
+          filters:
+            - AddRequestHeader=ABC, DEF
+            - AddRequestParameter=foo, bar
+            - name: My
+              args:
+                name: ABCDEF
+        - id: lb_route
+          uri: lb://spring-cloud-service-provider
+          predicates:
+            - Path=/lb/**
+          filters:
+            - StripPrefix=1
+#        - id: hystrix_test
+#          uri: http://localhost:8900
+#          predicates:
+#            - Path=/hello/gateway/hystrix/{num}
+#          filters:
+#            - name: Hystrix
+#              args:
+#                name: myCommandName
+#                fallbackUri: forward:/hystrix/fallback
+#            - name: Retry
+#              args:
+#                retries: 3
+#                statuses: BAD_GATEWAY,INTERNAL_SERVER_ERROR
+
+

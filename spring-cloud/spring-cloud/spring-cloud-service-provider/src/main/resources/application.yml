@@ -1,0 +1,7 @@
+#server:
+#  ssl:
+#    enabled: true
+#    key-alias: localhost
+#    key-store-password: spring
+#    key-store: classpath:localhost.keystore
+#    key-store-type: PKCS12

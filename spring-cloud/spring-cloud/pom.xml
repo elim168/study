@@ -25,6 +25,7 @@
         <module>spring-cloud-consul-server</module>
         <module>spring-cloud-consul-client</module>
         <module>spring-cloud-consul-hystrix-turbine</module>
+        <module>spring-cloud-gateway</module>
     </modules>
 
     <dependencies>
@@ -32,6 +33,10 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
         </dependency>
     </dependencies>
 

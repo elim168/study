@@ -6,12 +6,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
@@ -141,8 +136,8 @@ public class HelloController {
     }
     
     @GetMapping("path_variable/{pathVariable}")
-    public String pathVariable(@PathVariable("pathVariable") String pathVariable) {
-        return LocalDateTime.now() + "----pathVariable: " + pathVariable;
+    public String pathVariable(@PathVariable("pathVariable") String pathVariable, @RequestHeader Map<String, String> headers, @RequestParam Map<String, String> requestParams) {
+        return LocalDateTime.now() + "----pathVariable: " + pathVariable + "---headers: " + headers;
     }
     
     @PostMapping("request_body")
