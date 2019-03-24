@@ -24,6 +24,13 @@ public class IntsTest {
     Assert.assertEquals("1|2|3", Ints.join("|", new int[]{1, 2, 3}));
     Ints.max(new int[]{1, 3, 6});
 
+    byte[] bytes = Ints.toByteArray(10);
+    Assert.assertEquals(4, bytes.length);
+    Assert.assertEquals(0, bytes[0]);
+    Assert.assertEquals(0, bytes[1]);
+    Assert.assertEquals(0, bytes[2]);
+    Assert.assertEquals(10, bytes[3]);
+
     Ints.reverse(new int[0]);
     Ints.toArray(ImmutableList.of(1, 2, 3));
     Ints.checkedCast(100L);
@@ -42,6 +49,10 @@ public class IntsTest {
     UnsignedInts.max(new int[10]);
 
     UnsignedInteger.valueOf("888");
+
+    UnsignedInteger.valueOf("888").plus(UnsignedInteger.valueOf(10));
+    UnsignedInteger.valueOf(10).bigIntegerValue();
+
   }
 
 }
