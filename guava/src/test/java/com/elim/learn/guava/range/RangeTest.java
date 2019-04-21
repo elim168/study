@@ -66,4 +66,26 @@ public class RangeTest {
 
   }
 
+  @Test
+  public void test3() {
+    TreeRangeSet<Comparable<?>> rangeSet = TreeRangeSet.create();
+    rangeSet.add(Range.closedOpen(1, 10));
+    rangeSet.add(Range.closedOpen(10, 20));
+    System.out.println(rangeSet);//[1..20)
+    RangeMap<Integer, String> rangeMap = TreeRangeMap.create();
+    rangeMap.put(Range.closedOpen(0, 10), "A");
+    rangeMap.put(Range.closedOpen(10, 80), "B");
+    rangeMap.put(Range.closed(80, 100), "C");
+
+    for (int i=0; i<10; i++) {
+      Assert.assertEquals("A", rangeMap.get(i));
+    }
+    for (int i=10; i<80; i++) {
+      Assert.assertEquals("B", rangeMap.get(i));
+    }
+    for (int i=80; i<=100; i++) {
+      Assert.assertEquals("C", rangeMap.get(i));
+    }
+  }
+
 }

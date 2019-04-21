@@ -79,9 +79,10 @@ public class ExtensionUtilityTest {
     int i = 0;
     while (peekingIterator.hasNext()) {
       Integer peekVal = peekingIterator.peek();
+      Assert.assertEquals(list.get(i), peekVal);
+      Assert.assertEquals(list.get(i), peekingIterator.peek());
       Integer nextVal = peekingIterator.next();
       Assert.assertEquals(list.get(i), nextVal);
-      Assert.assertEquals(list.get(i), peekVal);
       i++;
     }
   }

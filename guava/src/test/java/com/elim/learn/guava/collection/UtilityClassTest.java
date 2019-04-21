@@ -148,6 +148,8 @@ public class UtilityClassTest {
     biMap.put("A", 1);
     BiMap<String, Integer> synchronizedBiMap = Maps.synchronizedBiMap(biMap);
     synchronizedBiMap.put("B", 2);
+
+    Assert.assertEquals("A", biMap.inverse().get(1));
   }
 
   @Test
