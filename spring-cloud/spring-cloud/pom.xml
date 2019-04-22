@@ -26,6 +26,9 @@
         <module>spring-cloud-consul-client</module>
         <module>spring-cloud-consul-hystrix-turbine</module>
         <module>spring-cloud-gateway</module>
+        <module>spring-cloud-function</module>
+        <module>spring-cloud-config-server</module>
+        <module>spring-cloud-config-client</module>
     </modules>
 
     <dependencies>

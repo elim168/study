@@ -1,0 +1,35 @@
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8089/eureka/
+    register-with-eureka: false
+  instance:
+    metadata-map:
+      user: user
+      password: password
+      configPath: /config
+
+
+
+spring:
+  cloud:
+    config:
+#      name: abc
+      uri: http://localhost:8080/config
+#      profile: prod
+      request-read-timeout: 10000
+      username: user
+      password: password
+      discovery:
+        enabled: false
+        service-id: configserver1
+      fail-fast: true
+      profile: prod
+      retry:
+        initial-interval: 2000
+        max-attempts: 10
+        max-interval: 5000
+        multiplier: 1.2
+  #      label: master
+  profiles:
+    active: test

@@ -1,0 +1,90 @@
+server.port: 8080
+
+encrypt.key: jjlj
+
+#-------------------Composite------------
+spring:
+#  profiles:
+#    active: git,jdbc
+#  datasource:
+#    driver-class-name: com.mysql.jdbc.Driver
+#    url: jdbc:mysql://localhost:3306/test?useSSL=false
+#    username: root
+#    password: elim
+  cloud:
+    config:
+      server:
+#        jdbc:
+#          sql: 'SELECT `KEY`, VALUE from PROPERTIES where APPLICATION=? and PROFILE=? and LABEL=?'
+#          order: 10
+        git:
+          uri: file:///D:/work/dev/git/projects/config_repo
+        bootstrap: true
+        prefix: '/config'
+  security:
+    user:
+      name: user
+      password: password
+  application:
+    name: configserver1
+#          order: 8
+#        overrides:
+#          info:
+#            foo: override-bar
+#spring.cloud.config.server.composite:
+##  -
+##    type: git
+##    uri: https://github.com/elim168/config_repo.git
+#  -
+#    type: git
+#    uri: file:///D:/work/dev/git/projects/config_repo
+#  -
+#    type: jdbc
+#    sql: 'SELECT `KEY`, VALUE from PROPERTIES where APPLICATION=? and PROFILE=? and LABEL=?'
+
+
+#-------------------Composite------------
+
+#spring:
+#  cloud:
+#    config:
+#      server:
+##        jdbc:
+##          sql: 'SELECT `KEY`, VALUE from PROPERTIES where APPLICATION=? and PROFILE=? and LABEL=?'
+#        default-label: 'dev'
+#  #        native:
+##          search-locations: D:/tmp/config/{application}
+#        git:
+#  profiles:
+#    active: jdbc
+#  datasource:
+#    driver-class-name: com.mysql.jdbc.Driver
+#    url: jdbc:mysql://localhost:3306/test?useSSL=false
+#    username: root
+#    password: elim
+#          uri: file:///D:/work/dev/git/projects/config_repo
+#          uri: https://github.com/elim168/config_repo.git
+#          search-paths: '{label}'
+#          clone-on-start: true
+#          force-pull: true
+#          basedir: /git-repo
+#          refresh-rate: 60
+#          uri: https://github.com/elim168/config_repo1
+#          skip-ssl-validation: true
+#          repos:
+#            app1: https://github.com/elim168/config_repo1
+#            app2:
+#              pattern: app2*
+#              uri: https://github.com/elim168/config_repo
+#            app3:
+#              pattern: app3/dev*,app3*/dev*
+#              uri: https://github.com/elim168/config_repo
+
+#          uri: https://github.com/spring-cloud-samples/config-repo
+eureka:
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.hostname}:${server.port}
+  client:
+    service-url:
+      defaultZone: http://localhost:8089/eureka/

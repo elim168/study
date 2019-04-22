@@ -1,0 +1,6 @@
+info.foo: AAA
+hello: world
+spring.application.name: app
+spring:
+  profiles:
+    active: dev

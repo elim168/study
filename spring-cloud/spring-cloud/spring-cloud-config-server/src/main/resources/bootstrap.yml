@@ -1,0 +1,8 @@
+#encrypt:
+#  key: AAA
+encrypt:
+  key-store:
+    location: server.jks
+    alias: testkey
+    password: 123456
+    secret: key123456
