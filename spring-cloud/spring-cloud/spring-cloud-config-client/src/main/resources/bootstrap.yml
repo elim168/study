@@ -9,6 +9,7 @@ eureka:
       password: password
       configPath: /config
 
+test.foo: ABC
 
 
 spring:
@@ -30,6 +31,14 @@ spring:
         max-attempts: 10
         max-interval: 5000
         multiplier: 1.2
+      override-none: true
+      allow-override: true
   #      label: master
   profiles:
     active: test
+encrypt:
+  key-store:
+    location: server.jks
+    alias: testkey
+    password: 123456
+    secret: key123456

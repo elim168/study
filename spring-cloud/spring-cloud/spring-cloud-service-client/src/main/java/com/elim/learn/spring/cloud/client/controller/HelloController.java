@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
+import brave.Span;
+import brave.Tracer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cloud.client.ServiceInstance;
@@ -43,11 +45,21 @@ public class HelloController {
     
     @Autowired
     private LoadBalancerFeignClient client;
+
+    @Autowired
+    private Tracer tracer;
     
     @GetMapping
     public String helloWorld() {
+        Span span = this.tracer.newTrace().name("hello world").start();
+        span.tag("hello", "world");
+        span.tag("tagA", "1");
         System.out.println(client);
-        return client + this.helloService.helloWorld();
+        try {
+            return client + this.helloService.helloWorld();
+        } finally {
+            span.finish();
+        }
     }
     
     @GetMapping("world")
@@ -94,6 +106,9 @@ public class HelloController {
     @GetMapping("headers")
     public String headers() {
         RequestIdHolder.set(UUID.randomUUID().toString());
+        Span currentSpan = this.tracer.currentSpan();
+        currentSpan.annotate("准备访问远程服务---headers");
+        currentSpan.tag("TagA", "123456");
         return this.helloService.headers();
     }
     

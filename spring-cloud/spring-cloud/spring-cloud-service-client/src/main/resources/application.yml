@@ -1,0 +1,33 @@
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8089/eureka/
+    register-with-eureka: false
+
+spring:
+  zipkin:
+    base-url: http://localhost:9411/
+#    base-url: http://zipkinserver/
+    service:
+      name: service1
+    locator:
+      discovery:
+        enabled: false
+    discovery-client-enabled: true
+  sleuth:
+    sampler:
+      probability: 1.0
+    hystrix:
+      strategy:
+        enabled: false
+    scheduled:
+      skip-pattern: com\.elim\.learn\.spring\.cloud\.client\.service\..*
+    async:
+      enabled: false
+#zipkinserver:
+#  ribbon:
+#    listOfServers: http://localhost:9411
+#    listOfServers: http://10.10.10.1:9411,http://10.10.10.2:9411,http://localhost:9411
+#ribbon:
+#  eureka:
+#    enabled: false
