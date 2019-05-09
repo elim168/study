@@ -1,0 +1,16 @@
+
+
+spring:
+  application:
+    name: service1
+  cloud:
+    zookeeper:
+      connect-string: localhost:2181
+      discovery:
+        enabled: true
+        register: true
+        prefer-ip-address: true
+        instance-id: ${spring.cloud.client.ip-address}:${server.port}
+        root: /springcloud
+server:
+  port: 9001

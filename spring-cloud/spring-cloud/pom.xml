@@ -31,7 +31,8 @@
         <module>spring-cloud-config-client</module>
         <module>spring-cloud-sleuth-service1</module>
         <module>spring-cloud-sleuth-service2</module>
-        <module>spring-cloud-zipkin-server</module>
+        <module>spring-cloud-zookeeper-server</module>
+        <module>spring-cloud-zookeeper-client</module>
     </modules>
 
     <dependencies>

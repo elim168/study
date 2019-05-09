@@ -1,0 +1,18 @@
+
+spring:
+  cloud:
+    service-registry:
+      auto-registration:
+        enabled: true
+    zookeeper:
+      connect-string: localhost:2181
+      discovery:
+        register: false
+        root: /springcloud
+      dependencies:
+        service1:
+          path: /springcloud/service1
+  application:
+    name: client1
+server:
+  port: 9002
