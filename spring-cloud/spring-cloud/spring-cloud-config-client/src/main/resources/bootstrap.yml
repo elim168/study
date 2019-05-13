@@ -7,7 +7,7 @@ eureka:
     metadata-map:
       user: user
       password: password
-      configPath: /config
+#      configPath: /config
 
 test.foo: ABC
 
@@ -22,7 +22,7 @@ spring:
       username: user
       password: password
       discovery:
-        enabled: false
+        enabled: true
         service-id: configserver1
       fail-fast: true
       profile: prod
