@@ -398,4 +398,109 @@ public void testCircuitBreakerRetryPolicy() throws Exception {
 
 ### CompositeRetryPolicy
 
-CompositeRetryPolicy可以用来组合多个RetryPolicy，可以设置必须所有的RetryPolicy都是可以重试的时候才能进行重试，也可以设置只要有一个RetryPolicy可以重试就可以进行重试。
+CompositeRetryPolicy可以用来组合多个RetryPolicy，可以设置必须所有的RetryPolicy都是可以重试的时候才能进行重试，也可以设置只要有一个RetryPolicy可以重试就可以进行重试。默认是必须所有的RetryPolicy都可以重试才能进行重试。下面代码中应用的就是CompositeRetryPolicy，它组合了两个RetryPolicy，最多尝试5次的SimpleRetryPolicy和超时时间是2秒钟的TimeoutRetryPolicy，所以它们的组合就是必须尝试次数不超过5次且尝试时间不超过2秒钟才能进行重试。`execute()`中执行的RetryCallback的逻辑是counter的值小于10时就抛出IllegalStateException，否则就返回counter的值。第一次尝试的时候会失败，第二次也是，直到第5次尝试也还是失败的，此时SimpleRetryPolicy已经不能再尝试了，而TimeoutRetryPolicy此时还是可以尝试的，但是由于前者已经不能再尝试了，所以整体就不能再尝试了。所以下面的执行会以抛出IllegalStateException告终。
+
+```java
+@Test
+public void testCompositeRetryPolicy() {
+  CompositeRetryPolicy compositeRetryPolicy = new CompositeRetryPolicy();
+  RetryPolicy policy1 = new SimpleRetryPolicy(5);
+  TimeoutRetryPolicy policy2 = new TimeoutRetryPolicy();
+  policy2.setTimeout(2000);
+  RetryPolicy[] policies = new RetryPolicy[]{policy1, policy2};
+  compositeRetryPolicy.setPolicies(policies);
+
+  RetryTemplate retryTemplate = new RetryTemplate();
+  retryTemplate.setRetryPolicy(compositeRetryPolicy);
+  AtomicInteger counter = new AtomicInteger();
+  retryTemplate.execute(retryContext -> {
+    if (counter.incrementAndGet() < 10) {
+      throw new IllegalStateException();
+    }
+    return counter.get();
+  });
+}
+```
+
+CompositeRetryPolicy也支持组合的RetryPolicy中只要有一个RetryPolicy满足条件就可以进行重试，这是通过参数optimistic控制的，默认是false，改为true即可。比如下面设置了`setOptimistic(true)`，那么中尝试5次后SimpleRetryPolicy已经不满足了，但是TimeoutRetryPolicy还满足条件，所以最终会一直尝试，直到counter的值为10。
+
+```java
+@Test
+public void testCompositeRetryPolicy() {
+  CompositeRetryPolicy compositeRetryPolicy = new CompositeRetryPolicy();
+  RetryPolicy policy1 = new SimpleRetryPolicy(5);
+  TimeoutRetryPolicy policy2 = new TimeoutRetryPolicy();
+  policy2.setTimeout(2000);
+  RetryPolicy[] policies = new RetryPolicy[]{policy1, policy2};
+  compositeRetryPolicy.setPolicies(policies);
+  compositeRetryPolicy.setOptimistic(true);
+
+  RetryTemplate retryTemplate = new RetryTemplate();
+  retryTemplate.setRetryPolicy(compositeRetryPolicy);
+  AtomicInteger counter = new AtomicInteger();
+  Integer result = retryTemplate.execute(retryContext -> {
+    if (counter.incrementAndGet() < 10) {
+      throw new IllegalStateException();
+    }
+    return counter.get();
+  });
+  Assert.assertEquals(10, result.intValue());
+}
+```
+
+## BackOffPolicy
+
+BackOffPolicy用来定义在两次尝试之间需要间隔的时间，RetryTemplate内部默认使用的是NoBackOffPolicy，其在两次尝试之间不会进行任何的停顿。对于一般可重试的操作往往是基于网络进行的远程请求，它可能由于网络波动暂时不可用，如果立马进行重试它可能还是不可用，但是停顿一下，过一会再试可能它又恢复正常了，所以在RetryTemplate中使用BackOffPolicy往往是很有必要的。
+
+### FixedBackOffPolicy
+
+FixedBackOffPolicy将在两次重试之间进行一次固定的时间间隔，默认是1秒钟，也可以通过`setBackOffPeriod()`进行设置。下面代码中指定了两次重试的时间间隔是1秒钟，第一次尝试会失败，等一秒后会进行第二次尝试，第二次尝试会成功。
+
+```java
+@Test
+public void testFixedBackOffPolicy() {
+
+  FixedBackOffPolicy backOffPolicy = new FixedBackOffPolicy();
+  backOffPolicy.setBackOffPeriod(1000);
+  RetryTemplate retryTemplate = new RetryTemplate();
+  retryTemplate.setBackOffPolicy(backOffPolicy);
+
+  long t1 = System.currentTimeMillis();
+  long t2 = retryTemplate.execute(retryContext -> {
+    if (System.currentTimeMillis() - t1 < 1000) {
+      throw new IllegalStateException();
+    }
+    return System.currentTimeMillis();
+  });
+  Assert.assertTrue(t2 - t1 > 1000);
+  Assert.assertTrue(t2 - t1 < 1100);
+}
+```
+
+### ExponentialBackOffPolicy
+
+ExponentialBackOffPolicy可以使每一次尝试的间隔时间都不一样，它有3个重要的参数，初始间隔时间、后一次间隔时间相对于前一次间隔时间的倍数和最大的间隔时间，它们的默认值分别是100毫秒、2.0和30秒。下面的代码使用了ExponentialBackOffPolicy，指定了初始间隔时间是1000毫秒，每次间隔时间以2倍的速率递增，最大的间隔时间是5000毫秒，它最多可以尝试10次。所以当第1次尝试失败后会间隔1秒后进行第2次尝试，之后再间隔2秒进行第3次尝试，之后再间隔4秒进行第4次尝试，之后都是间隔5秒再进行下一次尝试，因为再翻倍已经超过了设定的最大的间隔时间。
+
+```java
+@Test
+public void testExponentialBackOffPolicy() {
+  ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
+  backOffPolicy.setInitialInterval(1000);
+  backOffPolicy.setMaxInterval(5000);
+  backOffPolicy.setMultiplier(2.0);
+  RetryTemplate retryTemplate = new RetryTemplate();
+  retryTemplate.setBackOffPolicy(backOffPolicy);
+  int maxAttempts = 10;
+  retryTemplate.setRetryPolicy(new SimpleRetryPolicy(maxAttempts));
+
+  long t1 = System.currentTimeMillis();
+  long t2 = retryTemplate.execute(retryContext -> {
+    if (retryContext.getRetryCount() < maxAttempts-1) {//最后一次尝试会成功
+      throw new IllegalStateException();
+    }
+    return System.currentTimeMillis();
+  });
+  long time = 0 + 1000 + 1000 * 2 + 1000 * 2 * 2 + 5000 * (maxAttempts - 4);
+  Assert.assertTrue((t2-t1) - time < 100);
+}
+```
