@@ -96,3 +96,306 @@ public void testRecoveryCallback() {
   Assert.assertEquals(30, result.intValue());
 }
 ```
+
+## RetryPolicy
+
+RetryTemplate内部的重试策略是由RetryPolicy控制的。RetryPolicy的定义如下。
+
+```java
+public interface RetryPolicy extends Serializable {
+
+  /**
+   * @param context the current retry status
+   * @return true if the operation can proceed
+   */
+  boolean canRetry(RetryContext context);
+
+  /**
+   * Acquire resources needed for the retry operation. The callback is passed
+   * in so that marker interfaces can be used and a manager can collaborate
+   * with the callback to set up some state in the status token.
+   * @param parent the parent context if we are in a nested retry.
+   *
+   * @return a {@link RetryContext} object specific to this policy.
+   *
+   */
+  RetryContext open(RetryContext parent);
+
+  /**
+   * @param context a retry status created by the
+   * {@link #open(RetryContext)} method of this policy.
+   */
+  void close(RetryContext context);
+
+  /**
+   * Called once per retry attempt, after the callback fails.
+   *
+   * @param context the current status object.
+   * @param throwable the exception to throw
+   */
+  void registerThrowable(RetryContext context, Throwable throwable);
+
+}
+```
+
+### SimpleRetryPolicy
+
+RetryTemplate内部默认时候用的是SimpleRetryPolicy。SimpleRetryPolicy默认将对所有异常进行尝试，最多尝试3次。如果需要调整使用的RetryPolicy，可以通过RetryTemplate的`setRetryPolicy()`进行设置。比如下面代码就显示的设置了需要使用的RetryPolicy是不带参数的SimpleRetryPolicy，其默认会尝试3次。
+
+```java
+public void testSimpleRetryPolicy() {
+  RetryPolicy retryPolicy = new SimpleRetryPolicy();
+  RetryTemplate retryTemplate = new RetryTemplate();
+  retryTemplate.setRetryPolicy(retryPolicy);
+  AtomicInteger counter = new AtomicInteger();
+  Integer result = retryTemplate.execute(retryContext -> {
+    if (counter.incrementAndGet() < 3) {
+      throw new IllegalStateException();
+    }
+    return counter.get();
+  });
+  Assert.assertEquals(3, result.intValue());
+}
+```
+
+如果希望最多尝试10次，只需要传入构造参数10即可，比如下面这样。
+
+```java
+RetryPolicy retryPolicy = new SimpleRetryPolicy(10);
+```
+
+在实际使用的过程中，可能你不会希望所有的异常都进行重试，因为有的异常重试是解决不了问题的。所以可能你会想要指定可以重试的异常类型。通过SimpleRetryPolicy的构造参数可以指定哪些异常是可以进行重试的。比如下面代码我们指定了最多尝试10次，且只有IllegalStateException是可以进行重试的。那么在运行下面代码时前三次抛出的IllegalStateException都会再次进行尝试，第四次会抛出IllegalArgumentException，此时不能继续尝试了，该异常将会对外抛出。
+
+```java
+@Test
+public void testSimpleRetryPolicy() {
+  Map<Class<? extends Throwable>, Boolean> retryableExceptions = Maps.newHashMap();
+  retryableExceptions.put(IllegalStateException.class, true);
+  RetryPolicy retryPolicy = new SimpleRetryPolicy(10, retryableExceptions);
+  RetryTemplate retryTemplate = new RetryTemplate();
+  retryTemplate.setRetryPolicy(retryPolicy);
+  AtomicInteger counter = new AtomicInteger();
+  retryTemplate.execute(retryContext -> {
+    if (counter.incrementAndGet() < 3) {
+      throw new IllegalStateException();
+    } else if (counter.incrementAndGet() < 6) {
+      throw new IllegalArgumentException();
+    }
+    return counter.get();
+  });
+}
+```
+
+看到这里可能你会有疑问，可以进行重试的异常定义为什么使用的是Map结构，而不是简单的通过Set或List来定义可重试的所有异常类似，而要多一个Boolean类型的Value来定义该异常是否可重试。这样做的好处是它可以实现包含/排除的逻辑，比如下面这样，我们可以指定对所有的RuntimeException都是可重试的，唯独IllegalArgumentException是一个例外。所以当你运行如下代码时其最终结果还是抛出IllegalArgumentException。
+
+```java
+@Test
+public void testSimpleRetryPolicy() {
+  Map<Class<? extends Throwable>, Boolean> retryableExceptions = Maps.newHashMap();
+  retryableExceptions.put(RuntimeException.class, true);
+  retryableExceptions.put(IllegalArgumentException.class, false);
+  RetryPolicy retryPolicy = new SimpleRetryPolicy(10, retryableExceptions);
+  RetryTemplate retryTemplate = new RetryTemplate();
+  retryTemplate.setRetryPolicy(retryPolicy);
+  AtomicInteger counter = new AtomicInteger();
+  retryTemplate.execute(retryContext -> {
+    if (counter.incrementAndGet() < 3) {
+      throw new IllegalStateException();
+    } else if (counter.incrementAndGet() < 6) {
+      throw new IllegalArgumentException();
+    }
+    return counter.get();
+  });
+}
+```
+
+SimpleRetryPolicy在判断一个异常是否可重试时，默认会取最后一个抛出的异常。我们通常可能在不同的业务层面包装不同的异常，比如有些场景我们可能需要把捕获到的异常都包装为BusinessException，比如说把一个IllegalStateException包装为BusinessException。我们程序中定义了所有的IllegalStateException是可以进行重试的，如果SimpleRetryPolicy直接取的最后一个抛出的异常会取到BusinessException。这可能不是我们想要的，此时可以通过构造参数traverseCauses指定可以遍历异常栈上的每一个异常进行判断。比如下面代码，在`traverseCauses=false`时，只会在抛出IllegalStateException时尝试3次，第四次抛出的Exception不是RuntimeException，所以不会进行重试。指定了`traverseCauses=true`时第四次尝试时抛出的Exception，再往上找时会找到IllegalArgumentException，此时又可以继续尝试，所以最终执行后counter的值会是6。
+
+```java
+@Test
+public void testSimpleRetryPolicy() throws Exception {
+  Map<Class<? extends Throwable>, Boolean> retryableExceptions = Maps.newHashMap();
+  retryableExceptions.put(RuntimeException.class, true);
+  RetryPolicy retryPolicy = new SimpleRetryPolicy(10, retryableExceptions, true);
+  RetryTemplate retryTemplate = new RetryTemplate();
+  retryTemplate.setRetryPolicy(retryPolicy);
+  AtomicInteger counter = new AtomicInteger();
+  retryTemplate.execute(retryContext -> {
+    if (counter.incrementAndGet() < 3) {
+      throw new IllegalStateException();
+    } else if (counter.incrementAndGet() < 6) {
+      try {
+        throw new IllegalArgumentException();
+      } catch (Exception e) {
+        throw new Exception(e);
+      }
+    }
+    return counter.get();
+  });
+}
+```
+
+SimpleRetryPolicy除了前面介绍的3个构造方法外，还有如下这样一个构造方法，它的第四个参数表示当抛出的异常是在retryableExceptions中没有定义是否需要尝试时其默认的值，该值为true则表示默认可尝试。
+
+```java
+public SimpleRetryPolicy(int maxAttempts, Map<Class<? extends Throwable>, Boolean> retryableExceptions,
+                         boolean traverseCauses, boolean defaultValue)
+```
+
+下面代码中通过retryableExceptions指定了抛出IllegalFormatException时不进行重试，然后通过SimpleRetryPolicy的第四个参数指定了其它异常默认是可以进行重试的。所以下面的代码也可以正常运行，运行结束后counter的值是6。
+
+```java
+@Test
+public void testSimpleRetryPolicy() throws Exception {
+  Map<Class<? extends Throwable>, Boolean> retryableExceptions = Maps.newHashMap();
+  retryableExceptions.put(IllegalFormatException.class, false);
+  RetryPolicy retryPolicy = new SimpleRetryPolicy(10, retryableExceptions, false, true);
+  RetryTemplate retryTemplate = new RetryTemplate();
+  retryTemplate.setRetryPolicy(retryPolicy);
+  AtomicInteger counter = new AtomicInteger();
+  retryTemplate.execute(retryContext -> {
+    if (counter.incrementAndGet() < 3) {
+      throw new IllegalStateException();
+    } else if (counter.incrementAndGet() < 6) {
+      throw new IllegalArgumentException();
+    }
+    return counter.get();
+  });
+}
+```
+
+### AlwaysRetryPolicy
+
+顾名思义就是一直重试，直到成功为止。所以对于下面代码而言，其会一直尝试100次，第100次的时候它就成功了。
+
+```java
+@Test
+public void testRetryPolicy() {
+  RetryPolicy retryPolicy = new AlwaysRetryPolicy();
+  RetryTemplate retryTemplate = new RetryTemplate();
+  retryTemplate.setRetryPolicy(retryPolicy);
+  AtomicInteger counter = new AtomicInteger();
+  Integer result = retryTemplate.execute(retryContext -> {
+    if (counter.incrementAndGet() < 100) {
+      throw new IllegalStateException();
+    }
+    return counter.get();
+  });
+  Assert.assertEquals(100, result.intValue());
+}
+```
+
+### NeverRetryPolicy
+
+与AlwaysRetryPolicy相对的一个极端是从不重试，NeverRetryPolicy的策略就是从不重试，但是第一次调用还是会发生的。所以对于下面代码而言，如果第一次获取的随机数不是3的倍数，则可以正常执行，否则将抛出IllegalStateException。
+
+```java
+@Test
+public void testRetryPolicy() {
+  RetryPolicy retryPolicy = new NeverRetryPolicy();
+  RetryTemplate retryTemplate = new RetryTemplate();
+  retryTemplate.setRetryPolicy(retryPolicy);
+  retryTemplate.execute(retryContext -> {
+    int value = new Random().nextInt(100);
+    if (value % 3 == 0) {
+      throw new IllegalStateException();
+    }
+    return value;
+  });
+}
+```
+
+### TimeoutRetryPolicy
+
+TimeoutRetryPolicy用于在指定时间范围内进行重试，直到超时为止，默认的超时时间是1000毫秒。
+
+```java
+@Test
+public void testRetryPolicy() throws Exception {
+  TimeoutRetryPolicy retryPolicy = new TimeoutRetryPolicy();
+  retryPolicy.setTimeout(2000);//不指定时默认是1000
+  RetryTemplate retryTemplate = new RetryTemplate();
+  retryTemplate.setRetryPolicy(retryPolicy);
+  AtomicInteger counter = new AtomicInteger();
+  Integer result = retryTemplate.execute(retryContext -> {
+    if (counter.incrementAndGet() < 10) {
+      TimeUnit.MILLISECONDS.sleep(20);
+      throw new IllegalStateException();
+    }
+    return counter.get();
+  });
+  Assert.assertEquals(10, result.intValue());
+}
+
+```
+
+### ExceptionClassifierRetryPolicy
+
+之前介绍的SimpleRetryPolicy可以基于异常来判断是否需要进行重试。如果你需要基于不同的异常应用不同的重试策略怎么办呢？ExceptionClassifierRetryPolicy可以帮你实现这样的需求。下面的代码中我们就指定了当捕获的是IllegalStateException时将最多尝试5次，当捕获的是IllegalArgumentException时将最多尝试4次。其执行结果最终是抛出IllegalArgumentException的，但是在最终抛出IllegalArgumentException时counter的值是多少呢？换句话说它一共尝试了几次呢？答案是8次。按照笔者的写法，进行第5次尝试时不会抛出IllegalStateException，而是抛出IllegalArgumentException，它对于IllegalArgumentException的重试策略而言是第一次尝试，之后会再尝试3次，5+3=8，所以counter的最终的值是8。
+
+```java
+@Test
+public void testRetryPolicy() throws Exception {
+  ExceptionClassifierRetryPolicy retryPolicy = new ExceptionClassifierRetryPolicy();
+
+  Map<Class<? extends Throwable>, RetryPolicy> policyMap = Maps.newHashMap();
+  policyMap.put(IllegalStateException.class, new SimpleRetryPolicy(5));
+  policyMap.put(IllegalArgumentException.class, new SimpleRetryPolicy(4));
+  retryPolicy.setPolicyMap(policyMap);
+
+  RetryTemplate retryTemplate = new RetryTemplate();
+  retryTemplate.setRetryPolicy(retryPolicy);
+  AtomicInteger counter = new AtomicInteger();
+  retryTemplate.execute(retryContext -> {
+    if (counter.incrementAndGet() < 5) {
+      throw new IllegalStateException();
+    } else if (counter.get() < 10) {
+      throw new IllegalArgumentException();
+    }
+    return counter.get();
+  });
+}
+```
+
+### CircuitBreakerRetryPolicy
+
+CircuitBreakerRetryPolicy是包含了断路器功能的RetryPolicy，它内部默认包含了一个SimpleRetryPolicy，最多尝试3次。在固定的时间窗口内（默认是20秒）如果底层包含的RetryPolicy的尝试次数都已经耗尽了，则其会打开断路器，默认打开时间是5秒，在这段时间内如果还有其它请求过来就不会再进行调用了。CircuitBreakerRetryPolicy需要跟RetryState一起使用，下面的代码中RetryTemplate使用的是CircuitBreakerRetryPolicy，一共调用了5次`execute()`，每次调用RetryCallback都会抛出IllegalStateException，并且会打印counter的当前值，前三次RetryCallback都是可以运行的，之后断路器打开了，第四五次执行`execute()`时就不会再执行RetryCallback了，所以你只能看到只进行了3次打印。
+
+```java
+@Test
+public void testCircuitBreakerRetryPolicy() throws Exception {
+  CircuitBreakerRetryPolicy retryPolicy = new CircuitBreakerRetryPolicy();
+  RetryTemplate retryTemplate = new RetryTemplate();
+  retryTemplate.setRetryPolicy(retryPolicy);
+  AtomicInteger counter = new AtomicInteger();
+  RetryState retryState = new DefaultRetryState("key");
+  for (int i=0; i<5; i++) {
+    try {
+      retryTemplate.execute(retryContext -> {
+        System.out.println(LocalDateTime.now() + "----" + counter.get());
+        TimeUnit.MILLISECONDS.sleep(100);
+        if (counter.incrementAndGet() > 0) {
+          throw new IllegalStateException();
+        }
+        return 1;
+      }, null, retryState);
+    } catch (Exception e) {
+      
+    }
+  }
+}
+```
+
+断路器默认打开的时间是5秒，5秒之后断路器又会关闭，RetryCallback又可以正常调用了。判断断路器是否需要打开的时间窗口默认是20秒，即在20秒内所有的尝试次数都用完了，就会打开断路器。如果在20秒内只尝试了两次（默认3次），则在新的时间窗口内尝试次数又将从0开始计算。可以通过如下方式进行这两个时间的设置。
+
+```java
+  SimpleRetryPolicy delegate = new SimpleRetryPolicy(5);
+  //底层允许最多尝试5次
+  CircuitBreakerRetryPolicy retryPolicy = new CircuitBreakerRetryPolicy(delegate);
+  retryPolicy.setOpenTimeout(2000);//断路器打开的时间
+  retryPolicy.setResetTimeout(15000);//时间窗口
+```
+
+### CompositeRetryPolicy
+
+CompositeRetryPolicy可以用来组合多个RetryPolicy，可以设置必须所有的RetryPolicy都是可以重试的时候才能进行重试，也可以设置只要有一个RetryPolicy可以重试就可以进行重试。
