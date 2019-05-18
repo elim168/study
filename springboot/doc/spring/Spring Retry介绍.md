@@ -504,3 +504,298 @@ public void testExponentialBackOffPolicy() {
   Assert.assertTrue((t2-t1) - time < 100);
 }
 ```
+
+### ExponentialRandomBackOffPolicy
+
+ExponentialRandomBackOffPolicy的用法跟ExponentialBackOffPolicy的用法是一样的，它继承自ExponentialBackOffPolicy，在确定间隔时间时会先按照ExponentialBackOffPolicy的方式确定一个时间间隔，然后再随机的增加一个0-1的。比如取得的随机数是0.1即表示增加10%，每次需要确定重试间隔时间时都会产生一个新的随机数。如果指定的初始间隔时间是100毫秒，增量倍数是2,最大间隔时间是2000毫秒，则按照ExponentialBackOffPolicy的重试间隔是100、200、400、800,而ExponentialRandomBackOffPolicy产生的间隔时间可能是111、256、421、980。下面代码使用了ExponentialRandomBackOffPolicy，它打印出了每次重试时间的间隔。如果你有兴趣，你运行它会看到它会在ExponentialBackOffPolicy的基础上每次都随机的增长0-1倍。
+
+```java
+@Test
+public void testExponentialRandomBackOffPolicy() {
+  ExponentialRandomBackOffPolicy backOffPolicy = new ExponentialRandomBackOffPolicy();
+  backOffPolicy.setInitialInterval(1000);
+  backOffPolicy.setMaxInterval(5000);
+  backOffPolicy.setMultiplier(2.0);
+  RetryTemplate retryTemplate = new RetryTemplate();
+  retryTemplate.setBackOffPolicy(backOffPolicy);
+  int maxAttempts = 10;
+  retryTemplate.setRetryPolicy(new SimpleRetryPolicy(maxAttempts));
+
+  String lastAttemptTime = "lastAttemptTime";
+  retryTemplate.execute(retryContext -> {
+    if (retryContext.hasAttribute(lastAttemptTime)) {
+      System.out.println(System.currentTimeMillis() - (Long) retryContext.getAttribute(lastAttemptTime));
+    }
+    retryContext.setAttribute(lastAttemptTime, System.currentTimeMillis());
+    if (retryContext.getRetryCount() < maxAttempts-1) {//最后一次尝试会成功
+      throw new IllegalStateException();
+    }
+    return System.currentTimeMillis();
+  });
+}
+```
+
+### UniformRandomBackOffPolicy
+
+UniformRandomBackOffPolicy用来每次都随机的产生一个间隔时间，默认的间隔时间是在500-1500毫秒之间。可以通过`setMinBackOffPeriod()`设置最小间隔时间，通过`setMaxBackOffPeriod()`设置最大间隔时间。
+
+```java
+@Test
+public void testUniformRandomBackOffPolicy() {
+  UniformRandomBackOffPolicy backOffPolicy = new UniformRandomBackOffPolicy();
+  backOffPolicy.setMinBackOffPeriod(1000);
+  backOffPolicy.setMaxBackOffPeriod(3000);
+  RetryTemplate retryTemplate = new RetryTemplate();
+  retryTemplate.setBackOffPolicy(backOffPolicy);
+  int maxAttempts = 10;
+  retryTemplate.setRetryPolicy(new SimpleRetryPolicy(maxAttempts));
+
+  String lastAttemptTime = "lastAttemptTime";
+  retryTemplate.execute(retryContext -> {
+    if (retryContext.hasAttribute(lastAttemptTime)) {
+      System.out.println(System.currentTimeMillis() - (Long) retryContext.getAttribute(lastAttemptTime));
+    }
+    retryContext.setAttribute(lastAttemptTime, System.currentTimeMillis());
+    if (retryContext.getRetryCount() < maxAttempts-1) {//最后一次尝试会成功
+      throw new IllegalStateException();
+    }
+    return System.currentTimeMillis();
+  });
+}
+```
+
+## 监听器
+
+RetryTemplate中可以注册一些RetryListener，它可以用来对整个Retry过程进行监听。RetryListener的定义如下，它可以在整个Retry前、整个Retry后和每次Retry失败时进行一些操作。
+
+```java
+public interface RetryListener {
+
+  /**
+   * 在第一次尝试之前调用。如果方法的返回值是false，则不会进行尝试，反而会抛出TerminatedRetryException。
+   *
+   * @param <E> RetryCallback可抛出的异常类型
+   * @param <T> RetryCallback的返回值类型
+   * @param context 当前RetryContext.
+   * @param callback 当前RetryCallback.
+   * @return 如果需要继续尝试则返回true.
+   */
+  <T, E extends Throwable> boolean open(RetryContext context, RetryCallback<T, E> callback);
+
+  /**
+   * 在最后一次尝试后调用，而不管最后一次尝试是成功的还是失败的。
+   *
+   * @param context 当前RetryContext.
+   * @param callback 当前RetryCallback.
+   * @param throwable RetryCallback抛出的最后一个异常.
+   * @param <E> RetryCallback可抛出的异常类型
+   * @param <T> RetryCallback的返回值类型
+   */
+  <T, E extends Throwable> void close(RetryContext context, RetryCallback<T, E> callback, Throwable throwable);
+
+  /**
+   * 每一次尝试失败都会调用一次
+   *
+   * @param context 当前RetryContext.
+   * @param callback 当前RetryCallback.
+   * @param throwable RetryCallback抛出的最后一个异常.
+   * @param <E> RetryCallback可抛出的异常类型
+   * @param <T> RetryCallback的返回值类型
+   */
+  <T, E extends Throwable> void onError(RetryContext context, RetryCallback<T, E> callback, Throwable throwable);
+}
+```
+
+下面是一个简单的使用RetryListener的示例。
+
+```java
+@Test
+public void testListener() {
+  RetryTemplate retryTemplate = new RetryTemplate();
+  AtomicInteger counter = new AtomicInteger();
+  RetryCallback<Integer, IllegalStateException> retryCallback = retryContext -> {
+    //内部默认重试策略是最多尝试3次，即最多重试两次。还不成功就会抛出异常。
+    if (counter.incrementAndGet() < 3) {
+      throw new IllegalStateException();
+    }
+    return counter.incrementAndGet();
+  };
+
+  RetryListener retryListener = new RetryListener() {
+    @Override
+    public <T, E extends Throwable> boolean open(RetryContext context, RetryCallback<T, E> callback) {
+      System.out.println("---open----在第一次重试时调用");
+      return true;
+    }
+
+    @Override
+    public <T, E extends Throwable> void close(RetryContext context, RetryCallback<T, E> callback, Throwable throwable) {
+      System.out.println("close----在最后一次重试后调用（无论成功与失败）。" + context.getRetryCount());
+    }
+
+    @Override
+    public <T, E extends Throwable> void onError(RetryContext context, RetryCallback<T, E> callback, Throwable throwable) {
+      System.out.println("error----在每次调用异常时调用。" + context.getRetryCount());
+    }
+  };
+
+  retryTemplate.registerListener(retryListener);
+  retryTemplate.execute(retryCallback);
+
+}
+```
+
+如果只想关注RetryListener的某些方法，则可以选择继承RetryListenerSupport，它默认实现了RetryListener的所有方法。
+
+## 声明式的重试（使用注解）
+
+Spring Retry支持对Spring bean使用声明式的重试，在需要重试的bean方法上加上`@Retryable`。使用这种机制需要在`@Configuration`类上加上`@EnableRetry`。
+
+```java
+@EnableRetry
+@Configuration
+public class RetryConfiguration {
+
+  @Bean
+  public HelloService helloService() {
+    return new HelloService();
+  }
+
+}
+```
+
+这样就启用了声明式的重试机制，其会对使用了`@Retryable`标注的方法对应的bean创建对应的代理。使用`@Retryable`标注的方法如果不特殊声明的话，默认最多可以尝试3次。
+
+```java
+public class HelloService {
+
+  @Retryable
+  public void hello(AtomicInteger counter) {
+    if (counter.incrementAndGet() < 10) {
+      throw new IllegalStateException();
+    }
+  }
+
+}
+```
+
+`@Retryable`也可以加在Class上，当加在Class上时表示该bean所有的对外方法都是可以重试的。当Class上和方法上都加了`@Retryable`时，方法上的优先级更高。默认的最大尝试次数是3次，可以通过maxAttempts属性进行自定义。默认会对所有的异常进行重试，如有需要可以通过value和include属性指定需要重试的异常，也可以通过exclude属性指定不需要进行重试的异常。可以通过backoff属性指定BackOffPolicy相关的信息，它对应一个`@BackOff`，默认使用的BackOffPolicy将每次都间隔1000毫秒，如果默认值不能满足要求可以通过`@BackOff`指定初始的间隔时间。可以通过`@BackOff`的multiplier属性指定间隔之间的倍数，默认是0,即每次都是固定的间隔时间。当指定了multiplier后可以通过maxDelay属性指定最大的间隔时间，默认是0，表示不限制，即取ExponentialBackOffPolicy的默认值30秒。
+
+```java
+@Retryable
+public class HelloService {
+
+  @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 100, maxDelay = 2000, multiplier = 2))
+  public void hello(AtomicInteger counter) {
+    if (counter.incrementAndGet() < 10) {
+      throw new IllegalStateException();
+    }
+  }
+
+}
+```
+
+上面这些参数都是直接在代码里面写死的，如果你想改你还得修改代码，这很麻烦，所以对于这种可能会进行修改的参数我们一般会配置在配置文件中。上面这些属性都有增加Expression后缀的属性，比如maxAttempts对应的是maxAttemptsExpression，它是字符串类型，在里面可以使用占位符，从而允许我们在配置文件中配置这些信息。
+
+```java
+@Retryable
+public class HelloService {
+
+  @Retryable(maxAttemptsExpression = "${retry.maxAttempts:5}",
+          backoff = @Backoff(delayExpression = "${retry.delay:100}",
+                  maxDelayExpression = "${retry.maxDelay:2000}",
+                  multiplierExpression = "${retry.multiplier:2}"))
+  public void hello(AtomicInteger counter) {
+    if (counter.incrementAndGet() < 10) {
+      throw new IllegalStateException();
+    }
+  }
+
+}
+```
+
+### Recover
+
+使用注解的可重试方法，如果重试次数达到后还是继续失败的就会抛出异常，它可以通过`@Recover`标记同一Class中的一个方法作为RecoveryCallback。`@Recover`标记的方法的返回类型必须与`@Retryable`标记的方法一样。方法参数可以与`@Retryable`标记的方法一致，也可以不带参数，带了参数就会传递过来。
+
+```java
+@Retryable
+public class HelloService {
+
+  @Retryable(maxAttemptsExpression = "${retry.maxAttempts:5}",
+          backoff = @Backoff(delayExpression = "${retry.delay:100}",
+                  maxDelayExpression = "${retry.maxDelay:2000}",
+                  multiplierExpression = "${retry.multiplier:2}"))
+  public void hello(AtomicInteger counter) {
+    if (counter.incrementAndGet() < 10) {
+      throw new IllegalStateException();
+    }
+  }
+
+  @Recover
+  public void helloRecover(AtomicInteger counter) {
+    counter.set(1000);
+  }
+
+}
+```
+
+`@Recover`标记的方法还可以选择包含一个Exception类型的参数，它对应于`@Retryable`标记的方法最后抛出的异常，如果需要包含异常参数该参数必须是第一个参数。当定义了多个`@Recover`方法时，Spring Retry将选择更精确的那一个。此时的RecoveryCallback将选择第二个helloRecover方法。
+
+```java
+@Retryable
+public class HelloService {
+
+  @Retryable(maxAttemptsExpression = "${retry.maxAttempts:5}",
+          backoff = @Backoff(delayExpression = "${retry.delay:100}",
+                  maxDelayExpression = "${retry.maxDelay:2000}",
+                  multiplierExpression = "${retry.multiplier:2}"))
+  public void hello(AtomicInteger counter) {
+    if (counter.incrementAndGet() < 10) {
+      throw new IllegalStateException();
+    }
+  }
+
+  @Recover
+  public void helloRecover(AtomicInteger counter) {
+    counter.set(1000);
+  }
+
+  @Recover
+  public void helloRecover(IllegalStateException e, AtomicInteger counter) {
+    counter.set(2000);
+  }
+
+}
+```
+
+### 监听器
+
+使用声明式的Spring Retry，如果需要使用RetryListener，只需把它们定义为一个Spring bean即可。比如下面这样。
+
+```java
+@EnableRetry
+@Configuration
+@PropertySource("classpath:/application.properties")
+public class RetryConfiguration {
+
+  @Bean
+  public HelloService helloService() {
+    return new HelloService();
+  }
+
+  @Bean
+  public RetryListener retryListener() {
+    return new RetryListenerSupport() {
+      @Override
+      public <T, E extends Throwable> void onError(RetryContext context, RetryCallback<T, E> callback, Throwable throwable) {
+        super.onError(context, callback, throwable);
+        System.out.println("发生异常：" + context.getRetryCount());
+      }
+    };
+  }
+
+}
+```
+
+（注：本文是基于Spring Retry1.2.2所写）

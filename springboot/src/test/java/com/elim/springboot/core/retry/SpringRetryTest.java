@@ -5,7 +5,9 @@ import org.junit.Test;
 import org.python.google.common.collect.Maps;
 import org.springframework.retry.*;
 import org.springframework.retry.backoff.ExponentialBackOffPolicy;
+import org.springframework.retry.backoff.ExponentialRandomBackOffPolicy;
 import org.springframework.retry.backoff.FixedBackOffPolicy;
+import org.springframework.retry.backoff.UniformRandomBackOffPolicy;
 import org.springframework.retry.policy.*;
 import org.springframework.retry.support.DefaultRetryState;
 import org.springframework.retry.support.RetryTemplate;
@@ -169,6 +171,53 @@ public void testExponentialBackOffPolicy() {
   Assert.assertTrue((t2-t1) - time < 100);
 }
 
+@Test
+public void testExponentialRandomBackOffPolicy() {
+  ExponentialRandomBackOffPolicy backOffPolicy = new ExponentialRandomBackOffPolicy();
+  backOffPolicy.setInitialInterval(1000);
+  backOffPolicy.setMaxInterval(5000);
+  backOffPolicy.setMultiplier(2.0);
+  RetryTemplate retryTemplate = new RetryTemplate();
+  retryTemplate.setBackOffPolicy(backOffPolicy);
+  int maxAttempts = 10;
+  retryTemplate.setRetryPolicy(new SimpleRetryPolicy(maxAttempts));
+
+  String lastAttemptTime = "lastAttemptTime";
+  retryTemplate.execute(retryContext -> {
+    if (retryContext.hasAttribute(lastAttemptTime)) {
+      System.out.println(System.currentTimeMillis() - (Long) retryContext.getAttribute(lastAttemptTime));
+    }
+    retryContext.setAttribute(lastAttemptTime, System.currentTimeMillis());
+    if (retryContext.getRetryCount() < maxAttempts-1) {//最后一次尝试会成功
+      throw new IllegalStateException();
+    }
+    return System.currentTimeMillis();
+  });
+}
+
+@Test
+public void testUniformRandomBackOffPolicy() {
+  UniformRandomBackOffPolicy backOffPolicy = new UniformRandomBackOffPolicy();
+  backOffPolicy.setMinBackOffPeriod(1000);
+  backOffPolicy.setMaxBackOffPeriod(3000);
+  RetryTemplate retryTemplate = new RetryTemplate();
+  retryTemplate.setBackOffPolicy(backOffPolicy);
+  int maxAttempts = 10;
+  retryTemplate.setRetryPolicy(new SimpleRetryPolicy(maxAttempts));
+
+  String lastAttemptTime = "lastAttemptTime";
+  retryTemplate.execute(retryContext -> {
+    if (retryContext.hasAttribute(lastAttemptTime)) {
+      System.out.println(System.currentTimeMillis() - (Long) retryContext.getAttribute(lastAttemptTime));
+    }
+    retryContext.setAttribute(lastAttemptTime, System.currentTimeMillis());
+    if (retryContext.getRetryCount() < maxAttempts-1) {//最后一次尝试会成功
+      throw new IllegalStateException();
+    }
+    return System.currentTimeMillis();
+  });
+}
+
   @Test
   public void testRecoveryCallback() {
 
@@ -194,42 +243,44 @@ public void testExponentialBackOffPolicy() {
     Assert.assertEquals(30, result.intValue());
   }
 
-  @Test
-  public void testListener() {
-    RetryTemplate retryTemplate = new RetryTemplate();
-    AtomicInteger counter = new AtomicInteger();
-    RetryCallback<Integer, IllegalStateException> retryCallback = retryContext -> {
-      //内部默认重试策略是最多尝试3次，即最多重试两次。还不成功就会抛出异常。
-      if (counter.incrementAndGet() < 3) {
-        throw new IllegalStateException();
-      }
-      return counter.incrementAndGet();
-    };
+@Test
+public void testListener() {
+  RetryTemplate retryTemplate = new RetryTemplate();
+  AtomicInteger counter = new AtomicInteger();
+  RetryCallback<Integer, IllegalStateException> retryCallback = retryContext -> {
+    //内部默认重试策略是最多尝试3次，即最多重试两次。还不成功就会抛出异常。
+    if (counter.incrementAndGet() < 3) {
+      throw new IllegalStateException();
+    }
+    return counter.incrementAndGet();
+  };
 
-    RetryListener retryListener = new RetryListener() {
-      @Override
-      public <T, E extends Throwable> boolean open(RetryContext context, RetryCallback<T, E> callback) {
-        System.out.println("---open----在第一次重试时调用");
-        return true;
-      }
+  RetryListener retryListener = new RetryListener() {
+    @Override
+    public <T, E extends Throwable> boolean open(RetryContext context, RetryCallback<T, E> callback) {
+      System.out.println("---open----在第一次重试时调用");
+      return true;
+    }
 
-      @Override
-      public <T, E extends Throwable> void close(RetryContext context, RetryCallback<T, E> callback, Throwable throwable) {
-        System.out.println("close----在最后一次重试后调用（无论成功与失败）。" + context.getRetryCount());
-      }
+    @Override
+    public <T, E extends Throwable> void close(RetryContext context, RetryCallback<T, E> callback, Throwable throwable) {
+      System.out.println("close----在最后一次重试后调用（无论成功与失败）。" + context.getRetryCount());
+    }
 
-      @Override
-      public <T, E extends Throwable> void onError(RetryContext context, RetryCallback<T, E> callback, Throwable throwable) {
-        System.out.println("error----在每次调用异常时调用。" + context.getRetryCount());
-      }
-    };
+    @Override
+    public <T, E extends Throwable> void onError(RetryContext context, RetryCallback<T, E> callback, Throwable throwable) {
+      System.out.println("error----在每次调用异常时调用。" + context.getRetryCount());
+    }
+  };
 
-    retryTemplate.registerListener(retryListener);
-    Integer result = retryTemplate.execute(retryCallback);
-
-  }
+  retryTemplate.registerListener(retryListener);
+  retryTemplate.execute(retryCallback);
 
 }
+
+}
+
+
 
 
 
