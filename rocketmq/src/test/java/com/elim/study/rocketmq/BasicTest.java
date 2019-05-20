@@ -1,16 +1,14 @@
 package com.elim.study.rocketmq;
 
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
-import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
-import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
-import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
-import org.apache.rocketmq.client.producer.DefaultMQProducer;
-import org.apache.rocketmq.client.producer.SendCallback;
-import org.apache.rocketmq.client.producer.SendResult;
-import org.apache.rocketmq.client.producer.SendStatus;
+import org.apache.rocketmq.client.consumer.listener.*;
+import org.apache.rocketmq.client.producer.*;
+import org.apache.rocketmq.common.consumer.ConsumeFromWhere;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.common.message.MessageExt;
+import org.apache.rocketmq.common.message.MessageQueue;
 import org.apache.rocketmq.remoting.common.RemotingHelper;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.List;
@@ -132,6 +130,45 @@ public class BasicTest {
     });
     consumer.start();
     TimeUnit.SECONDS.sleep(120);
+  }
+
+  @Test
+  public void testOrderSend() throws Exception {
+    DefaultMQProducer producer = new DefaultMQProducer("group1");
+    producer.setNamesrvAddr(this.nameServer);
+    producer.start();
+    for (int i=0; i<10; i++) {
+      Message message = new Message("topic1", "tag3", (System.currentTimeMillis() + "---" + System.nanoTime() + "hello ordered message " + i).getBytes());
+      SendResult sendResult = producer.send(message, new MessageQueueSelector() {
+        @Override
+        public MessageQueue select(List<MessageQueue> mqs, Message msg, Object arg) {
+          int index = (int) arg;
+          //奇数放一个队列，偶数放一个队列
+          return mqs.get(index % mqs.size() % 2);
+        }
+      }, i);
+      Assert.assertTrue(sendResult.getSendStatus() == SendStatus.SEND_OK);
+    }
+    producer.shutdown();
+  }
+
+  @Test
+  public void testOrderConsume() throws Exception {
+    DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("group2");
+    consumer.setNamesrvAddr(this.nameServer);
+    consumer.subscribe("topic1", "tag3");
+//    consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);//订阅以前的消息也可以接收。
+    consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET);//默认值，订阅以前的消息将被忽略
+    consumer.registerMessageListener(new MessageListenerOrderly() {
+      @Override
+      public ConsumeOrderlyStatus consumeMessage(List<MessageExt> msgs, ConsumeOrderlyContext context) {
+        System.out.println(Thread.currentThread().getName() + "消费消息：" + new String(msgs.get(0).getBody()));
+        return ConsumeOrderlyStatus.SUCCESS;
+      }
+    });
+    consumer.start();
+    TimeUnit.SECONDS.sleep(120);
+    consumer.shutdown();
   }
 
 }
