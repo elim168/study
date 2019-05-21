@@ -2,15 +2,18 @@ package com.elim.study.rocketmq;
 
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.consumer.listener.*;
+import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.*;
 import org.apache.rocketmq.common.consumer.ConsumeFromWhere;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.apache.rocketmq.common.message.MessageQueue;
+import org.apache.rocketmq.common.protocol.heartbeat.MessageModel;
 import org.apache.rocketmq.remoting.common.RemotingHelper;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -164,6 +167,116 @@ public class BasicTest {
       public ConsumeOrderlyStatus consumeMessage(List<MessageExt> msgs, ConsumeOrderlyContext context) {
         System.out.println(Thread.currentThread().getName() + "消费消息：" + new String(msgs.get(0).getBody()));
         return ConsumeOrderlyStatus.SUCCESS;
+      }
+    });
+    consumer.start();
+    TimeUnit.SECONDS.sleep(120);
+    consumer.shutdown();
+  }
+
+  @Test
+  public void testBroadcastSend() throws Exception {
+    DefaultMQProducer producer = new DefaultMQProducer("group1");
+    producer.setNamesrvAddr(this.nameServer);
+    producer.start();
+    String topic = "topic1";
+    String tag = "tag4";
+    for (int i=0; i<10; i++) {
+      Message message = new Message(topic, tag, ("hello-" + i).getBytes());
+      producer.send(message);
+    }
+    producer.shutdown();
+  }
+
+  /**
+   * 群集消费时，同一消费组的消费者共享队列里面的消息，同一条消息只会由其中的一个消费者消费。
+   * @throws Exception
+   */
+  @Test
+  public void testBroadcastConsume() throws Exception {
+    String topic = "topic1";
+    String tag = "tag4";
+    String consumerGroup = "group1";
+    DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(consumerGroup);
+    consumer.setNamesrvAddr(this.nameServer);
+//    consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);
+    //广播方式，同一消息可以被所有的消费者消费。
+    consumer.setMessageModel(MessageModel.BROADCASTING);
+    try {
+      consumer.subscribe(topic, tag);
+      consumer.registerMessageListener((MessageListenerConcurrently) (msgs, context) -> {
+        System.out.println("consumer-3消费了消息——" + msgs.get(0).getMsgId());
+        return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+      });
+      consumer.start();
+    } catch (MQClientException e) {
+      e.printStackTrace();
+    }
+    TimeUnit.SECONDS.sleep(Integer.MAX_VALUE);
+  }
+
+  @Test
+  public void testScheduledMessageSend() throws Exception {
+    DefaultMQProducer producer = new DefaultMQProducer("group1");
+    producer.setNamesrvAddr(this.nameServer);
+    producer.start();
+    for (int i=0; i<10; i++) {
+      Message message = new Message("topic1", "tag5", String.valueOf(i).getBytes());
+      message.setDelayTimeLevel(4);
+      producer.send(message);
+    }
+    producer.shutdown();
+  }
+
+  @Test
+  public void testScheduledMessageConsume() throws Exception {
+    DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("group2");
+    consumer.setNamesrvAddr(this.nameServer);
+    consumer.subscribe("topic1", "tag5");
+    consumer.registerMessageListener(new MessageListenerConcurrently() {
+      @Override
+      public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
+        MessageExt msg = msgs.get(0);
+        System.out.println(String.format("收到消息%s，延时%dms", msg.getMsgId(), System.currentTimeMillis()-msg.getStoreTimestamp()));
+        return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+      }
+    });
+    consumer.start();
+    TimeUnit.SECONDS.sleep(120);
+    consumer.shutdown();
+  }
+
+  @Test
+  public void testSendBatch() throws Exception {
+    DefaultMQProducer producer = new DefaultMQProducer("group1");
+    producer.setNamesrvAddr(this.nameServer);
+    producer.start();
+    String topic = "topic1";
+    String tag = "tag6";
+    List<Message> messages = new ArrayList<>();
+    for (int i=0; i<1000; i++) {
+      messages.add(new Message(topic, tag, String.valueOf(i).getBytes()));
+    }
+    //批量发送消息，一次发送的消息总量不能超过1MB。
+    producer.send(messages);
+    producer.shutdown();
+  }
+
+  @Test
+  public void testConsumeBatch() throws Exception {
+    DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("group1");
+    consumer.setNamesrvAddr(this.nameServer);
+    //指定批量消费的最大值，默认是1
+    consumer.setConsumeMessageBatchMaxSize(50);
+    //批量拉取消息的数量，默认是32,当consumeMessageBatchMaxSize的值超过了pullBatchSize的值时
+    //批量消费的最大值不超过pullBatchSize的值。pullBatchSize的值指定超过32以后，实际拉取回来的也是32条消息。
+    consumer.setPullBatchSize(15);
+    consumer.subscribe("topic1", "tag6");
+    consumer.registerMessageListener(new MessageListenerConcurrently() {
+      @Override
+      public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
+        System.out.println(Thread.currentThread().getName() + "一次收到" + msgs.size() + "消息");
+        return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
       }
     });
     consumer.start();
