@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <appender name="mqAppender1" class="org.apache.rocketmq.logappender.logback.RocketmqLogbackAppender">
+        <tag>logback</tag>
+        <topic>topic1</topic>
+        <producerGroup>logback</producerGroup>
+        <nameServerAddress>localhost:9876</nameServerAddress>
+        <layout>
+            <pattern>%date %p %t - %m%n</pattern>
+        </layout>
+    </appender>
+
+    <appender name="mqAsyncAppender1" class="ch.qos.logback.classic.AsyncAppender">
+        <queueSize>1024</queueSize>
+        <discardingThreshold>80</discardingThreshold>
+        <maxFlushTime>2000</maxFlushTime>
+        <neverBlock>true</neverBlock>
+        <appender-ref ref="mqAppender1"/>
+    </appender>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS}-[%X{traceId}-%X{spanId}-%X{appname}-%X{exportable}] [%thread] %-5level %logger{36} -%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+    <logger name="com.elim" level="info">
+        <appender-ref ref="mqAppender1"/>
+    </logger>
+
+</configuration>

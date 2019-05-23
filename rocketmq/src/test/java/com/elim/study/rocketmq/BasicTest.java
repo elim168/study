@@ -1,6 +1,8 @@
 package com.elim.study.rocketmq;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
+import org.apache.rocketmq.client.consumer.MessageSelector;
 import org.apache.rocketmq.client.consumer.listener.*;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.*;
@@ -23,6 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author Elim
  * 19-5-19
  */
+@Slf4j
 public class BasicTest {
 
   private String nameServer = "localhost:9876";
@@ -276,6 +279,127 @@ public class BasicTest {
       @Override
       public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
         System.out.println(Thread.currentThread().getName() + "一次收到" + msgs.size() + "消息");
+        return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+      }
+    });
+    consumer.start();
+    TimeUnit.SECONDS.sleep(120);
+    consumer.shutdown();
+  }
+
+  @Test
+  public void testFilterSend() throws Exception {
+    DefaultMQProducer producer = new DefaultMQProducer("group1");
+    producer.setNamesrvAddr(this.nameServer);
+    producer.start();
+    String topic = "topic1";
+    String tag = "tag6";
+    for (int i=0; i<1000; i++) {
+      Message message = new Message(topic, tag, String.valueOf(i).getBytes());
+      message.putUserProperty("abc", String.valueOf(i));
+      producer.send(message);
+    }
+    producer.shutdown();
+  }
+
+  @Test
+  public void testFilterConsume() throws Exception {
+    DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("group1");
+    consumer.setNamesrvAddr(this.nameServer);
+    //默认是不支持通过sql92过滤的，需要在broker.conf中指定enablePropertyFilter=true。
+    consumer.subscribe("topic1", MessageSelector.bySql("abc > 300 and abc between 250 and 381 "));
+    consumer.registerMessageListener(new MessageListenerConcurrently() {
+      @Override
+      public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
+        System.out.println("消费消息：" + msgs.get(0).getUserProperty("abc"));
+        return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+      }
+    });
+    consumer.start();
+    TimeUnit.SECONDS.sleep(30);
+    consumer.shutdown();
+  }
+
+  /**
+   * 可以通过logback把日志都作为消息发送到RocketMQ。
+   * @throws Exception
+   */
+  @Test
+  public void logAppenderSend() throws Exception {
+    for (int i=0; i<10; i++) {
+      log.info("日志输出信息------" + i);
+    }
+    TimeUnit.SECONDS.sleep(10);
+  }
+
+  @Test
+  public void logAppenderConsume() throws Exception {
+    DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("group1");
+    consumer.setNamesrvAddr(this.nameServer);
+    consumer.subscribe("topic1", "logback");
+    consumer.registerMessageListener(new MessageListenerConcurrently() {
+      @Override
+      public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
+        System.out.println("消费消息：" + new String(msgs.get(0).getBody()));
+        return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+      }
+    });
+    consumer.start();
+    TimeUnit.SECONDS.sleep(1200);
+    consumer.shutdown();
+  }
+
+    /**
+     * commit后的消息消费者才能进行消费
+     * @throws Exception
+     */
+  @Test
+  public void transactionalSend() throws Exception {
+    TransactionMQProducer producer = new TransactionMQProducer("group1");
+    producer.setNamesrvAddr(this.nameServer);
+    producer.setTransactionListener(new TransactionListener() {
+      @Override
+      public LocalTransactionState executeLocalTransaction(Message msg, Object arg) {
+        Integer attach = (Integer) arg;
+        if (attach % 6 == 0) {
+          return LocalTransactionState.COMMIT_MESSAGE;
+        } else if (attach % 4 == 0) {
+          return LocalTransactionState.ROLLBACK_MESSAGE;
+        }
+        return LocalTransactionState.UNKNOW;
+      }
+
+      @Override
+      public LocalTransactionState checkLocalTransaction(MessageExt msg) {
+        //executeLocalTransaction返回UNKNOW时将转而调用checkLocalTransaction。
+        int i = Integer.parseInt(new String(msg.getBody()));
+        System.out.println("checkLocalTransaction ----" + i);
+        if (i % 10 == 0) {
+          return LocalTransactionState.COMMIT_MESSAGE;
+        } else if (i % 7 == 0) {
+          return LocalTransactionState.UNKNOW;
+        }
+        return LocalTransactionState.ROLLBACK_MESSAGE;
+      }
+    });
+    producer.start();
+    for (int i=0; i<100; i++) {
+      Message message = new Message("topic1", "transactional", String.valueOf(i).getBytes());
+      producer.sendMessageInTransaction(message, i);
+    }
+    TimeUnit.SECONDS.sleep(60);
+    producer.shutdown();
+  }
+
+  @Test
+  public void transactionalConsume() throws Exception {
+    DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("group1");
+    consumer.setNamesrvAddr(this.nameServer);
+    consumer.subscribe("topic1", "transactional");
+    consumer.registerMessageListener(new MessageListenerConcurrently() {
+      @Override
+      public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
+        System.out.println("消费了一条消息——" + new String(msgs.get(0).getBody()));
         return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
       }
     });
