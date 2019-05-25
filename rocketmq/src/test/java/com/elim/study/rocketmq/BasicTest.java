@@ -30,22 +30,29 @@ public class BasicTest {
 
   private String nameServer = "localhost:9876";
 
-  @Test
-  public void testSend() throws Exception {
-    DefaultMQProducer producer = new DefaultMQProducer("group1");
-    producer.setNamesrvAddr(nameServer);
-    producer.start();
-    for (int i = 0; i < 10; i++) {
-      Message message = new Message("topic1", ("hello" + i).getBytes());
-      SendResult sendResult = producer.send(message);
-      if (sendResult.getSendStatus() == SendStatus.SEND_OK) {
-        System.out.println("消息发送成功：" + sendResult);
-      } else {
-        System.out.println("消息发送失败：" + sendResult);
-      }
+@Test
+public void testSend() throws Exception {
+  //指定Producer的Group为group1
+  DefaultMQProducer producer = new DefaultMQProducer("group1");
+  //指定需要连接的Name Server
+  producer.setNamesrvAddr(nameServer);
+  producer.setRetryTimesWhenSendFailed(1);
+  //发送消息前必须调用start()，其内部会进行一些初始化工作。
+  producer.start();
+  for (int i = 0; i < 10; i++) {
+    //指定消息发送的Topic是topic1。
+    Message message = new Message("topic1", ("hello" + i).getBytes());
+    //同步发送，发送成功后才会返回
+    SendResult sendResult = producer.send(message);
+    if (sendResult.getSendStatus() == SendStatus.SEND_OK) {
+      System.out.println("消息发送成功：" + sendResult);
+    } else {
+      System.out.println("消息发送失败：" + sendResult);
     }
-    producer.shutdown();
   }
+  //使用完毕后需要把Producer关闭，以释放相应的资源
+  producer.shutdown();
+}
 
   @Test
   public void sendWithTag() throws Exception {
@@ -64,61 +71,68 @@ public class BasicTest {
     producer.shutdown();
   }
 
-  @Test
-  public void sendAsync() throws Exception {
-    DefaultMQProducer producer = new DefaultMQProducer("group1");
-    producer.setNamesrvAddr(nameServer);
-    producer.start();
-    CountDownLatch latch = new CountDownLatch(10);
-    for (int i = 0; i < 10; i++) {
-      Message message = new Message("topic1", "tag1", ("send by async, no." + i).getBytes(RemotingHelper.DEFAULT_CHARSET));
-      producer.send(message, new SendCallback() {
-        @Override
-        public void onSuccess(SendResult sendResult) {
-          System.out.println("发送成功：" + message);
-          latch.countDown();
-        }
-
-        @Override
-        public void onException(Throwable throwable) {
-          System.out.println("发送失败");
-          latch.countDown();
-        }
-      });
-    }
-    latch.await();
-    producer.shutdown();
-  }
-
-  @Test
-  public void sendOneway() throws Exception {
-    DefaultMQProducer producer = new DefaultMQProducer("group1");
-    producer.setNamesrvAddr(nameServer);
-    producer.start();
-    for (int i=0; i<10; i++) {
-      Message message = new Message("topic1", "tag2", ("message send with oneway, no."+i).getBytes());
-      producer.sendOneway(message);
-    }
-    producer.shutdown();
-  }
-
-  @Test
-  public void testConsumer() throws Exception {
-    DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("consumer_group1");
-    consumer.setNamesrvAddr(nameServer);
-    consumer.subscribe("topic1", "*");
-    consumer.registerMessageListener(new MessageListenerConcurrently() {
+@Test
+public void sendAsync() throws Exception {
+  DefaultMQProducer producer = new DefaultMQProducer("group1");
+  producer.setNamesrvAddr(nameServer);
+//  producer.setRetryTimesWhenSendAsyncFailed(1);
+  producer.start();
+  CountDownLatch latch = new CountDownLatch(10);
+  for (int i = 0; i < 10; i++) {
+    Message message = new Message("topic1", "tag1", ("send by async, no." + i).getBytes(RemotingHelper.DEFAULT_CHARSET));
+    producer.send(message, new SendCallback() {
       @Override
-      public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
-        System.out.println(Thread.currentThread().getName() + "收到了消息，数量是：" + msgs.size());
-        AtomicInteger counter = new AtomicInteger();
-        msgs.forEach(msg -> System.out.println(counter.incrementAndGet() + ".消息内容是：" + new String(msg.getBody())));
-        return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+      public void onSuccess(SendResult sendResult) {
+        System.out.println("发送成功：" + message);
+        latch.countDown();
+      }
+
+      @Override
+      public void onException(Throwable throwable) {
+        System.out.println("发送失败");
+        latch.countDown();
       }
     });
-    consumer.start();
-    TimeUnit.SECONDS.sleep(120);
   }
+  latch.await();
+  producer.shutdown();
+}
+
+@Test
+public void sendOneway() throws Exception {
+  DefaultMQProducer producer = new DefaultMQProducer("group1");
+  producer.setNamesrvAddr(nameServer);
+  producer.start();
+  for (int i=0; i<10; i++) {
+    Message message = new Message("topic1", "tag2", ("message send with oneway, no."+i).getBytes());
+    producer.sendOneway(message);
+  }
+  producer.shutdown();
+}
+
+@Test
+public void testConsumer() throws Exception {
+  //创建Consumer并指定消费者组。
+  DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("consumer_group1");
+  //指定需要连接的Name Server
+  consumer.setNamesrvAddr(nameServer);
+  //订阅topic1上的所有Tag。
+  consumer.subscribe("topic1", "*");
+  //注册一个消息监听器
+  consumer.registerMessageListener(new MessageListenerConcurrently() {
+    @Override
+    public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
+      System.out.println(Thread.currentThread().getName() + "收到了消息，数量是：" + msgs.size());
+      AtomicInteger counter = new AtomicInteger();
+      msgs.forEach(msg -> System.out.println(counter.incrementAndGet() + ".消息内容是：" + new String(msg.getBody())));
+      return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+    }
+  });
+  //启动消费者
+  consumer.start();
+  //为了确保Junit线程不立即死掉。
+  TimeUnit.SECONDS.sleep(120);
+}
 
   @Test
   public void testConsumeByTag() throws Exception {
@@ -277,7 +291,7 @@ public class BasicTest {
     //指定批量消费的最大值，默认是1
     consumer.setConsumeMessageBatchMaxSize(50);
     //批量拉取消息的数量，默认是32,当consumeMessageBatchMaxSize的值超过了pullBatchSize的值时
-    //批量消费的最大值不超过pullBatchSize的值。pullBatchSize的值指定超过32以后，实际拉取回来的也是32条消息。
+    //批量消费的最大值不超过pullBatchSize的值。pullBatchSize的值指定超过32以后，实际拉取回来的也是                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        32条消息。
     consumer.setPullBatchSize(15);
     consumer.subscribe("topic1", "tag6");
     consumer.registerMessageListener(new MessageListenerConcurrently() {
