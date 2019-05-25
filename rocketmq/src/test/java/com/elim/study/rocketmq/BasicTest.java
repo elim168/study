@@ -163,6 +163,11 @@ public class BasicTest {
     DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("group2");
     consumer.setNamesrvAddr(this.nameServer);
     consumer.subscribe("topic1", "tag3");
+    //有序消费时同一个队列里面的消息会按照顺序进行消费，它们可能被不同的线程消费，每一个线程在消费消息时都将锁定当前队列。
+    //如消息的顺序是1/2/3/4/5/6，则按照顺序消费可以保证消息的消费顺序一定是1/2/3/4/5/6，但是消费它们的线程有可能是线程6/5/4/3/2/1。
+    //如果要保证有序的消费是在同一个线程完成的，则消费者线程只能有一个。
+//    consumer.setConsumeThreadMax(1);
+//    consumer.setConsumeThreadMin(1);
 //    consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);//订阅以前的消息也可以接收。
     consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET);//默认值，订阅以前的消息将被忽略
     consumer.registerMessageListener(new MessageListenerOrderly() {
