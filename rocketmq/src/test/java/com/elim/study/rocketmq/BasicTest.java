@@ -1,8 +1,7 @@
 package com.elim.study.rocketmq;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
-import org.apache.rocketmq.client.consumer.MessageSelector;
+import org.apache.rocketmq.client.consumer.*;
 import org.apache.rocketmq.client.consumer.listener.*;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.*;
@@ -15,8 +14,8 @@ import org.apache.rocketmq.remoting.common.RemotingHelper;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -60,8 +59,8 @@ public void sendWithTag() throws Exception {
   producer.setNamesrvAddr(nameServer);
   producer.start();
   for (int i = 0; i < 10; i++) {
-    Message message = new Message("topic1", ("hello with tag---" + i).getBytes());
-    message.setTags("tag0");
+    Message message = new Message("topic1", "1".getBytes());
+    message.setTags("tag8");
     SendResult sendResult = producer.send(message);
     if (sendResult.getSendStatus() == SendStatus.SEND_OK) {
       System.out.println("消息发送成功：" + sendResult);
@@ -69,6 +68,7 @@ public void sendWithTag() throws Exception {
       System.out.println("消息发送失败：" + sendResult);
     }
   }
+  TimeUnit.SECONDS.sleep(10);
   producer.shutdown();
 }
 
@@ -177,14 +177,15 @@ public void testOrderSend() throws Exception {
   DefaultMQProducer producer = new DefaultMQProducer("group1");
   producer.setNamesrvAddr(this.nameServer);
   producer.start();
-  for (int i=0; i<10; i++) {
-    Message message = new Message("topic1", "tag3", (System.currentTimeMillis() + "---" + System.nanoTime() + "hello ordered message " + i).getBytes());
+  for (int i=0; i<5; i++) {
+    Message message = new Message("topic1", "tag8", (System.currentTimeMillis() + "---" + System.nanoTime() + "hello ordered message " + i).getBytes());
     SendResult sendResult = producer.send(message, new MessageQueueSelector() {
       @Override
       public MessageQueue select(List<MessageQueue> mqs, Message msg, Object arg) {
         int index = (int) arg;
         //奇数放一个队列，偶数放一个队列
-        return mqs.get(index % mqs.size() % 2);
+//        return mqs.get(index % mqs.size() % 2);
+        return mqs.get(0);
       }
     }, i);
     Assert.assertTrue(sendResult.getSendStatus() == SendStatus.SEND_OK);
@@ -257,36 +258,36 @@ public void testBroadcastConsume() throws Exception {
   TimeUnit.SECONDS.sleep(Integer.MAX_VALUE);
 }
 
-  @Test
-  public void testScheduledMessageSend() throws Exception {
-    DefaultMQProducer producer = new DefaultMQProducer("group1");
-    producer.setNamesrvAddr(this.nameServer);
-    producer.start();
-    for (int i=0; i<10; i++) {
-      Message message = new Message("topic1", "tag5", String.valueOf(i).getBytes());
-      message.setDelayTimeLevel(4);
-      producer.send(message);
-    }
-    producer.shutdown();
+@Test
+public void testScheduledMessageSend() throws Exception {
+  DefaultMQProducer producer = new DefaultMQProducer("group1");
+  producer.setNamesrvAddr(this.nameServer);
+  producer.start();
+  for (int i=0; i<10; i++) {
+    Message message = new Message("topic1", "tag5", String.valueOf(i+1).getBytes());
+    message.setDelayTimeLevel(i+1);
+    producer.send(message);
   }
+  producer.shutdown();
+}
 
-  @Test
-  public void testScheduledMessageConsume() throws Exception {
-    DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("group2");
-    consumer.setNamesrvAddr(this.nameServer);
-    consumer.subscribe("topic1", "tag5");
-    consumer.registerMessageListener(new MessageListenerConcurrently() {
-      @Override
-      public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
-        MessageExt msg = msgs.get(0);
-        System.out.println(String.format("收到消息%s，延时%dms", msg.getMsgId(), System.currentTimeMillis()-msg.getStoreTimestamp()));
-        return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
-      }
-    });
-    consumer.start();
-    TimeUnit.SECONDS.sleep(120);
-    consumer.shutdown();
-  }
+@Test
+public void testScheduledMessageConsume() throws Exception {
+  DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("group2");
+  consumer.setNamesrvAddr(this.nameServer);
+  consumer.subscribe("topic1", "tag5");
+  consumer.registerMessageListener(new MessageListenerConcurrently() {
+    @Override
+    public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
+      MessageExt msg = msgs.get(0);
+      System.out.println(String.format("收到消息%s，延时%dms，内容：%s", msg.getMsgId(), System.currentTimeMillis()-msg.getBornTimestamp(), new String(msg.getBody())));
+      return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+    }
+  });
+  consumer.start();
+  TimeUnit.SECONDS.sleep(1200);
+  consumer.shutdown();
+}
 
 @Test
 public void testSendBatch() throws Exception {
@@ -326,38 +327,38 @@ public void testConsumeBatch() throws Exception {
   consumer.shutdown();
 }
 
-  @Test
-  public void testFilterSend() throws Exception {
-    DefaultMQProducer producer = new DefaultMQProducer("group1");
-    producer.setNamesrvAddr(this.nameServer);
-    producer.start();
-    String topic = "topic1";
-    String tag = "tag6";
-    for (int i=0; i<1000; i++) {
-      Message message = new Message(topic, tag, String.valueOf(i).getBytes());
-      message.putUserProperty("abc", String.valueOf(i));
-      producer.send(message);
-    }
-    producer.shutdown();
+@Test
+public void testFilterSend() throws Exception {
+  DefaultMQProducer producer = new DefaultMQProducer("group1");
+  producer.setNamesrvAddr(this.nameServer);
+  producer.start();
+  String topic = "topic1";
+  String tag = "tag6";
+  for (int i=0; i<1000; i++) {
+    Message message = new Message(topic, tag, String.valueOf(i).getBytes());
+    message.putUserProperty("abc", String.valueOf(i));
+    producer.send(message);
   }
+  producer.shutdown();
+}
 
-  @Test
-  public void testFilterConsume() throws Exception {
-    DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("group1");
-    consumer.setNamesrvAddr(this.nameServer);
-    //默认是不支持通过sql92过滤的，需要在broker.conf中指定enablePropertyFilter=true。
-    consumer.subscribe("topic1", MessageSelector.bySql("abc > 300 and abc between 250 and 381 "));
-    consumer.registerMessageListener(new MessageListenerConcurrently() {
-      @Override
-      public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
-        System.out.println("消费消息：" + msgs.get(0).getUserProperty("abc"));
-        return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
-      }
-    });
-    consumer.start();
-    TimeUnit.SECONDS.sleep(30);
-    consumer.shutdown();
-  }
+@Test
+public void testFilterConsume() throws Exception {
+  DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("group1");
+  consumer.setNamesrvAddr(this.nameServer);
+  //默认是不支持通过sql92过滤的，需要在broker.conf中指定enablePropertyFilter=true。
+  consumer.subscribe("topic1", MessageSelector.bySql("abc > 300 and abc between 250 and 381 "));
+  consumer.registerMessageListener(new MessageListenerConcurrently() {
+    @Override
+    public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
+      System.out.println("消费消息：" + msgs.get(0).getUserProperty("abc"));
+      return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+    }
+  });
+  consumer.start();
+  TimeUnit.SECONDS.sleep(30);
+  consumer.shutdown();
+}
 
   /**
    * 可以通过logback把日志都作为消息发送到RocketMQ。
@@ -371,64 +372,64 @@ public void testConsumeBatch() throws Exception {
     TimeUnit.SECONDS.sleep(10);
   }
 
-  @Test
-  public void logAppenderConsume() throws Exception {
-    DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("group1");
-    consumer.setNamesrvAddr(this.nameServer);
-    consumer.subscribe("topic1", "logback");
-    consumer.registerMessageListener(new MessageListenerConcurrently() {
-      @Override
-      public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
-        System.out.println("消费消息：" + new String(msgs.get(0).getBody()));
-        return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
-      }
-    });
-    consumer.start();
-    TimeUnit.SECONDS.sleep(1200);
-    consumer.shutdown();
-  }
+@Test
+public void logAppenderConsume() throws Exception {
+  DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("group1");
+  consumer.setNamesrvAddr(this.nameServer);
+  consumer.subscribe("topic1", "logback");
+  consumer.registerMessageListener(new MessageListenerConcurrently() {
+    @Override
+    public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
+      System.out.println("消费消息：" + new String(msgs.get(0).getBody()));
+      return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+    }
+  });
+  consumer.start();
+  TimeUnit.SECONDS.sleep(1200);
+  consumer.shutdown();
+}
 
     /**
      * commit后的消息消费者才能进行消费
      * @throws Exception
      */
-  @Test
-  public void transactionalSend() throws Exception {
-    TransactionMQProducer producer = new TransactionMQProducer("group1");
-    producer.setNamesrvAddr(this.nameServer);
-    producer.setTransactionListener(new TransactionListener() {
-      @Override
-      public LocalTransactionState executeLocalTransaction(Message msg, Object arg) {
-        Integer attach = (Integer) arg;
-        if (attach % 6 == 0) {
-          return LocalTransactionState.COMMIT_MESSAGE;
-        } else if (attach % 4 == 0) {
-          return LocalTransactionState.ROLLBACK_MESSAGE;
-        }
-        return LocalTransactionState.UNKNOW;
-      }
-
-      @Override
-      public LocalTransactionState checkLocalTransaction(MessageExt msg) {
-        //executeLocalTransaction返回UNKNOW时将转而调用checkLocalTransaction。
-        int i = Integer.parseInt(new String(msg.getBody()));
-        System.out.println("checkLocalTransaction ----" + i);
-        if (i % 10 == 0) {
-          return LocalTransactionState.COMMIT_MESSAGE;
-        } else if (i % 7 == 0) {
-          return LocalTransactionState.UNKNOW;
-        }
+@Test
+public void transactionalSend() throws Exception {
+  TransactionMQProducer producer = new TransactionMQProducer("group1");
+  producer.setNamesrvAddr(this.nameServer);
+  producer.setTransactionListener(new TransactionListener() {
+    @Override
+    public LocalTransactionState executeLocalTransaction(Message msg, Object arg) {
+      Integer attach = (Integer) arg;
+      if (attach % 6 == 0) {
+        return LocalTransactionState.COMMIT_MESSAGE;
+      } else if (attach % 4 == 0) {
         return LocalTransactionState.ROLLBACK_MESSAGE;
       }
-    });
-    producer.start();
-    for (int i=0; i<100; i++) {
-      Message message = new Message("topic1", "transactional", String.valueOf(i).getBytes());
-      producer.sendMessageInTransaction(message, i);
+      return LocalTransactionState.UNKNOW;
     }
-    TimeUnit.SECONDS.sleep(60);
-    producer.shutdown();
+
+    @Override
+    public LocalTransactionState checkLocalTransaction(MessageExt msg) {
+      //executeLocalTransaction返回UNKNOW时将转而调用checkLocalTransaction。
+      int i = Integer.parseInt(new String(msg.getBody()));
+      System.out.println("checkLocalTransaction ----" + i);
+      if (i % 10 == 0) {
+        return LocalTransactionState.COMMIT_MESSAGE;
+      } else if (i % 7 == 0) {
+        return LocalTransactionState.UNKNOW;
+      }
+      return LocalTransactionState.ROLLBACK_MESSAGE;
+    }
+  });
+  producer.start();
+  for (int i=0; i<100; i++) {
+    Message message = new Message("topic1", "transactional", String.valueOf(i).getBytes());
+    producer.sendMessageInTransaction(message, i);
   }
+  TimeUnit.SECONDS.sleep(60);
+  producer.shutdown();
+}
 
   @Test
   public void transactionalConsume() throws Exception {
@@ -446,5 +447,140 @@ public void testConsumeBatch() throws Exception {
     TimeUnit.SECONDS.sleep(120);
     consumer.shutdown();
   }
+
+  @Test
+  public void testConsumeFailure() throws Exception {
+    DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("group1");
+    consumer.subscribe("topic1", "tag7");
+    AtomicInteger counter = new AtomicInteger();
+    consumer.registerMessageListener(new MessageListenerConcurrently() {
+      @Override
+      public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
+        System.out.println(counter.incrementAndGet() + "." + LocalDateTime.now() + "收到一条消息——" + msgs.get(0).getMsgId());
+        return ConsumeConcurrentlyStatus.RECONSUME_LATER;
+      }
+    });
+    consumer.start();
+    TimeUnit.HOURS.sleep(5);
+  }
+
+@Test
+public void testPullConsumeRetry() throws Exception {
+  DefaultMQPullConsumer consumer = new DefaultMQPullConsumer("group1_pull");
+  consumer.setNamesrvAddr(this.nameServer);
+  String topic = "%RETRY%group1_pull";
+  consumer.start();
+
+  //获取Topic对应的消息队列
+  Set<MessageQueue> messageQueues = consumer.fetchSubscribeMessageQueues(topic);
+  System.out.println(messageQueues);
+  int maxNums = 10;//每次拉取消息的最大数量
+  while (true) {
+    boolean found = false;
+    for (MessageQueue messageQueue : messageQueues) {
+      long offset = consumer.fetchConsumeOffset(messageQueue, false);
+      PullResult pullResult = consumer.pull(messageQueue, "*", offset, maxNums);
+      switch (pullResult.getPullStatus()) {
+        case FOUND:
+          found = true;
+          List<MessageExt> msgs = pullResult.getMsgFoundList();
+          System.out.println(messageQueue.getQueueId() + "收到了消息，数量----" + msgs.size());
+          for (MessageExt msg : msgs) {
+            System.out.println(messageQueue.getQueueId() + "处理消息——" + msg.getMsgId());
+          }
+          long nextOffset = pullResult.getNextBeginOffset();
+          consumer.updateConsumeOffset(messageQueue, nextOffset);
+          break;
+        case NO_NEW_MSG:
+          System.out.println("没有新消息");
+          break;
+        case NO_MATCHED_MSG:
+          System.out.println("没有匹配的消息");
+          break;
+        case OFFSET_ILLEGAL:
+          System.err.println("offset错误");
+          break;
+      }
+    }
+    if (!found) {//没有一个队列中有新消息，则暂停一会。
+      TimeUnit.MILLISECONDS.sleep(5000);
+    }
+  }
+}
+
+@Test
+public void testPullConsumer() throws Exception {
+  DefaultMQPullConsumer consumer = new DefaultMQPullConsumer("group1_pull");
+  consumer.setNamesrvAddr(this.nameServer);
+  String topic = "topic1";
+  consumer.start();
+
+  //获取Topic对应的消息队列
+  Set<MessageQueue> messageQueues = consumer.fetchSubscribeMessageQueues(topic);
+  System.out.println(messageQueues);
+  int maxNums = 10;//每次拉取消息的最大数量
+  while (true) {
+    boolean found = false;
+    for (MessageQueue messageQueue : messageQueues) {
+      long offset = consumer.fetchConsumeOffset(messageQueue, false);
+      PullResult pullResult = consumer.pull(messageQueue, "tag8", offset, maxNums);
+//      PullResult pullResult = consumer.pullBlockIfNotFound(messageQueue, "tag8", offset, maxNums);
+      switch (pullResult.getPullStatus()) {
+        case FOUND:
+          found = true;
+          List<MessageExt> msgs = pullResult.getMsgFoundList();
+          System.out.println(messageQueue.getQueueId() + "收到了消息，数量----" + msgs.size());
+          for (MessageExt msg : msgs) {
+            System.out.println(messageQueue.getQueueId() + "处理消息——" + msg.getMsgId());
+            if (new Random().nextInt(10) % 3 == 0) {
+              consumer.sendMessageBack(msg, 3);
+              System.out.println("消息消费失败----" + msg.getMsgId());
+            }
+          }
+          long nextOffset = pullResult.getNextBeginOffset();
+          consumer.updateConsumeOffset(messageQueue, nextOffset);
+          break;
+        case NO_NEW_MSG:
+          System.out.println("没有新消息");
+          break;
+        case NO_MATCHED_MSG:
+          System.out.println("没有匹配的消息");
+          break;
+        case OFFSET_ILLEGAL:
+          System.err.println("offset错误");
+          break;
+      }
+    }
+    if (!found) {//没有一个队列中有新消息，则暂停一会。
+      TimeUnit.MILLISECONDS.sleep(5000);
+    }
+  }
+}
+
+@Test
+public void testPushConsumer() throws Exception {
+  DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("group_push");
+  consumer.setNamesrvAddr(this.nameServer);
+  consumer.subscribe("topic1", "tag8");
+  consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);
+  AtomicInteger counter = new AtomicInteger();
+  Set<String> threads = new HashSet<>();
+  consumer.registerMessageListener(new MessageListenerConcurrently() {
+    @Override
+    public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
+      try {
+        TimeUnit.MILLISECONDS.sleep(50);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+      threads.add(Thread.currentThread().getName());
+      System.out.println(counter.incrementAndGet() + ".收到消息——" + msgs.get(0).getMsgId() + "---" + threads.size());
+      return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+    }
+  });
+  consumer.start();
+  TimeUnit.MINUTES.sleep(10);
+  consumer.shutdown();
+}
 
 }
