@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-    <appender name="mqAppender1" class="org.apache.rocketmq.logappender.logback.RocketmqLogbackAppender">
+<!--    <appender name="mqAppender1" class="org.apache.rocketmq.logappender.logback.RocketmqLogbackAppender">
         <tag>logback</tag>
         <topic>topic1</topic>
         <producerGroup>logback</producerGroup>
@@ -17,7 +17,7 @@
         <maxFlushTime>2000</maxFlushTime>
         <neverBlock>true</neverBlock>
         <appender-ref ref="mqAppender1"/>
-    </appender>
+    </appender>-->
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -29,8 +29,8 @@
         <appender-ref ref="STDOUT" />
     </root>
 
-    <logger name="com.elim" level="info">
+<!--    <logger name="com.elim" level="info">
         <appender-ref ref="mqAppender1"/>
-    </logger>
+    </logger>-->
 
 </configuration>
