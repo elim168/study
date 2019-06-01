@@ -23,6 +23,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
  * @author Elim
@@ -157,24 +158,25 @@ public class BasicTest {
     TimeUnit.SECONDS.sleep(120);
   }
 
-  @Test
-  public void testSendWithKeys() throws Exception {
-    DefaultMQProducer producer = new DefaultMQProducer("group1");
-    producer.setNamesrvAddr(nameServer);
-    producer.start();
-    for (int i = 0; i < 10; i++) {
-      Message message = new Message("topic1", ("message-" + i).getBytes());
-      message.setTags("tag0");
-      message.setKeys(String.valueOf(i));
-      SendResult sendResult = producer.send(message);
-      if (sendResult.getSendStatus() == SendStatus.SEND_OK) {
-        System.out.println("消息发送成功：" + sendResult);
-      } else {
-        System.out.println("消息发送失败：" + sendResult);
-      }
+@Test
+public void testSendWithKeys() throws Exception {
+  DefaultMQProducer producer = new DefaultMQProducer("group1");
+  producer.setNamesrvAddr(nameServer);
+  producer.start();
+  for (int i = 0; i < 10; i++) {
+    Message message = new Message("topic1", ("message-" + i).getBytes());
+    message.setTags("tag0");
+//    message.setKeys(String.valueOf(i));
+    message.setKeys(Arrays.asList(i, i+1, i+2).stream().map(String::valueOf).collect(Collectors.toList()));
+    SendResult sendResult = producer.send(message);
+    if (sendResult.getSendStatus() == SendStatus.SEND_OK) {
+      System.out.println("消息发送成功：" + sendResult);
+    } else {
+      System.out.println("消息发送失败：" + sendResult);
     }
-    producer.shutdown();
   }
+  producer.shutdown();
+}
 
   @Test
   public void testOrderSend() throws Exception {
