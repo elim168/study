@@ -13,7 +13,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<hibernate.version>5.0.6.Final</hibernate.version>
-		<spring.version>4.1.9.RELEASE</spring.version>
+		<spring.version>5.1.7.RELEASE</spring.version>
 	</properties>
 
 	<dependencies>
@@ -77,7 +77,20 @@
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-jpa</artifactId>
-			<version>1.9.2.RELEASE</version>
+			<version>2.1.8.RELEASE</version>
 		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+                <version>3.3</version>
+				<configuration>
+					<source>1.8</source>
+                    <target>1.8</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
