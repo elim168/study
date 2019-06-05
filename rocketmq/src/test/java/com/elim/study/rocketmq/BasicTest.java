@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class BasicTest {
 
-    private String nameServer = "localhost:9878";
+    private String nameServer = "localhost:9876";
 
     @Test
     public void testSend() throws Exception {
@@ -62,8 +62,9 @@ public class BasicTest {
     public void sendWithTag() throws Exception {
         DefaultMQProducer producer = new DefaultMQProducer("group1");
         producer.setNamesrvAddr(nameServer);
+        producer.setSendMsgTimeout(30 * 10000);
         producer.start();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 30; i++) {
             Message message = new Message("topic1", "1".getBytes());
             message.setTags("tag8");
             SendResult sendResult = producer.send(message);
@@ -73,7 +74,6 @@ public class BasicTest {
                 System.out.println("消息发送失败：" + sendResult);
             }
         }
-        TimeUnit.SECONDS.sleep(10);
         producer.shutdown();
     }
 
@@ -130,7 +130,7 @@ public class BasicTest {
             public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
                 System.out.println(Thread.currentThread().getName() + "收到了消息，数量是：" + msgs.size());
                 AtomicInteger counter = new AtomicInteger();
-                msgs.forEach(msg -> System.out.println(counter.incrementAndGet() + ".消息内容是：" + new String(msg.getBody()) + "-" + msg.getMsgId()));
+                msgs.forEach(msg -> System.out.println(counter.incrementAndGet() + ".消息内容是：" + new String(msg.getBody()) + "-" + msg.getMsgId() + "-" + msg.getBornTimestamp() + "-" + msg));
                 return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
             }
         });
