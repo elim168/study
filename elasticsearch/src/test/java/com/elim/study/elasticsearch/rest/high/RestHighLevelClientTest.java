@@ -5,6 +5,8 @@ import com.elim.study.elasticsearch.dto.Movie;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.DocWriteRequest;
+import org.elasticsearch.action.admin.cluster.node.tasks.list.ListTasksRequest;
+import org.elasticsearch.action.admin.cluster.node.tasks.list.ListTasksResponse;
 import org.elasticsearch.action.bulk.BackoffPolicy;
 import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.bulk.BulkRequest;
@@ -23,16 +25,18 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.core.MultiTermVectorsRequest;
+import org.elasticsearch.client.core.MultiTermVectorsResponse;
 import org.elasticsearch.client.core.TermVectorsRequest;
 import org.elasticsearch.client.core.TermVectorsResponse;
 import org.elasticsearch.common.unit.ByteSizeUnit;
 import org.elasticsearch.common.unit.ByteSizeValue;
 import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.get.GetResult;
-import org.elasticsearch.index.query.FuzzyQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
-import org.elasticsearch.index.query.SimpleQueryStringBuilder;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.index.reindex.BulkByScrollResponse;
 import org.elasticsearch.index.reindex.DeleteByQueryRequest;
@@ -41,16 +45,13 @@ import org.elasticsearch.index.reindex.UpdateByQueryRequest;
 import org.elasticsearch.script.Script;
 import org.elasticsearch.script.ScriptType;
 import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
-import org.elasticsearch.search.sort.SortOrder;
+import org.elasticsearch.tasks.TaskInfo;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class RestHighLevelClientTest {
@@ -259,10 +260,10 @@ public class RestHighLevelClientTest {
     public void testBulk() throws Exception {
         BulkRequest bulkRequest = new BulkRequest();
         Long start = System.currentTimeMillis();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 15; i++) {
             Movie movie = new Movie();
             movie.setId(start + i);
-            movie.setTitle("movie-title-" + i);
+            movie.setTitle("movie title " + i);
             movie.setDirector("movie-director-" + i);
             movie.setYear(2018);
             movie.setCreateTime(new Date());
@@ -426,6 +427,63 @@ public class RestHighLevelClientTest {
         request.setQuery(new MatchQueryBuilder("title", "title-13"));
         BulkByScrollResponse response = this.highLevelClient.deleteByQuery(request, RequestOptions.DEFAULT);
         System.out.println(JSON.toJSONString(response));
+    }
+
+    /**
+     * 用来对任务进行限流
+     * @throws Exception
+     */
+    @Test
+    public void testRethrottleRequest() throws Exception {
+        ListTasksRequest listTasksRequest = new ListTasksRequest();
+        ListTasksResponse listTasksResponse = this.highLevelClient.tasks().list(listTasksRequest, RequestOptions.DEFAULT);
+        List<TaskInfo> tasks = listTasksResponse.getTasks();
+        System.out.println(tasks);
+        if (tasks != null && !tasks.isEmpty()) {
+            for (TaskInfo taskInfo : tasks) {
+                System.out.println(JSON.toJSONString(taskInfo));
+                /*TaskId taskId = taskInfo.getTaskId();
+//                taskInfo.getType()
+                float requestsPerSecond = 100;
+                RethrottleRequest request = new RethrottleRequest(taskId, requestsPerSecond);
+                ListTasksResponse listTasksResponse1 = this.highLevelClient.reindexRethrottle(request, RequestOptions.DEFAULT);
+                System.out.println("********************************************");
+                System.out.println(listTasksResponse1);*/
+            }
+        }
+    }
+
+    @Test
+    public void testMultiTermVectors() throws Exception {
+        MultiTermVectorsRequest request = new MultiTermVectorsRequest();
+        TermVectorsRequest request1 =
+                new TermVectorsRequest("movies", "2");
+        request1.setFields("director");
+        request.add(request1);
+
+        XContentBuilder docBuilder = XContentFactory.jsonBuilder();
+        docBuilder.startObject().field("year", 1978).endObject();
+        TermVectorsRequest request2 =
+                new TermVectorsRequest("movies", docBuilder);
+        request.add(request2);
+        request2.setPositions(false);
+        request2.setOffsets(false);
+        MultiTermVectorsResponse response = this.highLevelClient.mtermvectors(request, RequestOptions.DEFAULT);
+        System.out.println(JSON.toJSONString(response));
+        System.out.println();
+        response.getTermVectorsResponses().forEach(_response -> System.out.println(JSON.toJSONString(_response)));
+
+
+        System.out.println("**************************方式二***************************");
+        //方式二：提取公共信息，差别在于ID。
+        TermVectorsRequest tvrequestTemplate =
+                new TermVectorsRequest("movies", "fakeId");
+        tvrequestTemplate.setFields("title", "director", "year");
+        String[] ids = {"2", "3"};
+        MultiTermVectorsRequest request_2 =
+                new MultiTermVectorsRequest(ids, tvrequestTemplate);
+        MultiTermVectorsResponse response2 = this.highLevelClient.mtermvectors(request_2, RequestOptions.DEFAULT);
+        response2.getTermVectorsResponses().forEach(_response -> System.out.println(JSON.toJSONString(_response)));
     }
 
 }
