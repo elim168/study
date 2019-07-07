@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class BasicTest {
 
-    private String nameServer = "localhost:9876";
+    private String nameServer = "172.17.0.2:9876";
 
     @Test
     public void testSend() throws Exception {
