@@ -3,6 +3,9 @@ package com.elim.study.elasticsearch.rest.high;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import org.apache.http.HttpHost;
+import org.apache.lucene.search.Explanation;
+import org.elasticsearch.action.explain.ExplainRequest;
+import org.elasticsearch.action.explain.ExplainResponse;
 import org.elasticsearch.action.fieldcaps.FieldCapabilities;
 import org.elasticsearch.action.fieldcaps.FieldCapabilitiesRequest;
 import org.elasticsearch.action.fieldcaps.FieldCapabilitiesResponse;
@@ -11,11 +14,14 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.core.CountRequest;
+import org.elasticsearch.client.core.CountResponse;
 import org.elasticsearch.common.text.Text;
 import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.rankeval.*;
 import org.elasticsearch.script.ScriptType;
 import org.elasticsearch.script.mustache.MultiSearchTemplateRequest;
 import org.elasticsearch.script.mustache.MultiSearchTemplateResponse;
@@ -43,27 +49,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class SearchAPITest {
-
-    private RestHighLevelClient highLevelClient;
-
-    @Before
-    public void init() {
-        RestClientBuilder restClientBuilder = RestClient.builder(new HttpHost("localhost", 9200, "http"));
-        this.highLevelClient = new RestHighLevelClient(restClientBuilder);
-    }
-
-    @After
-    public void after() throws IOException {
-        this.highLevelClient.close();
-    }
-
-    private String toJson(Object obj) {
-        return JSON.toJSONString(obj, SerializerFeature.PrettyFormat);
-    }
+public class SearchAPITest extends BaseRestHighLevelClient {
 
     @Test
     public void testSearchRequest() throws Exception {
@@ -307,6 +298,59 @@ public class SearchAPITest {
 
         Map<String, FieldCapabilities> yearCapabilities = response.getField("year");
         System.out.println(this.toJson(yearCapabilities));
+    }
+
+    @Test
+    public void testRankEvalRequest() throws Exception {
+
+        EvaluationMetric evaluationMetric = new PrecisionAtK();
+        List<RatedDocument> ratedDocs = new ArrayList<>();
+        ratedDocs.add(new RatedDocument("movies", "1560773542234", 1));
+        ratedDocs.add(new RatedDocument("movies", "1560773542235", 1));
+        ratedDocs.add(new RatedDocument("movies", "1560773542236", 1));
+        ratedDocs.add(new RatedDocument("movies", "1560773542237", 1));
+        ratedDocs.add(new RatedDocument("movies", "1560773542238", 1));
+
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        searchSourceBuilder.query(QueryBuilders.matchQuery("title", "movie"));
+
+        RatedRequest ratedRequest = new RatedRequest("movie_query", ratedDocs, searchSourceBuilder);
+        List<RatedRequest> ratedRequests = new ArrayList<>();
+        ratedRequests.add(ratedRequest);
+        RankEvalSpec rankEvalSpec = new RankEvalSpec(ratedRequests, evaluationMetric);
+        RankEvalRequest rankEvalRequest = new RankEvalRequest(rankEvalSpec, new String[]{"movies"});
+        RankEvalResponse rankEvalResponse = this.highLevelClient.rankEval(rankEvalRequest, RequestOptions.DEFAULT);
+        System.out.println(rankEvalResponse.getMetricScore());
+        Map<String, EvalQueryQuality> partialResults = rankEvalResponse.getPartialResults();
+        EvalQueryQuality evalQueryQuality = partialResults.get("movie_query");
+        System.out.println(this.toJson(evalQueryQuality));
+
+        System.out.println(evalQueryQuality.metricScore());
+
+    }
+
+    @Test
+    public void testExplainRequest() throws Exception {
+        ExplainRequest request = new ExplainRequest("movies", "1");
+        request.query(QueryBuilders.matchQuery("title", "Godfather"));
+        ExplainResponse response = this.highLevelClient.explain(request, RequestOptions.DEFAULT);
+        System.out.println(response.hasExplanation());
+        System.out.println(response.isExists() + "-----isExists");
+        System.out.println(response.isMatch() + "-----isMatch");
+        System.out.println(response.status() + "-----status");
+        Explanation explanation = response.getExplanation();
+        System.out.println(this.toJson(explanation));
+    }
+
+    @Test
+    public void testCountRequest() throws Exception {
+        CountRequest request = new CountRequest("movies");
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        searchSourceBuilder.query(QueryBuilders.matchQuery("title", "movie ford"));
+        request.source(searchSourceBuilder);
+        CountResponse response = this.highLevelClient.count(request, RequestOptions.DEFAULT);
+        long count = response.getCount();
+        System.out.println("满足查询条件的记录数是：" + count);
     }
 
 }

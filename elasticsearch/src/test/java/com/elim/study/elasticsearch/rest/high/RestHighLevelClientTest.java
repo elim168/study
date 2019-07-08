@@ -54,20 +54,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-public class RestHighLevelClientTest {
-
-    private RestHighLevelClient highLevelClient;
-
-    @Before
-    public void init() {
-        RestClientBuilder restClientBuilder = RestClient.builder(new HttpHost("localhost", 9200, "http"));
-        this.highLevelClient = new RestHighLevelClient(restClientBuilder);
-    }
-
-    @After
-    public void after() throws IOException {
-        this.highLevelClient.close();
-    }
+public class RestHighLevelClientTest extends BaseRestHighLevelClient {
 
     @Test
     public void testIndex() throws Exception {
