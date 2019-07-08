@@ -16,7 +16,8 @@
   <dubbo:registry address="zookeeper://localhost:2181"/>
 
   <!-- provider元素用于指定服务提供者的全局配置，可被具体服务或具体的服务方法配置覆盖 -->
-  <dubbo:provider executes="30" accepts="10" threads="20"/>
+  <!-- 线程数是所有服务提供者共用 -->
+  <dubbo:provider executes="5" accepts="10" threads="220" timeout="600000"/>
 
   <!-- <dubbo:registry address="zookeeper://localhost:2181" client="zkclient"/> -->
 
@@ -27,7 +28,7 @@
   <!-- executes用于指定服务所有方法的并发线程数，并发线程数超出时将抛出RpcException -->
   <dubbo:service interface="com.elim.learn.dubbo.service.UserService"
                  stub="com.elim.learn.dubbo.service.UserServiceStub" ref="userService"
-                 executes="10" version="1.0.0">
+                 executes="10" version="1.0.0" >
     <dubbo:method name="sayHello"/>
   </dubbo:service>
 

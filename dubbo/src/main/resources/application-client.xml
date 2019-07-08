@@ -11,6 +11,7 @@
   <dubbo:application name="learn-dubbo-client"/>
 
   <!-- consumer元素用于定义服务消费方的全局配置. -->
+  <!-- actives对应客户端并发数 -->
   <dubbo:consumer actives="30" connections="8"/>
 
   <!-- 使用multicast广播注册中心暴露服务地址 -->
@@ -21,7 +22,7 @@
     connections来指定 -->
   <dubbo:reference id="userService" interface="com.elim.learn.dubbo.service.UserService" cache="lru"
                    actives="10" connections="5" version="1.0.0">
-    <dubbo:method name="sayHello" actives="5"/>
+    <dubbo:method name="sayHello" actives="15"/>
   </dubbo:reference>
   <dubbo:reference id="service2" interface="com.elim.learn.dubbo.service.Service2"/>
 

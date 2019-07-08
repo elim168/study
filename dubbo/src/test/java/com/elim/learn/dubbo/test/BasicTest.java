@@ -46,9 +46,10 @@ public class BasicTest {
     Service2 service2 = context.getBean(Service2.class);
     ExecutorService executorService = Executors.newCachedThreadPool();
     AtomicInteger counter = new AtomicInteger();
-    while (counter.getAndIncrement() < 50) {
+    while (counter.incrementAndGet() < 30) {
       executorService.execute(() -> userService.sayHello("ABC" + counter.get()));
-      executorService.execute(() -> service2.plus1(counter.get()));
+      executorService.execute(() -> System.out.println(service2.plus1(counter.get())));
+      TimeUnit.MILLISECONDS.sleep(100);
     }
     TimeUnit.SECONDS.sleep(60);
   }
