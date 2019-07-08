@@ -23,5 +23,6 @@
                    actives="10" connections="5" version="1.0.0">
     <dubbo:method name="sayHello" actives="5"/>
   </dubbo:reference>
+  <dubbo:reference id="service2" interface="com.elim.learn.dubbo.service.Service2"/>
 
 </beans>

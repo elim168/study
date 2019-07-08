@@ -20,10 +20,11 @@ public class UserServiceImpl implements UserService {
    */
   @Override
   public void sayHello(String name) {
-    System.out.println("Hello " + name);
+    System.out.println(counter.getAndIncrement() + "Hello " + name + "--" + Thread.currentThread().getName());
     try {
       TimeUnit.MILLISECONDS.sleep(200);
-    } catch (InterruptedException e) {
+      System.in.read();
+    } catch (Exception e) {
       e.printStackTrace();
     }
   }

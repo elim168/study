@@ -3,6 +3,7 @@
  */
 package com.elim.learn.dubbo.test;
 
+import com.elim.learn.dubbo.service.Service2;
 import com.elim.learn.dubbo.service.UserService;
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -10,6 +11,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Elim
@@ -32,6 +37,20 @@ public class BasicTest {
     ApplicationContext context = new ClassPathXmlApplicationContext("application-client.xml");
     UserService userService = (UserService) context.getBean("userService");
     userService.sayHello("张三");
+  }
+
+  @Test
+  public void testClient2() throws Exception {
+    ApplicationContext context = new ClassPathXmlApplicationContext("application-client.xml");
+    final UserService userService = (UserService) context.getBean("userService");
+    Service2 service2 = context.getBean(Service2.class);
+    ExecutorService executorService = Executors.newCachedThreadPool();
+    AtomicInteger counter = new AtomicInteger();
+    while (counter.getAndIncrement() < 50) {
+      executorService.execute(() -> userService.sayHello("ABC" + counter.get()));
+      executorService.execute(() -> service2.plus1(counter.get()));
+    }
+    TimeUnit.SECONDS.sleep(60);
   }
 
   @Test
