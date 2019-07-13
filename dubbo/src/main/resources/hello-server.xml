@@ -9,7 +9,7 @@
 
     <dubbo:application name="hello-provider"/>
     <dubbo:protocol name="dubbo" port="20880"/>
-    <dubbo:provider protocol="dubbo" host="localhost"/>
+    <dubbo:provider timeout="2000"/>
     <dubbo:registry address="zookeeper://localhost:2181"/>
     <dubbo:service interface="com.elim.study.dubbo.service.HelloService" ref="helloService"/>
     <bean id="helloService" class="com.elim.study.dubbo.service.HelloServiceImpl"/>

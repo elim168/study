@@ -8,9 +8,8 @@
        http://dubbo.apache.org/schema/dubbo/dubbo.xsd">
 
     <dubbo:application name="hello-consumer"/>
-    <dubbo:registry address="zookeeper://localhost:2181"/>
-    <dubbo:consumer/>
-
-    <dubbo:reference interface="com.elim.study.dubbo.service.HelloService"/>
+    <dubbo:registry protocol="zookeeper" address="localhost:2181"/>
+    <dubbo:consumer retries="0"/>
+    <dubbo:reference id="helloService" interface="com.elim.study.dubbo.service.HelloService"/>
 
 </beans>
