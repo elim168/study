@@ -1,12 +1,12 @@
 /**
  *
  */
-package com.elim.learn.dubbo.service;
+package com.elim.study.dubbo.service;
 
 /**
  *
- * 	<dubbo:service interface="com.elim.learn.dubbo.service.UserService"
- stub="com.elim.learn.dubbo.service.UserServiceStub" ref="userService"/>
+ * 	<dubbo:service interface="UserService"
+ stub="UserServiceStub" ref="userService"/>
 
  dubbo存根（Stub）是用于在客户端进行一些缓存操作而设计的。其会定义在服务端，在客户端也应包括它。
  当我们对服务进行调用时访问的就是对应的服务存根的代理对象。定义服务存根类的时候我们会把对应的存根类实现我们的服务对应的
@@ -30,7 +30,7 @@ public class UserServiceStub implements UserService {
   }
 
   /* (non-Javadoc)
-   * @see com.elim.learn.dubbo.service.UserService#sayHello(java.lang.String)
+   * @see UserService#sayHello(java.lang.String)
    */
   @Override
   public void sayHello(String name) {
@@ -40,7 +40,7 @@ public class UserServiceStub implements UserService {
   }
 
   /* (non-Javadoc)
-   * @see com.elim.learn.dubbo.service.UserService#cacheTest(int)
+   * @see UserService#cacheTest(int)
    */
   @Override
   public String cacheTest(int id) {

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://dubbo.apache.org/schema/dubbo"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://dubbo.apache.org/schema/dubbo
+       http://dubbo.apache.org/schema/dubbo/dubbo.xsd">
+
+    <dubbo:application name="hello-provider"/>
+    <dubbo:protocol name="dubbo" port="20880"/>
+    <dubbo:provider protocol="dubbo" host="localhost"/>
+    <dubbo:registry address="zookeeper://localhost:2181"/>
+    <dubbo:service interface="com.elim.study.dubbo.service.HelloService" ref="helloService"/>
+    <bean id="helloService" class="com.elim.study.dubbo.service.HelloServiceImpl"/>
+
+</beans>

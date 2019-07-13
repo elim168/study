@@ -1,7 +1,7 @@
 /**
  *
  */
-package com.elim.learn.dubbo.service;
+package com.elim.study.dubbo.service;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -16,7 +16,7 @@ public class UserServiceImpl implements UserService {
   private AtomicInteger counter = new AtomicInteger(0);
 
   /* (non-Javadoc)
-   * @see com.elim.learn.dubbo.service.UserService#sayHello(java.lang.String)
+   * @see UserService#sayHello(java.lang.String)
    */
   @Override
   public void sayHello(String name) {
@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
   }
 
   /* (non-Javadoc)
-   * @see com.elim.learn.dubbo.service.UserService#cacheTest(int)
+   * @see UserService#cacheTest(int)
    */
   @Override
   public String cacheTest(int id) {

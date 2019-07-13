@@ -1,4 +1,4 @@
-package com.elim.learn.dubbo.service;
+package com.elim.study.dubbo.service;
 
 import java.io.IOException;
 

@@ -1,10 +1,10 @@
 /**
  *
  */
-package com.elim.learn.dubbo.test;
+package com.elim.study.dubbo.test;
 
-import com.elim.learn.dubbo.service.Service2;
-import com.elim.learn.dubbo.service.UserService;
+import com.elim.study.dubbo.service.Service2;
+import com.elim.study.dubbo.service.UserService;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;

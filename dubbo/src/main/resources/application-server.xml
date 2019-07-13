@@ -27,17 +27,17 @@
   <dubbo:protocol name="dubbo" port="20880"/>
 
   <!-- 声明需要暴露的服务接口 -->
-  <dubbo:service interface="com.elim.learn.dubbo.service.UserService"
-                 stub="com.elim.learn.dubbo.service.UserServiceStub" ref="userService"
+  <dubbo:service interface="com.elim.study.dubbo.service.UserService"
+                 stub="com.elim.study.dubbo.service.UserServiceStub" ref="userService"
                  executes="10" version="1.0.0" >
     <dubbo:method name="sayHello"/>
   </dubbo:service>
 
-  <dubbo:service interface="com.elim.learn.dubbo.service.Service2" ref="service2"/>
+  <dubbo:service interface="com.elim.study.dubbo.service.Service2" ref="service2"/>
 
   <!-- 和本地bean一样实现服务 -->
-  <bean id="userService" class="com.elim.learn.dubbo.service.UserServiceImpl"/>
+  <bean id="userService" class="com.elim.study.dubbo.service.UserServiceImpl"/>
 
-  <bean id="service2" class="com.elim.learn.dubbo.service.Service2Impl"/>
+  <bean id="service2" class="com.elim.study.dubbo.service.Service2Impl"/>
 
 </beans>

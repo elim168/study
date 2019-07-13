@@ -20,10 +20,10 @@
   <!-- 生成远程服务代理，可以和本地bean一样使用demoService -->
   <!-- 服务消费方通过actives属性来控制消费方某个方法调用的最大线程数。如果需要控制连接数量，则通过
     connections来指定 -->
-  <dubbo:reference id="userService" interface="com.elim.learn.dubbo.service.UserService" cache="lru"
+  <dubbo:reference id="userService" interface="com.elim.study.dubbo.service.UserService" cache="lru"
                    actives="10" connections="5" version="1.0.0">
     <dubbo:method name="sayHello" actives="15"/>
   </dubbo:reference>
-  <dubbo:reference id="service2" interface="com.elim.learn.dubbo.service.Service2"/>
+  <dubbo:reference id="service2" interface="com.elim.study.dubbo.service.Service2"/>
 
 </beans>
