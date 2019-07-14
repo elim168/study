@@ -11,7 +11,9 @@
     <dubbo:protocol name="dubbo" port="20880"/>
     <dubbo:provider timeout="2000"/>
     <dubbo:registry address="zookeeper://localhost:2181"/>
-    <dubbo:service interface="com.elim.study.dubbo.service.HelloService" ref="helloService"/>
+    <dubbo:service interface="com.elim.study.dubbo.service.HelloService" ref="helloService" group="A" />
+    <dubbo:service interface="com.elim.study.dubbo.service.HelloService" ref="helloService2" group="B" timeout="200" />
     <bean id="helloService" class="com.elim.study.dubbo.service.HelloServiceImpl"/>
+    <bean id="helloService2" class="com.elim.study.dubbo.service.HelloServiceImpl2"/>
 
 </beans>
