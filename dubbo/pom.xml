@@ -29,6 +29,59 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>4.3.16.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-server -->
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>9.0.0.M0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-servlet -->
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-servlet</artifactId>
+            <version>9.0.0.M0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.caucho/hessian -->
+        <dependency>
+            <groupId>com.caucho</groupId>
+            <artifactId>hessian</artifactId>
+            <version>4.0.62</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.9</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.jboss.resteasy/resteasy-jaxrs -->
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-jaxrs</artifactId>
+            <version>3.8.0.Final</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.jboss.resteasy/resteasy-client -->
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-client</artifactId>
+            <version>3.8.0.Final</version>
+        </dependency>
+
+
+
+
+
+
     </dependencies>
 
     <repositories>

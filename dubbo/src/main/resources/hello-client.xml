@@ -9,7 +9,7 @@
 
     <dubbo:application name="hello-consumer"/>
     <dubbo:registry protocol="zookeeper" address="localhost:2181"/>
-    <dubbo:consumer retries="3"/>
-    <dubbo:reference retries="5" id="helloService" interface="com.elim.study.dubbo.service.HelloService" group="B"/>
+    <dubbo:consumer retries="5" connections="2"  />
+    <dubbo:reference id="helloService" interface="com.elim.study.dubbo.service.HelloService" cluster="failback"/>
 
 </beans>

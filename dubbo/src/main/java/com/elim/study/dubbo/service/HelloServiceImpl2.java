@@ -10,13 +10,10 @@ public class HelloServiceImpl2 implements HelloService {
     @Override
     public void sayHello(String name) {
         System.out.println("Hello 2 " + name + "-----" + counter.incrementAndGet());
-        if (counter.get() % 3 != 0) {
-//            throw new IllegalArgumentException("Elim Custom Error");
-            try {
-                TimeUnit.MILLISECONDS.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        try {
+            TimeUnit.MILLISECONDS.sleep(50000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
         System.out.println("Invoke completed");
     }
