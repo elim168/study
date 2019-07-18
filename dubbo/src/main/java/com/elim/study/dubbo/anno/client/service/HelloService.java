@@ -16,7 +16,8 @@ public class HelloService {
   private AnnotationService annotationService;
 
   public void sayHello(String name) {
-    this.annotationService.sayHello(name);
+    String result = this.annotationService.sayHello(name);
+    System.out.println(result);
   }
 
 }

@@ -22,7 +22,9 @@ public class AnnotationTest {
   public void consumer() {
     AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext(ClientAnnotationConfiguration.class);
     HelloService helloService = applicationContext.getBean(HelloService.class);
-    helloService.sayHello("Elim");
+    long t1 = System.currentTimeMillis();
+    helloService.sayHello("Elim123");
+    System.out.println(System.currentTimeMillis() - t1);
   }
 
 }

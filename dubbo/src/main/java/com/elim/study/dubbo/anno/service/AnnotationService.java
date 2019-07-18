@@ -6,6 +6,6 @@ package com.elim.study.dubbo.anno.service;
  */
 public interface AnnotationService {
 
-  void sayHello(String name);
+  String sayHello(String name);
 
 }

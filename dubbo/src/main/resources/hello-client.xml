@@ -10,6 +10,10 @@
     <dubbo:application name="hello-consumer"/>
     <dubbo:registry protocol="zookeeper" address="localhost:2181"/>
     <dubbo:consumer retries="5" connections="2"  />
-    <dubbo:reference id="helloService" interface="com.elim.study.dubbo.service.HelloService" cluster="failback"/>
+    <dubbo:reference id="helloService" interface="com.elim.study.dubbo.service.HelloService" retries="0" timeout="100">
+        <dubbo:method name="sayHello" timeout="1000">
+            <dubbo:argument type="java.lang.String"/>
+        </dubbo:method>
+    </dubbo:reference>
 
 </beans>

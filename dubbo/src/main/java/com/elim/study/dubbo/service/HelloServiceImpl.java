@@ -10,7 +10,12 @@ public class HelloServiceImpl implements HelloService {
     public void sayHello(String name) {
         System.out.println("Hello " + name + "-----" + counter.incrementAndGet());
         if (counter.get() < 3) {
-            throw new IllegalStateException("AAAAAAAAAAA");
+//            throw new IllegalStateException("AAAAAAAAAAA");
+        }
+        try {
+            TimeUnit.MILLISECONDS.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
         System.out.println("Invoke completed");
     }
