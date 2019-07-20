@@ -7,13 +7,9 @@
        http://dubbo.apache.org/schema/dubbo
        http://dubbo.apache.org/schema/dubbo/dubbo.xsd">
 
-    <dubbo:application name="hello-consumer"/>
-    <dubbo:registry protocol="zookeeper" address="localhost:2181"/>
-    <dubbo:consumer retries="5" connections="2"  />
-    <dubbo:reference id="helloService" interface="com.elim.study.dubbo.service.HelloService" retries="0" timeout="100">
-        <dubbo:method name="sayHello" timeout="1000">
-            <dubbo:argument type="java.lang.String"/>
-        </dubbo:method>
-    </dubbo:reference>
+  <dubbo:application name="hello-consumer"/>
+  <dubbo:registry protocol="zookeeper" address="localhost:2181"/>
+  <dubbo:consumer filter="log" />
+  <dubbo:reference id="helloService" interface="com.elim.study.dubbo.service.HelloService" />
 
 </beans>

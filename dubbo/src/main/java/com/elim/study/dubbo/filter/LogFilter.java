@@ -1,12 +1,13 @@
 package com.elim.study.dubbo.filter;
 
+import org.apache.dubbo.common.extension.Activate;
 import org.apache.dubbo.rpc.*;
 
 /**
  * @author Elim
  * 19-7-18
  */
-//@Activate(group = {"provider", "consumer"})
+@Activate(group = {"provider", "consumer"})
 public class LogFilter implements Filter {
 
   @Override

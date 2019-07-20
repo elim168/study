@@ -9,12 +9,10 @@
 
     <dubbo:application name="hello-provider"/>
     <dubbo:protocol name="dubbo" port="20880"/>
-    <dubbo:provider timeout="200000" connections="1"/>
+    <dubbo:provider filter="log"/>
     <dubbo:registry address="zookeeper://localhost:2181"/>
-    <dubbo:service interface="com.elim.study.dubbo.service.HelloService" ref="helloService" token="ABCD">
-        <dubbo:method name="sayHello" timeout="500">
-            <dubbo:argument type="java.lang.String"/>
-        </dubbo:method>
+    <dubbo:service interface="com.elim.study.dubbo.service.HelloService" ref="helloService">
+        <dubbo:method name="sayHello" timeout="500" />
     </dubbo:service>
     <!--<dubbo:service interface="com.elim.study.dubbo.service.HelloService" ref="helloService2" group="B" />-->
     <bean id="helloService" class="com.elim.study.dubbo.service.HelloServiceImpl"/>
