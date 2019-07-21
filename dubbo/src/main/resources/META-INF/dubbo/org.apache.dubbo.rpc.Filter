@@ -1,1 +1,3 @@
 log=com.elim.study.dubbo.filter.LogFilter
+paramSend=com.elim.study.dubbo.filter.ParamSendFilter
+paramReceive=com.elim.study.dubbo.filter.ParamReceiveFilter

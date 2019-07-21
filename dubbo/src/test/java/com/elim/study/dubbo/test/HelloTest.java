@@ -1,6 +1,7 @@
 package com.elim.study.dubbo.test;
 
 import com.elim.study.dubbo.service.HelloService;
+import org.apache.dubbo.rpc.RpcContext;
 import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -20,6 +21,7 @@ public class HelloTest {
     public void testConsumer() throws Exception {
         ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("/hello-client.xml");
         HelloService helloService = applicationContext.getBean(HelloService.class);
+        RpcContext.getContext().setAttachment("ABC", "123");
         helloService.sayHello("Elim");
     }
 
