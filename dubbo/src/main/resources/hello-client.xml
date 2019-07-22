@@ -10,6 +10,8 @@
   <dubbo:application name="hello-consumer"/>
   <dubbo:registry protocol="zookeeper" address="localhost:2181"/>
   <dubbo:consumer filter="log" stub="true"/>
-  <dubbo:reference id="helloService" interface="com.elim.study.dubbo.service.HelloService" />
+  <dubbo:reference id="helloService" interface="com.elim.study.dubbo.service.HelloService" >
+    <dubbo:method name="sayHelloAsync" async="true" />
+  </dubbo:reference>
 
 </beans>

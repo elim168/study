@@ -1,5 +1,6 @@
 package com.elim.study.dubbo.service;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -16,5 +17,10 @@ public class HelloServiceImpl2 implements HelloService {
             e.printStackTrace();
         }
         System.out.println("Invoke completed");
+    }
+
+    @Override
+    public CompletableFuture<String> sayHelloAsync(String name) {
+        return null;
     }
 }

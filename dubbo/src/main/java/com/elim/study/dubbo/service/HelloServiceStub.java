@@ -1,5 +1,7 @@
 package com.elim.study.dubbo.service;
 
+import java.util.concurrent.CompletableFuture;
+
 public class HelloServiceStub implements HelloService {
 
     private final HelloService helloService;
@@ -14,5 +16,10 @@ public class HelloServiceStub implements HelloService {
         System.out.println("远程调用前的处理");
         this.helloService.sayHello(name);
         System.out.println("远程调用后的处理");
+    }
+
+    @Override
+    public CompletableFuture<String> sayHelloAsync(String name) {
+        return this.helloService.sayHelloAsync(name);
     }
 }

@@ -2,6 +2,7 @@ package com.elim.study.dubbo.service;
 
 import org.apache.dubbo.rpc.RpcContext;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class HelloServiceImpl implements HelloService {
@@ -19,5 +20,10 @@ public class HelloServiceImpl implements HelloService {
             e.printStackTrace();
         }*/
         System.out.println("Invoke completed" + RpcContext.getContext().getAttachment("ABC"));
+    }
+
+    @Override
+    public CompletableFuture<String> sayHelloAsync(String name) {
+        return CompletableFuture.supplyAsync(() -> "Hello " + name);
     }
 }

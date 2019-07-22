@@ -28,6 +28,11 @@ public class HelloTest {
     }
 
     @Test
+    public void testAsync() throws Exception {
+
+    }
+
+    @Test
     public void testConsumer2() throws Exception {
         ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("/hello-client.xml");
         HelloService helloService = applicationContext.getBean("helloService", HelloService.class);
