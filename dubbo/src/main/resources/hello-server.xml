@@ -9,9 +9,9 @@
 
     <dubbo:application name="hello-provider"/>
     <dubbo:protocol name="dubbo" port="20880" />
-    <dubbo:provider filter="log" />
+    <dubbo:provider filter="log" async="false"/>
     <dubbo:registry address="zookeeper://localhost:2181"/>
-    <dubbo:service interface="com.elim.study.dubbo.service.HelloService" ref="helloService" >
+    <dubbo:service interface="com.elim.study.dubbo.service.HelloService" ref="helloService" async="false">
         <dubbo:method name="sayHello" timeout="500" />
     </dubbo:service>
     <!--<dubbo:service interface="com.elim.study.dubbo.service.HelloService" ref="helloService2" group="B" />-->

@@ -4,7 +4,7 @@ import java.util.concurrent.CompletableFuture;
 
 public interface HelloService {
 
-    void sayHello(String name);
+    String sayHello(String name);
 
     CompletableFuture<String> sayHelloAsync(String name);
 }

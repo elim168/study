@@ -11,11 +11,12 @@ public class HelloServiceStub implements HelloService {
     }
 
     @Override
-    public void sayHello(String name) {
+    public String sayHello(String name) {
         //类似AOP处理
         System.out.println("远程调用前的处理");
-        this.helloService.sayHello(name);
+        String result = this.helloService.sayHello(name);
         System.out.println("远程调用后的处理");
+        return result;
     }
 
     @Override

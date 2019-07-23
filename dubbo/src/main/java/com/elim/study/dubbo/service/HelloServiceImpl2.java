@@ -9,14 +9,16 @@ public class HelloServiceImpl2 implements HelloService {
     private AtomicInteger counter = new AtomicInteger();
 
     @Override
-    public void sayHello(String name) {
-        System.out.println("Hello 2 " + name + "-----" + counter.incrementAndGet());
+    public String sayHello(String name) {
+        String result = "Hello 2 " + name + "-----" + counter.incrementAndGet();
+        System.out.println(result);
         try {
             TimeUnit.MILLISECONDS.sleep(50000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         System.out.println("Invoke completed");
+        return result;
     }
 
     @Override
