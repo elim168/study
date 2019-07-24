@@ -7,11 +7,16 @@
        http://dubbo.apache.org/schema/dubbo
        http://dubbo.apache.org/schema/dubbo/dubbo.xsd">
 
-  <dubbo:application name="hello-consumer"/>
-  <dubbo:registry protocol="zookeeper" address="localhost:2181"/>
-  <dubbo:consumer filter="log" async="false" />
-<dubbo:reference id="helloService" interface="com.elim.study.dubbo.service.HelloService">
-  <dubbo:method name="sayHello" async="true" return="false"/>
-</dubbo:reference>
+    <dubbo:application name="hello-consumer"/>
+    <dubbo:registry protocol="zookeeper" address="localhost:2181"/>
+
+    <!--<dubbo:protocol name="dubbo" serialization="fst"/-->
+
+    <dubbo:consumer filter="log" timeout="100" retries="0"/>
+    <dubbo:reference id="helloService" interface="com.elim.study.dubbo.service.HelloService" mock="force:true">
+        <dubbo:method name="sayHello" mock="fail:true"/>
+    </dubbo:reference>
+
+    <dubbo:reference id="personService" interface="com.elim.study.dubbo.service.PersonService" timeout="2000"/>
 
 </beans>

@@ -1,6 +1,7 @@
 package com.elim.study.dubbo.service;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 public class HelloServiceStub implements HelloService {
 
@@ -22,5 +23,10 @@ public class HelloServiceStub implements HelloService {
     @Override
     public CompletableFuture<String> sayHelloAsync(String name) {
         return this.helloService.sayHelloAsync(name);
+    }
+
+    @Override
+    public void update(String name, Consumer<String> callback) {
+        this.helloService.update(name, callback);
     }
 }

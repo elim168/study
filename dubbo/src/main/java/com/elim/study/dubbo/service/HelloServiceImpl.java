@@ -4,7 +4,9 @@ import org.apache.dubbo.rpc.AsyncContext;
 import org.apache.dubbo.rpc.RpcContext;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 public class HelloServiceImpl implements HelloService {
     private AtomicInteger counter = new AtomicInteger();
@@ -15,11 +17,11 @@ public class HelloServiceImpl implements HelloService {
         if (counter.get() < 3) {
 //            throw new IllegalStateException("AAAAAAAAAAA");
         }
-        /*try {
+        try {
             TimeUnit.MILLISECONDS.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }*/
+        }
         System.out.println("Invoke completed" + RpcContext.getContext().getAttachment("ABC"));
         AsyncContext asyncContext = RpcContext.startAsync();
         new Thread(() -> {
@@ -33,5 +35,11 @@ public class HelloServiceImpl implements HelloService {
     @Override
     public CompletableFuture<String> sayHelloAsync(String name) {
         return CompletableFuture.supplyAsync(() -> "Hello " + name);
+    }
+
+    @Override
+    public void update(String name, Consumer<String> callback) {
+        System.out.println("update --- " + name);
+        callback.accept("callback " + name);
     }
 }

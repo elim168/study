@@ -77,6 +77,38 @@
             <version>3.8.0.Final</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.esotericsoftware/kryo -->
+<!--        <dependency>
+            <groupId>com.esotericsoftware</groupId>
+            <artifactId>kryo</artifactId>
+            <version>4.0.2</version>
+        </dependency>-->
+
+        <!-- https://mvnrepository.com/artifact/de.ruedigermoeller/fst -->
+<!--        <dependency>
+            <groupId>de.ruedigermoeller</groupId>
+            <artifactId>fst</artifactId>
+            <version>2.57</version>
+        </dependency>-->
+
+        <!-- https://mvnrepository.com/artifact/org.apache.dubbo/dubbo-serialization-fst -->
+<!--        <dependency>
+            <groupId>org.apache.dubbo</groupId>
+            <artifactId>dubbo-serialization-fst</artifactId>
+            <version>2.7.2</version>
+        </dependency>-->
+
+
+
+        <dependency>
+            <groupId>org.apache.dubbo</groupId>
+            <artifactId>dubbo-serialization-kryo</artifactId>
+            <version>2.7.2</version>
+        </dependency>
+
+
+
+
 
 
 

@@ -8,14 +8,23 @@
        http://dubbo.apache.org/schema/dubbo/dubbo.xsd">
 
     <dubbo:application name="hello-provider"/>
-    <dubbo:protocol name="dubbo" port="20880" />
+    <dubbo:protocol name="dubbo" port="20880" serialization="fst" />
     <dubbo:provider filter="log" async="false"/>
     <dubbo:registry address="zookeeper://localhost:2181"/>
     <dubbo:service interface="com.elim.study.dubbo.service.HelloService" ref="helloService" async="false">
         <dubbo:method name="sayHello" timeout="500" />
+        <dubbo:method name="update">
+            <dubbo:argument index="1" callback="true"/>
+        </dubbo:method>
     </dubbo:service>
     <!--<dubbo:service interface="com.elim.study.dubbo.service.HelloService" ref="helloService2" group="B" />-->
+
+    <dubbo:service
+            interface="com.elim.study.dubbo.service.PersonService"
+            ref="personService"/>
+
     <bean id="helloService" class="com.elim.study.dubbo.service.HelloServiceImpl"/>
     <bean id="helloService2" class="com.elim.study.dubbo.service.HelloServiceImpl2"/>
+    <bean id="personService" class="com.elim.study.dubbo.service.PersonServiceImpl"/>
 
 </beans>

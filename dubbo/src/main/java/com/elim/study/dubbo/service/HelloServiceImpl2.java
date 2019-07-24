@@ -3,6 +3,7 @@ package com.elim.study.dubbo.service;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 public class HelloServiceImpl2 implements HelloService {
 
@@ -24,5 +25,10 @@ public class HelloServiceImpl2 implements HelloService {
     @Override
     public CompletableFuture<String> sayHelloAsync(String name) {
         return null;
+    }
+
+    @Override
+    public void update(String name, Consumer<String> callback) {
+
     }
 }
