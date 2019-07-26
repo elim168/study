@@ -12,8 +12,11 @@
                   optimizer="com.elim.study.dubbo.MySerializationOptimizer"/>
   <dubbo:provider filter="log" async="false"/>
   <dubbo:registry address="zookeeper://localhost:2181"/>
+
+  <!--<dubbo:config-center address="zookeeper://localhost:2181"/>-->
+
   <dubbo:service interface="com.elim.study.dubbo.service.HelloService" ref="helloService" async="false">
-    <dubbo:method name="sayHello" timeout="500"/>
+    <dubbo:method name="sayHello"/>
     <dubbo:method name="update">
       <dubbo:argument index="1" callback="true"/>
     </dubbo:method>

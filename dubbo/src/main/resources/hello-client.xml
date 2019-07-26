@@ -12,7 +12,7 @@
 
     <!--<dubbo:protocol name="dubbo" serialization="fst"/-->
 
-    <dubbo:consumer filter="log" timeout="100" retries="0"/>
+    <dubbo:consumer filter="log" />
     <dubbo:reference id="helloService" interface="com.elim.study.dubbo.service.HelloService" mock="force:true">
         <dubbo:method name="sayHello" mock="fail:true"/>
     </dubbo:reference>

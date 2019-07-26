@@ -18,7 +18,7 @@ public class HelloServiceImpl implements HelloService {
 //            throw new IllegalStateException("AAAAAAAAAAA");
         }
         try {
-            TimeUnit.MILLISECONDS.sleep(500);
+            TimeUnit.MILLISECONDS.sleep(1010);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
