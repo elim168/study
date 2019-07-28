@@ -14,7 +14,7 @@ public class HelloTest {
 
     @Test
     public void provider() throws Exception {
-        System.setProperty("dubbo.properties.file", "dubbo2.properties");
+//        System.setProperty("dubbo.properties.file", "dubbo2.properties");
         new ClassPathXmlApplicationContext("/hello-server.xml");
         System.in.read();
     }
