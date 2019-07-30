@@ -10,7 +10,7 @@
   <dubbo:application name="hello-provider"/>
   <dubbo:protocol name="dubbo" port="20880" serialization="fst"
                   optimizer="com.elim.study.dubbo.MySerializationOptimizer"/>
-  <dubbo:provider filter="log" async="false"/>
+  <dubbo:provider filter="log" async="false" />
   <dubbo:registry address="zookeeper://localhost:2181"/>
 
   <!--<dubbo:config-center address="zookeeper://localhost:2181"/>-->
