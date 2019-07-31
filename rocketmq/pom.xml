@@ -9,25 +9,24 @@
     <version>1.0-SNAPSHOT</version>
 
     <name>rocketmq</name>
-    <!-- FIXME change it to the project's website -->
-    <url>http://www.example.com</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <rocketmq.version>4.5.1</rocketmq.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.rocketmq</groupId>
             <artifactId>rocketmq-client</artifactId>
-            <version>4.5.0</version>
+            <version>${rocketmq.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.rocketmq</groupId>
             <artifactId>rocketmq-logappender</artifactId>
-            <version>4.5.0</version>
+            <version>${rocketmq.version}</version>
         </dependency>
 
         <dependency>
@@ -37,13 +36,19 @@
             <scope>provided</scope>
         </dependency>
 
-        <dependency>
+        <!--<dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.3.0-alpha4</version>
             <scope>test</scope>
-        </dependency>
+        </dependency>-->
 
+        <!-- https://mvnrepository.com/artifact/org.apache.rocketmq/rocketmq-spring-boot-starter -->
+<dependency>
+    <groupId>org.apache.rocketmq</groupId>
+    <artifactId>rocketmq-spring-boot-starter</artifactId>
+    <version>2.0.3</version>
+</dependency>
 
 
         <dependency>
@@ -52,6 +57,8 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+
+
     </dependencies>
 
     <build>
