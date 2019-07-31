@@ -11,7 +11,11 @@
   <dubbo:protocol name="dubbo" port="20880" serialization="fst"
                   optimizer="com.elim.study.dubbo.MySerializationOptimizer"/>
   <dubbo:provider filter="log" async="false" />
-  <dubbo:registry address="zookeeper://localhost:2181" group="dubbo1"/>
+  <dubbo:registry address="zookeeper://localhost:2181" />
+
+  <!--<dubbo:monitor protocol="registry" interval="1000" />-->
+
+  <dubbo:metrics port="20880" protocol="dubbo"/>
 
   <dubbo:config-center address="zookeeper://localhost:2181" namespace="hello"/>
 
