@@ -22,6 +22,7 @@
         <module>spring-cloud-ribbon</module>
         <module>spring-cloud-zuul</module>
         <module>spring-cloud-stream-rocketmq</module>
+        <module>spring-cloud-stream-kafka</module>
         <module>spring-cloud-consul-server</module>
         <module>spring-cloud-consul-client</module>
         <module>spring-cloud-consul-hystrix-turbine</module>
