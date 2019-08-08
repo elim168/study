@@ -3,6 +3,8 @@ package com.elim.learn.spring.cloud.stream.kafka.consumer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.cloud.stream.messaging.Sink;
+import org.springframework.kafka.support.Acknowledgment;
+import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
 import org.springframework.stereotype.Component;
@@ -15,7 +17,12 @@ public class SinkConsumer {
     public void inputConsumer(Message<String> message) {
         String payload = message.getPayload();
         MessageHeaders headers = message.getHeaders();
+
+        Acknowledgment acknowledgment = headers.get(KafkaHeaders.ACKNOWLEDGMENT, Acknowledgment.class);
+        acknowledgment.acknowledge();
+
         log.info("从Binding-{}收到信息-{}， headers：{}", Sink.INPUT, payload, headers);
+
     }
     
 }
