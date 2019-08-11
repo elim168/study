@@ -24,7 +24,7 @@ public class ProducerTest {
   @Before
   public void before() {
     Properties props = new Properties();
-    props.put("bootstrap.servers", "localhost:19092");
+    props.put("bootstrap.servers", "localhost:9092");
     props.put("acks", "all");
     props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
     props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
@@ -46,18 +46,18 @@ public class ProducerTest {
 
   @Test
   public void test2() throws Exception {
-ProducerRecord<String, String> record = new ProducerRecord<>(this.topic, "Value-" + LocalDateTime.now());
-this.producer.send(record, (recordMetadata, e) -> {
-  if (e != null) {
-    System.out.println("消息发送失败：" + e);
-  } else {
-    System.out.println("消息发送成功：" + recordMetadata);
-  }
-});
+    ProducerRecord<String, String> record = new ProducerRecord<>(this.topic, "Value-" + LocalDateTime.now());
+    this.producer.send(record, (recordMetadata, e) -> {
+      if (e != null) {
+        System.out.println("消息发送失败：" + e);
+      } else {
+        System.out.println("消息发送成功：" + recordMetadata);
+      }
+    });
   }
 
   @After
-  public void after () throws Exception {
+  public void after() throws Exception {
     this.producer.close();
   }
 
