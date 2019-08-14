@@ -32,7 +32,7 @@ public class ConsumerTest {
     while (true) {
       ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(1000));
       consumerRecords.forEach(record -> {
-        record.headers().forEach(header -> System.out.println("Header - " + header.key() + ": " + header.value()));
+        record.headers().forEach(header -> System.out.println("Header - " + header.key() + ": " + new String(header.value())));
         System.out.println(new Date(record.timestamp()) + "---" + record.key() + " -- " + record.value());
       });
     }

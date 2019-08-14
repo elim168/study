@@ -28,6 +28,7 @@ public class ProducerTest {
     props.put("acks", "all");
     props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
     props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+    props.put("interceptor.classes", "com.elim.study.kafka.producer.interceptor.MyProducerInterceptor");
     Producer<String, String> producer = new KafkaProducer<>(props);
     this.producer = producer;
   }
@@ -41,7 +42,6 @@ public class ProducerTest {
       System.out.println(recordMetadata.serializedKeySize() + "--" + recordMetadata.serializedValueSize() + "--" + recordMetadata.offset());
     }
 
-    this.producer.close();
   }
 
   @Test
@@ -54,6 +54,15 @@ public class ProducerTest {
         System.out.println("消息发送成功：" + recordMetadata);
       }
     });
+  }
+
+  @Test
+  public void testInterceptor() throws Exception{
+    for (int i = 0; i < 5; i++) {
+      Future<RecordMetadata> future = this.producer.send(new ProducerRecord<String, String>(this.topic, "Interceptor-Key-" + i, "Value-" + i));
+      RecordMetadata recordMetadata = future.get();
+      System.out.println(recordMetadata.offset());
+    }
   }
 
   @After
