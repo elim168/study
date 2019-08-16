@@ -4,12 +4,16 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.time.LocalDateTime;
-import java.util.Properties;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Future;
 
 /**
@@ -23,13 +27,16 @@ public class ProducerTest {
 
   @Before
   public void before() {
-    Properties props = new Properties();
-    props.put("bootstrap.servers", "localhost:9092");
-    props.put("acks", "all");
-    props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-    props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-    props.put("interceptor.classes", "com.elim.study.kafka.producer.interceptor.MyProducerInterceptor");
-    Producer<String, String> producer = new KafkaProducer<>(props);
+Map<String, Object> configs = new HashMap<>();
+configs.put("bootstrap.servers", "localhost:9092");
+configs.put("acks", "all");
+configs.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+configs.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+List<String> interceptors = new ArrayList<>();
+interceptors.add("com.elim.study.kafka.producer.interceptor.MyProducerInterceptor");
+interceptors.add("com.elim.study.kafka.producer.interceptor.MyProducerInterceptor2");
+configs.put("interceptor.classes", interceptors);
+Producer<String, String> producer = new KafkaProducer<>(configs);
     this.producer = producer;
   }
 
@@ -69,5 +76,19 @@ public class ProducerTest {
   public void after() throws Exception {
     this.producer.close();
   }
+@Test
+public void test() throws Exception {
+  Map<String, Object> configs = new HashMap<>();
+  configs.put("bootstrap.servers", "localhost:9092");
+  configs.put("acks", "all");
+  String topic = "topic1";
+  Producer<String, String> producer = new KafkaProducer<>(configs, new StringSerializer(), new StringSerializer());
+  for (int i = 0; i < 10; i++) {
+    Future<RecordMetadata> future = producer.send(new ProducerRecord<String, String>(topic, "Key-" + i, "Value-" + i));
+    RecordMetadata recordMetadata = future.get();
+    System.out.println(recordMetadata.serializedKeySize() + "--" + recordMetadata.serializedValueSize() + "--" + recordMetadata.offset());
+  }
 
+  producer.close();
+}
 }
