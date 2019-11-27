@@ -1,4 +1,4 @@
-package com.elim.study;
+package com.elim.study.sentinel.basic;
 
 import com.alibaba.csp.sentinel.Entry;
 import com.alibaba.csp.sentinel.SphU;

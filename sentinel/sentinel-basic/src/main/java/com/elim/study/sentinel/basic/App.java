@@ -1,4 +1,4 @@
-package com.elim.study;
+package com.elim.study.sentinel.basic;
 
 /**
  * Hello world!
