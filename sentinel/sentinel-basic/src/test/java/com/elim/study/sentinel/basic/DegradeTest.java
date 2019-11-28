@@ -6,6 +6,7 @@ import com.alibaba.csp.sentinel.slots.block.BlockException;
 import com.alibaba.csp.sentinel.slots.block.RuleConstant;
 import com.alibaba.csp.sentinel.slots.block.degrade.DegradeRule;
 import com.alibaba.csp.sentinel.slots.block.degrade.DegradeRuleManager;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -19,6 +20,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class DegradeTest {
 
   String resource = "hello";
+
+  @BeforeClass
+  public static void init() {
+    //接入控制台还需要引入sentinel-transport-simple-http依赖
+    System.setProperty("csp.sentinel.dashboard.server", "localhost:9888");
+  }
 
   @Test
   public void test() throws Exception {
@@ -51,7 +58,7 @@ public class DegradeTest {
     }
 
     Thread thread = new Thread(() -> {
-      int times = 60;
+      int times = 600;
       for (int i = 0; i < times; i++) {
         sleep(1000);
         System.out.println(i + "-----------" + successCount + "," + failCount);

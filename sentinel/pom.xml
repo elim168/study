@@ -29,6 +29,12 @@
       <version>${sentinel.version}</version>
     </dependency>
     <dependency>
+      <groupId>com.alibaba.csp</groupId>
+      <artifactId>sentinel-transport-simple-http</artifactId>
+      <version>${sentinel.version}</version>
+    </dependency>
+
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.12</version>
