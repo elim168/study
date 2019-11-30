@@ -118,4 +118,18 @@ public class AnnotationTest {
     }
   }
 
+  @Test
+  public void testBlockHandler() {
+    FlowRule rule = new FlowRule();
+    rule.setResource(ResourceConstant.RESOURCE_3);
+    rule.setCount(10);
+    rule.setGrade(RuleConstant.FLOW_GRADE_QPS);
+    FlowRuleManager.loadRules(Arrays.asList(rule));
+
+    for (int i=0; i<30; i++) {
+      this.fooService.resource3(i);
+    }
+
+  }
+
 }

@@ -15,9 +15,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Unit test for simple App.
+ * 由相应的ProcessorSlot接入
  */
-public class AppTest {
+public class FlowRuleTest {
 
   private String resourceName = "abc";
 

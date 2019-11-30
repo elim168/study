@@ -23,6 +23,8 @@ public class DegradeTest {
 
   @BeforeClass
   public static void init() {
+    //指定应用名称，用于在控制台显示
+    System.setProperty("project.name", "sentinel-test");
     //接入控制台还需要引入sentinel-transport-simple-http依赖
     System.setProperty("csp.sentinel.dashboard.server", "localhost:9888");
   }
