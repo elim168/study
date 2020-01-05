@@ -9,6 +9,7 @@ class Bag:
         self.add(x)
         self.add(x)
 
+
 bag = Bag()
 bag.add(1)
 bag.add(10)
