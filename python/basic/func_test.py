@@ -75,3 +75,45 @@ def test6(a, b, **c):
 
 
 test6(1, 2, a1=10, b1=20, c1=30)  # 1 2 {'a1': 10, 'b1': 20, 'c1': 30}
+
+# lambda表达式
+
+f1 = lambda a, b: a + b  # 定义了一个函数，包含两个入参，返回它们的和
+
+print(f1(10, 35))
+
+
+def f2(c):  # 子函数中包含lambda表达式
+    return lambda a, b: a + b + c
+
+
+f = f2(50)
+print(f(10, 20))
+
+# eval()测试
+
+eval('print("Hello Eval()")')  # 输出Hello Eval()
+a = 5
+b = 6
+c = eval('a + b')  # c等于11
+print(c)
+
+d = dict(a=10, b=20)
+e = eval('a + b', d)  # e等于30
+print(e)
+
+
+# 内部函数
+
+
+def outer_func():
+    print('Hello outer_func')
+
+    def inner_func():
+        print('Hello inner_func')
+
+    inner_func()
+    print('内部函数调用完毕，内部函数只能在函数内部调用')
+
+
+outer_func()

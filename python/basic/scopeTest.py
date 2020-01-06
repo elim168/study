@@ -3,7 +3,7 @@ def scope_test():
         spam = "local spam"
 
     def do_nonlocal():
-        nonlocal spam
+        nonlocal spam   # 用来声明外层的局部变量
         spam = "nonlocal spam"
 
     def do_global():
@@ -12,13 +12,13 @@ def scope_test():
 
     spam = "test spam"
     do_local()
-    print("After local assignment:", spam)
+    print("After local assignment:", spam)  # test spam
     do_nonlocal()
-    print("After nonlocal assignment:", spam)
+    print("After nonlocal assignment:", spam)   # nonlocal spam
     do_global()
-    print("After global assignment:", spam)
+    print("After global assignment:", spam)  # nonlocal spam
 
 
 scope_test()
-print("In global scope:", spam)
+print("In global scope:", spam)  # global spam
 
