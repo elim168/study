@@ -32,6 +32,13 @@ class Bag:
             与Class属性无关的操作。当然也可以直接在该方法内通过Class访问静态属性。
         '''
 
+    def __del__(self):  # __del__方法会在对象被销毁时调用，一般不需要重写
+        print('对象id={0}被销毁了---'.format(id(self)))
+
+    def __call__(self, *args, **kwargs):
+        print('__call__方法可以让对象像方法一样调用，调用obj()时即将调用对象的__call__()方法。该方法也可以定义需要接收的参数')
+
+
 
 bag = Bag()
 bag.add(1)
@@ -60,4 +67,20 @@ print(Bag.static_prop1) # 200
 
 print(Bag.class_method1())
 print(Bag.static_method1())
+
+
+bag()   # 调用对象的__call__()。
+
+
+
+Bag.hello = lambda s : print('Hello -> {0}'.format(s))  # 给类增加新方法，如果原方法已经存在则会被覆盖。
+
+def hello2(self):
+    print('Hello 2 -> id = {0}'.format(id(self)))
+
+Bag.hello2 = hello2
+
+bag.hello()
+bag.hello2()
+
 
