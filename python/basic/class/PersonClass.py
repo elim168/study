@@ -17,6 +17,19 @@ class Person:
     def call_private_method(self):
         self.__private_method()
 
+    #方法上加上了@property后可以直接通过把方法当作属性来访问，如obj.age访问的就是Person对象的age()，常用于私有属性的get方法上。
+    @property
+    def age(self):
+        return self.__age
+'''
+    @age.getter
+    def age(self):
+        return self.__age
+
+    @age.setter   # 定义这是age属性的setter方法
+    def age(self, age):
+        self.__age = age
+'''
 
 p = Person('张三', 30)
 print(p.name)
@@ -28,3 +41,7 @@ p._Person__private_method()
 p.call_private_method()
 
 print(Person._Person__static_private_prop)
+
+print(p.age)
+p.age = 35
+print(p.age)
