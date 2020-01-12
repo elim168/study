@@ -29,3 +29,6 @@ class Singleton2:
 
 print(Singleton2.get_instance())
 print(Singleton2.get_instance())
+
+
+
