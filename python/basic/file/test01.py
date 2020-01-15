@@ -30,3 +30,12 @@ with open(r'/home/elim/file1.txt', 'w') as f:   # with块运行完后会自动�
 
 # open(r'/home/elim/file1.txt', 'w', encoding='GBK')  # 指定字符集
 
+
+print('==============================')
+with open(r'/home/elim/file1.txt') as f:
+    print(f.read(10))   # 读取10个字符
+    print(f.read()) # 一直读到文件结束
+
+print('==============================')
+with open(r'/home/elim/file1.txt') as f:
+    print(f.readlines())   # 读取所有的行，以列表形式返回。
