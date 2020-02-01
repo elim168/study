@@ -1,0 +1,19 @@
+Metadata-Version: 2.1
+Name: mymodule-test
+Version: 1.0.2
+Summary: 这是一个对外发布的模块，发布后可以供他人使用。测试/test
+Home-page: UNKNOWN
+Author: elim
+Author-email: yeelimzhang@163.com
+License: UNKNOWN
+Description: # mymodule的说明文档
+        
+        这只是一个简单的测试。
+        
+        just an sample！
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown

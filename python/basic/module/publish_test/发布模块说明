@@ -2,4 +2,8 @@
 
 在模块下创建一个setup.py文件，内容参见setup.py。
 
-然后在模块目录下，即setup.py文件所在的目录下执行python setup.py sdist可以将模块打包。执行python setup.py install可以将模块安装到
+然后在模块目录下，即setup.py文件所在的目录下执行python setup.py sdist可以将模块打包。执行python setup.py install可以将模块安装到本地的site-packages
+
+通过安装twine，然后通过twine可以把打包好的模块上传到pypi.org供他人使用。
+
+详细信息可以参考https://packaging.python.org/tutorials/packaging-projects/
