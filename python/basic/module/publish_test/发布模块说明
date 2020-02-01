@@ -1,0 +1,5 @@
+把需要发布的模块放在一个文件夹下。需要发布的模块可以有包名。
+
+在模块下创建一个setup.py文件，内容参见setup.py。
+
+然后在模块目录下，即setup.py文件所在的目录下执行python setup.py sdist可以将模块打包。执行python setup.py install可以将模块安装到
