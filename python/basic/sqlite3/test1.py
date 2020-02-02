@@ -36,6 +36,7 @@ cursor.execute('update t_user set password=:password where id=:id', {'id': 136, 
 rows = cursor.execute('select * from t_user')
 for row in rows:
     print(row)
+
 cursor.close()
 connection.close()
 
@@ -43,9 +44,11 @@ connection.close()
 
 connection = sqlite3.connect(database)
 connection.execute(insert_sql, ('user100', 'password')) # 也可以直接通过connection的execute方法执行SQL
-connection.execute('update t_user set password=? where id=?', ('new_password', 15)) # 修改
-connection.execute('delete from t_user where id = ?', (129,))   # 删除
+connection.execute('update t_user set password=? where id=?', ('new_password', 150)) # 修改
 
+connection.commit()
+
+connection.execute('delete from t_user where id = ?', (169,))   # 删除
 connection.commit()
 
 
