@@ -13,5 +13,5 @@ p1 = Process(target=action1)
 p1.start()
 print('main process starting')
 p1.join()
-# p1.join(3)    # timeout second
+# p1.join(3)    # join时也可以指定超时时间，单位是秒
 print('main process end!')
