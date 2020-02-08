@@ -23,6 +23,7 @@ t1.start()
 t2.start()
 
 
+# 测试结果输出如下
 '''
 main thread name is MainThread
 thread-Thread-1  get name from thread local is zhangsan
