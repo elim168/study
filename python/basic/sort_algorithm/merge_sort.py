@@ -6,16 +6,16 @@ import random
 
 def sort(lista) -> list:
     n = len(lista)
-    if n == 1:  # 列表的长度为1说明已经是最小的维度了，不需要再细分了。
+    if n == 1: # 列表的长度为1说明已经是最小的维度了，不需要再细分了。
         return lista
-    mid = n // 2  # 找出中间位置
-    list_left = sort(lista[0:mid])  # 把左半部分排序
-    list_right = sort(lista[mid:])  # 把右半部分排序
+    mid = n // 2 # 找出中间位置
+    list_left = sort(lista[0:mid]) # 把左半部分排序
+    list_right = sort(lista[mid:]) # 把右半部分排序
     left_index, right_index = 0, 0
-    result = []  # 放有序的结果集
+    result = [] # 放有序的结果集
     left_len = len(list_left)
     right_len = len(list_right)
-    while left_index < left_len and right_index < right_len:  # 分别从左半部分和右半部分的左边开始扫，依次把最小值附加到结果中
+    while left_index < left_len and right_index < right_len: # 分别从左半部分和右半部分的左边开始扫，依次把最小值附加到结果中 
         if list_left[left_index] < list_right[right_index]:
             result.append(list_left[left_index])
             left_index += 1
@@ -28,6 +28,7 @@ def sort(lista) -> list:
     if right_index < right_len:
         result.extend(list_right[right_index:])
     return result
+
 
 
 def test():  # 测试函数
