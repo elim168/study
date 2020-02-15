@@ -1,5 +1,4 @@
 class Person:
-
     # Class级别的私有属性，在Class内部可以通过Person.__static_private_prop调用，外部通过Person._Person__static_private_prop
     __static_private_prop = 1
 
@@ -9,7 +8,8 @@ class Person:
         self.__age = age
 
     def hello(self):
-        print('Hello, name={0}, age={1}-------------{2}'.format(self.name, self.__age, Person.__static_private_prop)) # 私有属性是可以在内部调用的
+        print('Hello, name={0}, age={1}-------------{2}'.format(self.name, self.__age,
+                                                                Person.__static_private_prop))  # 私有属性是可以在内部调用的
 
     def __private_method(self):
         print('我是私有方法，在内部可以随便调，在外部需要以_Person__private_method()调用')
@@ -17,10 +17,12 @@ class Person:
     def call_private_method(self):
         self.__private_method()
 
-    #方法上加上了@property后可以直接通过把方法当作属性来访问，如obj.age访问的就是Person对象的age()，常用于私有属性的get方法上。
+    # 方法上加上了@property后可以直接通过把方法当作属性来访问，如obj.age访问的就是Person对象的age()，常用于私有属性的get方法上。
     @property
     def age(self):
         return self.__age
+
+
 '''
     @age.getter
     def age(self):
@@ -34,7 +36,7 @@ class Person:
 p = Person('张三', 30)
 print(p.name)
 # print(p.__age)    # 私有属性也不能这样访问
-print(p._Person__age)   # 访问私有属性
+print(p._Person__age)  # 访问私有属性
 
 p.hello()
 p._Person__private_method()
