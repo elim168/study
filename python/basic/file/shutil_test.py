@@ -12,7 +12,7 @@ import shutil
 # 把父母录的class以zip格式进行压缩，压缩后生成test.zip文件在当前目录下。test也可以指定为绝对路径，这里是相对路径
 shutil.make_archive('test', 'zip', '../class')
 
-shutil.unpack_archive('test.zip', 'extracted', 'zip')   # 把当前目录下的test.zip文件以zip算法进行解压缩到当前目录下的extracted目录下
+shutil.unpack_archive('test.zip', 'extracted', 'zip')  # 把当前目录下的test.zip文件以zip算法进行解压缩到当前目录下的extracted目录下
 
-print(shutil.get_archive_formats()) # 获取可用的压缩算法
-print(shutil.get_unpack_formats()) # 获取可用的解压缩算法
+print(shutil.get_archive_formats())  # 获取可用的压缩算法
+print(shutil.get_unpack_formats())  # 获取可用的解压缩算法
