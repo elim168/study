@@ -1,4 +1,4 @@
-# python正则表达式的语法和java中的类似，它也支持.、*、+、?、[]、{}、\d、\w、\s和转译字符等
+# python正则表达式的语法和java中的类似，它也支持.、*、+、?、[]、{}、\d、\w、\s、\b和转译字符等
 
 import re
 print(re.match('.{5}', 'abcd') is not None)  # False
@@ -21,6 +21,14 @@ print(re.match(r'\d?[abc]\w{3}\d*', '\na1111/abcdef') is not None)  # False
 print(re.match(r'\d?[abc]\w{3}\d*', 'a1111/abcdef') is not None)  # True
 print(re.match(r'\d?[abc]\w{3}\d*', '1a1111/abcdef') is not None)  # True
 print(re.match(r'\d?[abc]\w{3}\d*', '1e1111/abcdef') is not None)  # False
+# \b匹配单词，下面匹配以app开头的单词
+print(re.match(r'\d{5} \bapp', '10000 apple') is not None)  # True
+# 下面匹配以le结尾的单词
+print(re.match(r'\d{5}.*le\b', '10000 applell') is not None)  # False
+# 下面匹配以le结尾的单词
+print(re.match(r'\d{5}.*le\b', '10000 apple ll') is not None)  # True
+# 下面匹配不以le结尾的单词
+print(re.match(r'\d{5}.*le\B', '10000 applell') is not None)  # True
 
 
 
