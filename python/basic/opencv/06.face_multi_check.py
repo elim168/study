@@ -1,8 +1,8 @@
-# 定位人脸区域
+# 定位人脸区域，包含多人脸的
 
 import cv2
 
-image = cv2.imread('face01.jpg')
+image = cv2.imread('face03.jpg')
 # 把原图转换为灰色图片
 gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 # 默认的人脸检测

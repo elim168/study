@@ -1,3 +1,5 @@
+# 需要先pip3 install pillow安装pillow库
+
 # 从PIL包中引入Image模块
 from PIL import Image
 

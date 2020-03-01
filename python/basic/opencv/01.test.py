@@ -1,4 +1,5 @@
 # opencv可以用来做人脸识别
+# 通过pip3 install opencv-python安装opencv
 # 使用opencv需要导入cv2模块
 
 import cv2
