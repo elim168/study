@@ -36,6 +36,11 @@ public class ServiceTest {
     service.startAsync();
 
     service.stopAsync();
+    try {
+      TimeUnit.MILLISECONDS.sleep(100);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
   }
 
   @Test
@@ -66,6 +71,7 @@ public class ServiceTest {
     System.out.println(service.state());
     service.stopAsync();
     TimeUnit.SECONDS.sleep(1);
+    System.out.println(service.state());
     System.out.println("Over");
   }
 

@@ -1,10 +1,12 @@
 package com.elim.learn.guava.basic;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Ordering;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -68,6 +70,16 @@ public class OrderingTest {
     System.out.println(objects);
     Collections.sort(objects, ordering.onResultOf(a -> a.toString().length()).compound(Ordering.usingToString()).reverse());
     System.out.println(objects);
+  }
+
+  @Test
+  public void test5() {
+    //基于Comparator对象创建Ordering
+    Ordering<Integer> ordering = Ordering.<Integer>from((left, right) -> left.compareTo(right));
+    List<Integer> nums = ImmutableList.of(1, 2, 3, 9, 8, 7, 6);
+    nums = new ArrayList<>(nums);
+    Collections.sort(nums, ordering);
+    System.out.println(nums);
   }
 
 }

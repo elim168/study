@@ -164,6 +164,8 @@ public class NewCollectionTest {
     table.put("row2", "column3", "value2-3");
     Assert.assertEquals(6, table.size());
     Assert.assertEquals("value1-1", table.get("row1", "column1"));
+    Assert.assertNull(table.get("row3", "column1"));
+    Assert.assertNull(table.get("row1", "column4"));
     Map<String, String> row1 = table.row("row1");
     Assert.assertEquals(3, row1.size());
     Assert.assertEquals("value1-1", row1.get("column1"));
@@ -198,6 +200,7 @@ public class NewCollectionTest {
     //getInstance可以避免类型转换
     Assert.assertEquals(-1, map.getInstance(int.class).intValue());
     Assert.assertEquals(1, map.getInstance(Integer.class).intValue());
+    Assert.assertEquals(1000000000000000L, map.getInstance(Long.class).longValue());
     Assert.assertEquals(1000000000000000L, map.getInstance(Long.class).longValue());
   }
 

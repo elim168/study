@@ -26,6 +26,7 @@ public class GraphTest {
     graph.putEdge(1, 2);
     graph.putEdge(1, 3);
     graph.putEdge(1, 4);
+    graph.putEdge(5, 1);
     graph.putEdge(3, 4);
     graph.putEdge(3, 5);
     graph.putEdge(3, 6);
@@ -33,9 +34,10 @@ public class GraphTest {
     graph.putEdge(7, 8);
     Assert.assertTrue(graph.removeNode(8));
     Assert.assertFalse(graph.removeNode(9));
+    // 获取与节点1有边连起来的节点，2/3/4/5
     Set<Integer> adjacentNodes1 = graph.adjacentNodes(1);
-    Assert.assertEquals(3, adjacentNodes1.size());
-    Assert.assertTrue(adjacentNodes1.equals(Sets.newHashSet(2, 3, 4)));
+    Assert.assertEquals(4, adjacentNodes1.size());
+    Assert.assertTrue(adjacentNodes1.equals(Sets.newHashSet(2, 3, 4, 5)));
 
     Assert.assertTrue(graph.removeEdge(1, 4));
     Assert.assertEquals(2, graph.adjacentNodes(1).size());
