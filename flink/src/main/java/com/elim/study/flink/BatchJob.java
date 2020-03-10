@@ -18,10 +18,14 @@
 
 package com.elim.study.flink;
 
+import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.operators.DataSource;
+import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.util.Collector;
 
 /**
+ * 批处理示例
  * Skeleton for a Flink Batch Job.
  *
  * <p>For a tutorial how to write a Flink batch application, check the
@@ -33,39 +37,50 @@ import org.apache.flink.api.java.operators.DataSource;
  */
 public class BatchJob {
 
-	public static void main(String[] args) throws Exception {
-		// set up the batch execution environment
-		final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+  public static void main(String[] args) throws Exception {
+    // set up the batch execution environment
+    final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-		DataSource<String> stringDataSource = env.readTextFile("BatchJob.java");
-		stringDataSource.print();
+    DataSource<String> stringDataSource = env.readTextFile("file:///home/elim/hello.txt");
+    stringDataSource.flatMap(new FlatMapFunction<String, Tuple2<String, Integer>>() {
 
-		/*
+      @Override
+      public void flatMap(String value, Collector<Tuple2<String, Integer>> out) throws Exception {
+        //value是从文件中读取出来的一行
+        String[] words = value.split("\\s+");
+        for (String word : words) {
+          out.collect(new Tuple2<String, Integer>(word, 1));
+        }
+      }
 
-		 * Here, you can start creating your execution plan for Flink.
-		 *
-		 * Start with getting some data from the environment, like
-		 * 	env.readTextFile(textPath);
-		 *
-		 * then, transform the resulting DataSet<String> using operations
-		 * like
-		 * 	.filter()
-		 * 	.flatMap()
-		 * 	.join()
-		 * 	.coGroup()
-		 *
-		 * and many more.
-		 * Have a look at the programming guide for the Java API:
-		 *
-		 * https://flink.apache.org/docs/latest/apis/batch/index.html
-		 *
-		 * and the examples
-		 *
-		 * https://flink.apache.org/docs/latest/apis/batch/examples.html
-		 *
-		 */
+    }).groupBy(0).sum(1).print();
 
-		// execute program
-		env.execute("Flink Batch Java API Skeleton");
-	}
+    /*
+
+     * Here, you can start creating your execution plan for Flink.
+     *
+     * Start with getting some data from the environment, like
+     * 	env.readTextFile(textPath);
+     *
+     * then, transform the resulting DataSet<String> using operations
+     * like
+     * 	.filter()
+     * 	.flatMap()
+     * 	.join()
+     * 	.coGroup()
+     *
+     * and many more.
+     * Have a look at the programming guide for the Java API:
+     *
+     * https://flink.apache.org/docs/latest/apis/batch/index.html
+     *
+     * and the examples
+     *
+     * https://flink.apache.org/docs/latest/apis/batch/examples.html
+     *
+     */
+
+    // execute program
+//    env.execute("Flink Batch Java API Skeleton");
+  }
 }
