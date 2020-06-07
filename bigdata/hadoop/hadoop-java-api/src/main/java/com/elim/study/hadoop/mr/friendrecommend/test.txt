@@ -1,0 +1,11 @@
+A X Y Z N P R S T
+B X Y Z Q P
+C X Y Z N T
+D X Y Z N R
+E X Y Z Q T
+F X Y Z N R
+G X Y Z N T
+H X Y M O P
+I X Y M O S
+J X Z M P N
+K X Z N P R

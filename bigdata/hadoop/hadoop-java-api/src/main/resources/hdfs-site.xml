@@ -25,4 +25,9 @@
         <name>dfs.namenode.secondary.http-address</name>
         <value>172.18.0.2:9868</value>
     </property>
+    <!--没有该配置本地可能会出现 No valid local directories in property: mapreduce.cluster.local.dir-->
+    <property>
+        <name>mapreduce.cluster.local.dir</name>
+        <value>/tmp/hadoop/mapreduce/cluster/local</value>
+    </property>
 </configuration>

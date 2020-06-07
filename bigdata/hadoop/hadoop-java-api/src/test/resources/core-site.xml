@@ -20,11 +20,11 @@
 <configuration>
     <property>
         <name>fs.defaultFS</name>
-        <value>hdfs://hadoop-master:9820</value>
+        <value>hdfs://172.18.0.2:9820</value>
     </property>
     <property>
         <name>hadoop.tmp.dir</name>
-	<value>/var/hadoop/singlenode</value>
+	    <value>/var/hadoop/singlenode</value>
     </property>
 </configuration>
 

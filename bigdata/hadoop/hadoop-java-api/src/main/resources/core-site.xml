@@ -16,13 +16,16 @@
 
 <!-- Put site-specific property overrides in this file. -->
 
+
 <configuration>
     <property>
-        <name>dfs.replication</name>
-        <value>1</value>
+        <name>fs.defaultFS</name>
+        <value>hdfs://172.18.0.2:9820</value>
     </property>
     <property>
-        <name>dfs.namenode.secondary.http-address</name>
-        <value>172.18.0.2:9868</value>
+        <name>hadoop.tmp.dir</name>
+	<value>/var/hadoop/singlenode</value>
     </property>
 </configuration>
+
+
