@@ -1,0 +1,10 @@
+syntax = "proto3"; // proto3 必须加此注解
+
+package com.elim.study.hbase.sample.protobuf;
+
+message PhoneRecord {
+  string otherNum = 1;
+  string type = 2;
+  string keep_time = 3;
+  string record_time = 4;
+}

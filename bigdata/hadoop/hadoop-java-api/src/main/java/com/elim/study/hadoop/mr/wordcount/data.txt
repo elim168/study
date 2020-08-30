@@ -1,0 +1,7 @@
+hello world hadoop hive java hbase mapper reduce
+hello elim china hadoop hive
+java hbase
+mapper reduce
+hello china
+ok
+complete

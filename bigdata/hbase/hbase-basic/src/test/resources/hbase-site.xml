@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+    <property>
+        <name>hbase.zookeeper.quorum</name>
+        <!--不指定端口号时默认使用2181-->
+        <value>172.18.0.3,172.18.0.4,172.18.0.5</value>
+        <description> Zookeeper ensemble information</description>
+    </property>
+</configuration>
+
