@@ -1,12 +1,19 @@
 syntax = "proto3"; // proto3 必须加此注解
 
+// 按日存放的通话记录
+
 // 定义生成的Java类存放的包路径
 package com.elim.study.hbase.sample.protobuf;
 
 // 相当于定义了一个Class叫PhoneRecord，它有四个属性，下面的等号后面的数字代表了属性的顺序。详细的语法可以参考https://github.com/protocolbuffers/protobuf
 message PhoneRecord {
-  required string otherNum = 1;
-  required string type = 2;
+  string otherNum = 1;
+  string type = 2;
   string keep_time = 3;
   string record_time = 4;
+}
+
+message DailyRecord {
+    // 表示DailyRecord中存放了一个集合类型的PhoneRecord
+    repeated PhoneRecord phoneRecord = 1;
 }
