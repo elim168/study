@@ -50,7 +50,7 @@ public class WordCount {
         //设置Key分组的比较器，即如何界定哪些Key为一组。默认使用Mapper阶段的快速排序的比较器
 //        job.setGroupingComparatorClass(null);
 
-        Path inputPath = new Path("/user/elim/test.txt");
+        Path inputPath = new Path("/user/elim/data/test.txt");
         Path outputPath = new Path("/result/mapreduce/example/wordcount/" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
 //        FileSystem fileSystem = outputPath.getFileSystem(job.getConfiguration());
         if (args != null && args.length > 0) {

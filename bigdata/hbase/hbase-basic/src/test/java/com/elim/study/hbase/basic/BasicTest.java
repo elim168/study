@@ -1,5 +1,6 @@
 package com.elim.study.hbase.basic;
 
+import com.google.common.collect.Lists;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.*;
 import org.apache.hadoop.hbase.client.*;
@@ -47,7 +48,11 @@ public class BasicTest {
         }
         //列族
         ColumnFamilyDescriptor cf1 = ColumnFamilyDescriptorBuilder.of("cf1");
+
+        // 设置各种配置信息
+        ColumnFamilyDescriptor cf2 = ColumnFamilyDescriptorBuilder.newBuilder("cf2".getBytes()).setMaxVersions(10).setMinVersions(3).setBlocksize(65536).build();
         TableDescriptor desc = TableDescriptorBuilder.newBuilder(tableName).setColumnFamily(cf1).build();
+        TableDescriptorBuilder.newBuilder(tableName).setColumnFamilies(Lists.newArrayList(cf1, cf2)).setMaxFileSize(10).setSplitEnabled(false).build();
         admin.createTable(desc);
     }
 
@@ -83,6 +88,9 @@ public class BasicTest {
 //        get.addFamily("cf1".getBytes());
 //        get.addColumn("cf1".getBytes(), "name".getBytes());
         Result result = table.get(get);
+
+        // 通过下面的方式可以同时获取多个rowkey对应的记录
+//        table.get(List<Get> gets);
         //包含列
         Assert.assertTrue(result.containsColumn("cf1".getBytes(), "name".getBytes()));
         //包含非空列
