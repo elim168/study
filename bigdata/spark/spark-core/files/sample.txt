@@ -1,0 +1,125 @@
+Hello Java
+Hello Scala
+Hello Spark
+Hello World
+Hi Java
+Hello ABC
+DDDDDDDD
+FFFFFFF
+China
+USA
+ABC
+DEFG
+JJ
+A
+B
+C
+D
+E
+F
+G
+H
+I
+J
+K
+L
+M
+N
+O
+P
+Q
+R
+S
+T
+U
+V
+W
+X
+Y
+Z
+DDDD
+JJJJ
+QQQQ
+AAAA
+CHINA
+Hello Java
+Hello Scala
+Hello Spark
+Hello World
+Hi Java
+Hello ABC
+DDDDDDDD
+FFFFFFF
+China
+USA
+ABC
+DEFG
+JJ
+A
+B
+C
+D
+E
+F
+G
+H
+I
+J
+K
+L
+M
+N
+O
+P
+Q
+R
+S
+T
+U
+V
+W
+X
+Y
+Z
+DDDD
+JJJJ
+QQQQ
+AAAA
+CHINA
+Hello Java
+Hello Scala
+Hello Spark
+Hello World
+Hi Java
+Hello ABC
+DDDDDDDD
+FFFFFFF
+China
+USA
+ABC
+DEFG
+JJ
+A
+B
+C
+D
+E
+F
+G
+H
+I
+J
+K
+L
+M
+N
+O
+P
+Q
+R
+S
+T
+U
+V
+W
+X

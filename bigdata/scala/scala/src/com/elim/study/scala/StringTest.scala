@@ -15,10 +15,10 @@ object StringTest {
       */
     val builder = new StringBuilder//调用的是无参构造参数，相当于new StringBuilder()
     builder.append("A")
-    builder.+('B')  //append()
+//    builder.+("B")  //append()
     builder.++=("C")  //append()
     builder.++=("D")
-    println(builder)  //ABCD
+    println(builder)  //ACD
 
 
   }
