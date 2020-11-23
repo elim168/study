@@ -16,8 +16,10 @@ object ScalaWordcount {
     val sparkContext = new SparkContext(sparkConf)
     val lines = sparkContext.textFile("spark-core/files/wordcount.txt")
     val words = lines.flatMap(line => line.toLowerCase().split(" "))
-    val wordPairs = words.map(word => new Tuple2(word, 1))
-    val result = wordPairs.reduceByKey((v1, v2) => v1 + v2)
+//    val wordPairs = words.map(word => new Tuple2(word, 1))
+    val wordPairs = words.map(Tuple2(_, 1))
+//    val result = wordPairs.reduceByKey((v1, v2) => v1 + v2)
+    val result = wordPairs.reduceByKey(_+_)
 
     /**
      * 排序
