@@ -18,6 +18,7 @@ object CreateDataFrameFromRDDWithReflect {
     })
     personsRDD.foreach(println)
 
+
     val session = SparkSession.builder().config(conf).getOrCreate()
     // 这里的第二个参数如果换成了PersonScala会打印不出来想要的schema，如果是纯Scala请参考
     val dataFrame = session.createDataFrame(personsRDD, classOf[Person])

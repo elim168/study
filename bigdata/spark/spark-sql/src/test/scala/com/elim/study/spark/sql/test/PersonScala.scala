@@ -1,6 +1,6 @@
 package com.elim.study.spark.sql.test
 
-class PersonScala(_name: String, _age: Int, _sex: String) {
+case class PersonScala(_name: String, _age: Int, _sex: String) {
 
   var name = _name
   var age = _age

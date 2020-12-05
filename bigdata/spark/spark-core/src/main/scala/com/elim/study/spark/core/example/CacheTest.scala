@@ -31,10 +31,12 @@ object CacheTest {
 
     // 将filter()操作后的RDD缓存起来，这个也是一个延时操作，只有进行了Action算子后才会将对应的数据缓存起来。
     result.cache()
-    val s3 = System.currentTimeMillis()
+    //    result.checkpoint()
+//    result.persist()
     // 第一次count时result中没有数据将从磁盘加载后再进行计算，计算完成后会将文件内容缓存在内存中
-    result.count()
     val e3 = System.currentTimeMillis()
+    val s3 = System.currentTimeMillis()
+    result.count()
 
     val s4 = System.currentTimeMillis()
     // 第二次由于内存中已经缓存了result的数据，将不需要再从源头加载数据了，也就不用从磁盘加载文件了。
