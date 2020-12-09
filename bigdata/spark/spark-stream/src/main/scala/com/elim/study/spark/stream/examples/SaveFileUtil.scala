@@ -7,6 +7,14 @@ import java.util.UUID
 object SaveFileUtil {
 
   def main(args: Array[String]): Unit = {
+    geneFile
+  }
+
+  def geneFileInNewThread() = {
+    new Thread(() => geneFile).start()
+  }
+
+  private def geneFile = {
     val dir = "./data/streaming-files"
     if (Files.notExists(Paths.get(dir))) {
       Files.createDirectories(Paths.get(dir))
@@ -22,5 +30,4 @@ object SaveFileUtil {
       Thread.sleep(3000)
     }
   }
-
 }
