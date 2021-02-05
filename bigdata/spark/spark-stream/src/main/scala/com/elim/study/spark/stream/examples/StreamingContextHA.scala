@@ -4,6 +4,7 @@ import org.apache.spark.SparkConf
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 
 /**
+ * 提交任务时需要指定--supervise
  * 通过设置checkpoint目录和StreamingContext.getOrCreate(..)可以在第一次创建StreamingContext后，把StreamingContext的运行状态等
  * 都存到checkpoint中，之后如果遇到了宕机等情形重新运行程序时可以从checkpoint中恢复StreamingContext及其当前的任务运行进度。
  *

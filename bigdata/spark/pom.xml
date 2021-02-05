@@ -12,6 +12,7 @@
         <module>spark-core</module>
         <module>spark-sql</module>
         <module>spark-stream</module>
+        <module>spark-project-trafic</module>
     </modules>
 
     <dependencies>
