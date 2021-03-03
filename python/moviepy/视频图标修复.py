@@ -99,6 +99,47 @@ if not headblur_possible:
     logo_fix.__doc__ = doc
 
 
+# 取图标之外的某一处的内容放那里
+def logo_fix3(clip, x, y, width, _height):
+    """
+    Returns a filter that will blurr a moving part (a head ?) of
+    the frames. The position of the blur at time t is
+    defined by (fx(t), fy(t)), the radius of the blurring
+    by ``r_zone`` and the intensity of the blurring by ``r_blur``.
+    Requires OpenCV for the circling and the blurring.
+    Automatically deals with the case where part of the image goes
+    offscreen.
+    """
+
+    def fl(gf, t):
+        im = gf(t)
+        h, w, d = im.shape
+        height = _height
+        x1, x2 = x, min(x + width, w)
+        y1, y2 = y, min(y + height, h)
+
+        # 在左边则取左上角那块
+        if x1 < w//2:
+            if y1 < height:
+                if y1%2 != 0:
+                    y1 += 1
+                if height%2 != 0:
+                    height += 1
+                imseg1 = im[0:height//2:, 0:width]
+                imseg2 = im[y1-height//2+1:y1, 0:width]
+                imseg = np.vstack((imseg1, imseg2))
+            else:
+                imseg = im[0:height, 0:width]
+        else:
+            # 在右边则取右上角那块
+            imseg = im[0:height, w-width:w]
+        imseg = np.hstack(
+            (im[y1:y2, 0:x1], imseg, im[y1:y2, x2:]))
+        imnew = np.vstack((im[0:y1, 0:], imseg, im[y2:, 0:]))  # 将模糊化对应矩形对应的所有水平数据与其上和其下的数据竖直堆叠作为返回的帧数据
+        return imnew
+
+    return clip.fl(fl)
+
 
 def test():
     video = VideoFileClip('你好.sub.result.mp4')
@@ -194,7 +235,19 @@ def test4():
     CompositeVideoClip(clips).write_videofile('/home/elim/dev/视频录制/sub.handled.mp4')
 
 
+# 使用log_fix3
+def test5():
+    video = VideoFileClip('/home/elim/dev/视频录制/元宵晚会-彩排.mp4').subclip(0, -30)
+    video = video.fx(logo_fix3, 117, 86, 252, 101)
+    video = video.fx(logo_fix3, 1546, 84, 313, 96)
+    # 预览
+    # clip_blurred.show(10.5, interactive = True)
+    # video.preview()
+    video.write_videofile('/home/elim/dev/视频录制/sub.handled.mp4')
+
+
 if __name__ == "__main__":
     # test()
     # test3()
-    test4()
+    # test4()
+    test5()

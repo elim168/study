@@ -1,7 +1,7 @@
 from PIL import Image, ImageDraw, ImageFont
 
 # 创建一个图片
-image = Image.new('RGB', (500, 300), 'green')
+image = Image.new('RGBA', (500, 300), 'green')
 # 获取该图片的画笔，之后都通过该画笔进行绘画
 draw = ImageDraw.Draw(image)
 
@@ -26,6 +26,7 @@ image.show()
 # 绘制九宫格
 image = Image.new('RGB', (300, 300))
 draw = ImageDraw.Draw(image)
+
 
 
 def get_color(x, y):
