@@ -117,6 +117,8 @@ def test():
 # 本方法来源于网上，不太好使
 def test2():
     from copy import deepcopy
+    # 如果画面中像素的RBG各分量之和超过580,就处理，这是一个经验值，可调整
+    threshold = 500
     def remove_watermark(image):
         image = deepcopy(image)
         shape = image.shape
@@ -127,11 +129,72 @@ def test2():
             image[image[:,:,:3].sum(axis=2)>threshold] = [255] * 4
         return image
 
-    # 如果画面中像素的RBG各分量之和超过580,就处理，这是一个经验值，可调整
-    threshold = 600
-    video = VideoFileClip('你好.sub.result.mp4')
+    video:VideoFileClip = VideoFileClip('/home/elim/dev/视频录制/元宵晚会-彩排.mp4')
     video.fl_image(remove_watermark).preview()
+
+
+# a
+def test3():
+    from copy import deepcopy
+    # 如果画面中像素的RBG各分量之和超过580,就处理，这是一个经验值，可调整
+    threshold = 500
+    # x,y,w,h
+    p1 = (117, 86, 252, 101)
+    p2 = (1546, 84, 313, 96)
+    ps = (p1, p2)
+
+    def remove_watermark(image):
+        image = deepcopy(image)
+        # shape = image.shape
+        # print(shape[-1])
+        # print(shape)
+        """
+        第1次选择的是： (117, 86, 252, 101)
+        第2次选择的是： (1546, 84, 313, 96)
+        """
+        items = []
+        for p in ps:
+            for x in range(p[0], p[0] + p[2]):
+                for y in range(p[1], p[1] + p[3]):
+                    # print(image[y][x])
+                    color = image[y][x]
+                    if color[0] > 150 and color[1] > 100 and color[2] > 100:
+                        color[2] = 0
+                        # color1 = image[y + 5, x - 5]
+                        # for y1 in range(y - 5, y + 5):
+                        #     for x1 in range(x - 5, x + 5):
+                        #         color = image[y1][x1]
+                        #         color[0] = color1[0]
+                        #         color[1] = color1[1]
+                        #         color[2] = color1[2]
+
+        # if shape[-1] == 3:
+        #     image[image.sum(axis=2)>threshold] = [150] * 3
+        # elif shape[-1] == 4:
+        #     image[image[:,:,:3].sum(axis=2)>threshold] = [25] * 4
+        return image
+
+    video:VideoFileClip = VideoFileClip('/home/elim/dev/视频录制/sub.mp4')
+    video.fl_image(remove_watermark).write_videofile('/home/elim/dev/视频录制/sub.handled.mp4')
+
+
+def test4():
+    p1 = (117, 86, 252, 101)
+    p2 = (1546, 84, 313, 96)
+    ps = (p1, p2)
+    clips = []
+    video: VideoFileClip = VideoFileClip('/home/elim/dev/视频录制/sub.mp4')
+    clips.append(video)
+    for p in ps:
+        crop1 = video.crop(x1=p[0], x2=p[0] + p[2], y1=p[1], y2=p[1] - p[3] // 2).set_position((p[0], p[1]))
+        crop2 = video.crop(x1=p[0], x2=p[0] + p[2], y1=p[1]+p[3], y2=p[1] + 3 * p[3] // 2).set_position((p[0], p[1]+p[3]//2))
+        clips.append(crop1)
+        clips.append(crop2)
+
+    CompositeVideoClip(clips).write_videofile('/home/elim/dev/视频录制/sub.handled.mp4')
+
 
 if __name__ == "__main__":
     # test()
-    test2()
+    # test3()
+    test4()

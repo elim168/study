@@ -24,13 +24,14 @@ def subclip() :
 
 
 def subclip2():
-    video = VideoFileClip('01.简介-2021-02-21_22.49.27.mp4')
-    video = video.subclip(3, -6)
-    video = video.resize(width=1920, height=1080)
+    # video = VideoFileClip('/home/elim/dev/视频录制/01.简介-2021-02-26_22.43.43.mp4')
+    video = VideoFileClip('每逢佳节被催婚.mp4')
+    video = video.subclip('00:08:46', '00:10:14')
+    # video = video.resize(width=1920, height=1080)
     # txt_clip = TextClip("《疯狂直播》", fontsize=70, color='white', font='/usr/share/fonts/truetype/arphic/ukai.ttc')\
     #     .set_position('center').set_duration(15)
     # result = CompositeVideoClip([video, txt_clip])
-    video.write_videofile('2000爱笑的女孩.mp4')
+    video.write_videofile('/home/elim/dev/视频录制/女孩雇了个男朋友回家，被送了好多鱼.mp4')
 
 
 def subBatch(*times):

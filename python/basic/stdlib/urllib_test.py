@@ -11,3 +11,6 @@ with urlopen('https://cn.bing.com/') as response:
     for line in response:
         print(line)
         print(line.decode('utf-8'))
+
+
+

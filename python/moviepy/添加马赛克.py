@@ -107,19 +107,19 @@ def test4():
         my_headblur.__doc__ = doc
     # -----------------------------------------------------------------------
 
-    videoPath = '04一醉十年.mp4'
-    times = 3
+    videoPath = '/home/elim/dev/视频录制/元宵晚会-彩排.mp4'
+    times = 2
     cap = cv2.VideoCapture(videoPath)
     (flag, image) = cap.read()
-    video = VideoFileClip(videoPath)
+    video = VideoFileClip(videoPath).subclip(0, 5)
     for i in range(times):
         bbox = cv2.selectROI('selectroi', image)
         print('第{0}次选择的是：'.format(i + 1), bbox)
-        video = video.fx(my_headblur, bbox[0], bbox[1], bbox[2], bbox[3], 80)
+        # video = video.fx(my_headblur, bbox[0], bbox[1], bbox[2], bbox[3], 30)
     # 使用到了moviepy/video/fx/headblur.py中的内容，有疑问可以参考对应的源码
     # 马赛克位置可以通过程序“选择图片或视频位置.py”获取
     # video = video.fx(my_headblur, 1260, 36, 283, 57, 20)
-    video.write_videofile('result.{0}'.format(videoPath))
+    # video.write_videofile('/home/elim/dev/视频录制/元宵晚会-彩排.result.1.mp4')
 
 
 if __name__ == "__main__":
