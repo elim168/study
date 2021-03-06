@@ -7,7 +7,7 @@ def transparent_background(path):
         img = Image.open(path)
         img = img.convert("RGBA")  # 转换获取信息
         pixdata = img.load()
-        color_no = get_convert_middle(path) + 30  # 抠图的容错值
+        color_no = get_convert_middle(path) +27  # 抠图的容错值
 
         for y in range(img.size[1]):
             for x in range(img.size[0]):
@@ -42,4 +42,4 @@ def get_convert_middle(img_path):
 
 
 if __name__ == '__main__':
-    transparent_background('flower_01.jpg')
+    transparent_background('a.jpg')

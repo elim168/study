@@ -32,7 +32,7 @@ def addTransparency(img, factor=0.7):
 
 
 def test():
-    clip:VideoFileClip = VideoFileClip('/home/elim/dev/视频录制/元宵晚会-彩排.mp4')
+    clip:VideoFileClip = VideoFileClip('/home/elim/dev/视频录制/元宵晚会-彩排.mp4').subclip(20,-30)
     # clip.write_videofile('cctv.mp4')
     # (1584, 886)
     size = clip.size
@@ -42,7 +42,9 @@ def test():
     img_x = size[0] - img_width - 50
     img_y = 80
     image_clip = ImageClip(gene_image(img_width, img_height, 1), duration=clip.duration, transparent=True).set_position((img_x, img_y))
-    result = CompositeVideoClip([clip, image_clip])
+    clip2 = ImageClip('1.png').set_fps(clip.fps).set_duration(clip.duration).set_position((100, 60))
+    clip3 = ImageClip('1.png').set_fps(clip.fps).set_duration(clip.duration).set_position((180, 40))
+    result = CompositeVideoClip([clip, image_clip, clip2, clip3])
     result.write_videofile('logo.result.mp4')
 
 

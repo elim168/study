@@ -141,6 +141,39 @@ def logo_fix3(clip, x, y, width, _height):
     return clip.fl(fl)
 
 
+
+# 取左下角的一块内容放到左上角
+def logo_fix4(clip, x, y, width, _height):
+    """
+    Returns a filter that will blurr a moving part (a head ?) of
+    the frames. The position of the blur at time t is
+    defined by (fx(t), fy(t)), the radius of the blurring
+    by ``r_zone`` and the intensity of the blurring by ``r_blur``.
+    Requires OpenCV for the circling and the blurring.
+    Automatically deals with the case where part of the image goes
+    offscreen.
+    """
+
+    def fl(gf, t):
+        im = gf(t)
+        h, w, d = im.shape
+        height = _height
+        x1 = 0
+        x2 = x + width
+
+        y1 = y+height
+        y2 = 2*y1
+
+        imseg = im[y1:y2, x1:x2]
+        imseg = np.hstack(
+            (imseg, im[0:y+height, x2:]))
+        imnew = np.vstack((imseg, im[y+height:, 0:]))  # 将模糊化对应矩形对应的所有水平数据与其上和其下的数据竖直堆叠作为返回的帧数据
+        return imnew
+
+    return clip.fl(fl)
+
+
+
 def test():
     video = VideoFileClip('你好.sub.result.mp4')
     size = video.size
@@ -246,8 +279,21 @@ def test5():
     video.write_videofile('/home/elim/dev/视频录制/sub.handled.mp4')
 
 
+# 使用log_fix4
+def test6():
+    video = VideoFileClip('/home/elim/dev/视频录制/元宵晚会-彩排.mp4').subclip(0, 30)
+    video = video.fx(logo_fix4, 117, 86, 252, 101)
+    # video = video.fx(logo_fix3, 1546, 84, 313, 96)
+    # 预览
+    # clip_blurred.show(10.5, interactive = True)
+    # video.preview()
+    video.write_videofile('/home/elim/dev/视频录制/sub.handled.mp4')
+
+
+
 if __name__ == "__main__":
     # test()
     # test3()
     # test4()
-    test5()
+    # test5()
+    test6()

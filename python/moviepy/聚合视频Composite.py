@@ -80,12 +80,13 @@ clip2.set_position((0.4,0.7), relative=True)
 clip2.set_position(lambda t: ('center', 50+t) )
     :return:
     """
-    clip1 = VideoFileClip('04一醉十年.mp4').speedx(1.15)
+    # clip1 = VideoFileClip('04一醉十年.mp4').speedx(1.15).subclip(0, 20)
+    clip1 = VideoFileClip('04一醉十年.mp4').subclip(0, 10)
     size = clip1.size
     # 在指定的位置加一张图片
-    clip2 = ImageClip('head1.jpg').set_fps(clip1.fps).set_duration(clip1.duration).set_position((size[0]-198, 0))
+    clip2 = ImageClip('1.png').set_fps(clip1.fps).set_duration(clip1.duration).set_position((60, 0))
     result = CompositeVideoClip([clip1, clip2])
-    result = result.resize(width=1920, height=1080)
+    # result = result.resize(width=1920, height=1080)
     result.write_videofile('一醉十年.mp4')
 
 
