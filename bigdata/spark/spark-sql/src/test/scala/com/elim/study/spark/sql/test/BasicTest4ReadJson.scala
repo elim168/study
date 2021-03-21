@@ -81,6 +81,11 @@ object BasicTest4ReadJson {
 //    val rows = dataFrame.collect()
 //    rows.foreach(println)
 
+    /**
+     * DataFrame转RDD/DataSet
+     */
+    dataFrame.rdd.foreach(row => println(row))
+
     context.stop()
 
     sparkSession.stop()
