@@ -1,0 +1,66 @@
+<!--
+	Copyright 2009 The Go Authors. All rights reserved.
+	Use of this source code is governed by a BSD-style
+	license that can be found in the LICENSE file.
+-->
+
+{{ $colCount := tocColCount .}}
+{{/* Generate the TOC */}}
+<nav class="search-nav" style="column-count: {{$colCount}}" role="navigation">
+{{range $key, $val := .Idents}}
+	{{if $val}}
+		<a href="#{{$key.Name}}">{{$key.Name}}</a>
+		<br />
+	{{end}}
+{{end}}
+
+{{if not .Idents}}
+	{{with .Pak}}
+		<a href="#Packages">包 {{html $.Query}}</a>
+		<br />
+	{{end}}
+{{end}}
+
+{{with .Hit}}
+	{{with .Decls}}
+		<a href="#Global">包级声明</a>
+		<br />
+		{{range .}}
+			{{$pkg_html := pkgLink .Pak.Path | html}}
+			<a href="#Global_{{$pkg_html}}" class="indent">package {{html .Pak.Name}}</a>
+			<br />
+		{{end}}
+	{{end}}
+	{{with .Others}}
+		<a href="#Local">局部声明和使用</a>
+		<br />
+		{{range .}}
+			{{$pkg_html := pkgLink .Pak.Path | html}}
+			<a href="#Local_{{$pkg_html}}" class="indent">package {{html .Pak.Name}}</a>
+			<br />
+		{{end}}
+	{{end}}
+{{end}}
+
+{{with .Textual}}
+	{{if $.Complete}}
+		<a href="#Textual">文本出现了 {{html $.Found}} 次</a>
+	{{else}}
+		<a href="#Textual">文本出现超过 {{html $.Found}} 次</a>
+	{{end}}
+{{end}}
+</nav>
+
+{{with .Alert}}
+	<p>
+	<span class="alert" style="font-size:120%">{{html .}}</span>
+	</p>
+{{end}}
+{{with .Alt}}
+	<p>
+	<span class="alert" style="font-size:120%">你是否在找：</span>
+	{{range .Alts}}
+		<a href="search?q={{urlquery .}}" style="font-size:120%">{{html .}}</a>
+	{{end}}
+	</p>
+{{end}}
