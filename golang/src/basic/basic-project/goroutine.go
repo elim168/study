@@ -22,10 +22,9 @@ f2------------ 3
 f2------------ 4
 f1------------ 4
 
- */
+*/
 
-func main() {
-
+func gotest1() {
 	f1 := func() {
 		for i := 0; i < 5; i++ {
 			fmt.Println("f1------------", i)
@@ -43,9 +42,28 @@ func main() {
 	go f1()
 	go f2()
 	fmt.Println("Main End")
+}
+
+func gotest2() {
+	for i := 0; i < 10; i++ {
+		go func() {
+			// 全部输出A：10。i遍历完10次后变成10了。
+			fmt.Println("A:", i)
+		}()
+	}
+	for i := 0; i < 10; i++ {
+		go func(i int) {
+			fmt.Println("B:", i)
+		}(i)
+	}
+}
+
+func main() {
+
+	//gotest1()
+	gotest2()
 
 	// 等待敲一个回车
 	fmt.Scanln()
-
 
 }
