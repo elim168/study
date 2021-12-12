@@ -1,0 +1,26 @@
+<h1>首页</h1>
+
+
+<ul>
+	{{range $i, $title := .items}}
+	<li><a href="/view/{{$title}}">{{$i}}.{{$title}}</a></li>
+	{{end}}
+</ul>
+
+
+<div>分割线----------------------------遍历也可以写为下面这种方式</div>
+<ol>
+	{{range .items}}
+	<li><a href="/view/{{.}}">{{.}}</a></li>
+	{{end}}
+</ol>
+
+
+
+
+
+
+
+
+
+

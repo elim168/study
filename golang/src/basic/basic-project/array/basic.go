@@ -24,4 +24,9 @@ func main() {
 	// slice bounds out of range [:60] with capacity 32
 	//fmt.Println(a[5: 60])
 
+/*	b := [3]int{0, 0, 0}
+	var c [2]int = [2]int{3, 9}
+	// copy是针对切片的，数组是不能使用copy的。
+	copy(b, c)*/
+
 }

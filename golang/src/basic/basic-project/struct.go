@@ -18,6 +18,16 @@ type father struct {
 	son person
 }
 
+
+/*
+
+P_Student
+Golang中没有继承。下面的定义会让P_Student组合person类型的属性和方法，它可以直接访问person的属性和方法，但是调用方法时的属主都是person。因为它没有继承
+ */
+type P_Student struct {
+	person
+}
+
 /**
 构造方法
  */
@@ -128,5 +138,17 @@ func main() {
 
 	var myint = MyInt(10)
 	fmt.Println(myint, int(myint))
+
+	// 构造时指定person的一些属性
+	var s = P_Student{person{"李四", "男", 10, 30}}
+	fmt.Println(s.id, s.name, s.Sex())
+
+	var s2 = P_Student{}
+	s2.name = "小七"
+	fmt.Println(s2.id, s2.name, s2.Sex())
+
+	// s作为person对象赋值给person类型的p1变量
+	p1 = s.person
+	fmt.Println(p1)
 
 }

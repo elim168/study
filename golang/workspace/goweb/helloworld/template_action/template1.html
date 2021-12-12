@@ -1,0 +1,26 @@
+<html>
+    <head>
+        <title>测试template标签</title>
+    </head>
+    <body>
+        template标签可以对模板进行嵌套
+        <div style="border: red 1px solid;">
+            后台传递过来的数据是：{{.}}
+        </div>
+        <div style="border: 1px solid rgb(0, 255, 85); margin-top: 20px;">
+            如下是嵌套了template2的内容
+            <div style="border: 1px solid brown; margin: 10px;">
+                {{template "template2.html"}}
+            </div>
+            
+        </div>
+        <hr/>
+        <div style="border: 1px solid rgb(0, 255, 85);">
+            如下是嵌套了template2的内容。嵌套模板时还可以传参。如下是把当前模板的参数传递到template2的结果。
+            <div style="border: 1px solid blue; margin: 10px;">
+                {{template "template2.html" .}}
+            </div>
+            
+        </div>
+    </body>
+</html>

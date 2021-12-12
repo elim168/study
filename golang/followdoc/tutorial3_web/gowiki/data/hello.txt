@@ -1,0 +1,6 @@
+你好，中国；
+你好，世界！<br/>
+Hello China! <br/>
+Hello World! <br/>
+
+我们都有一个家，名字叫中国。

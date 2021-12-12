@@ -36,6 +36,9 @@ func main() {
 	// 数字0开头是八进制
 	a,_ = strconv.ParseInt("0123", 0, 32)
 	fmt.Println(a)
+	// 数字0b开头是二进制
+	a,_ = strconv.ParseInt("0b1111", 0, 32)
+	fmt.Println("二进制1111：", a)
 
 	fmt.Println(strconv.ParseUint("123", 0, 32))
 	fmt.Println(strconv.ParseBool("True"))

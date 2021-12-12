@@ -1,0 +1,23 @@
+<html>
+    <head>
+        <title>测试block标签</title>
+    </head>
+    <body>
+        当前值是：{{.}}<br/>
+
+        block标签用于定义模板，同时该模板也会立即展示。它的语法是"block <模板名称> <给模板传入的值>"，传入的值也是必须的。 
+
+        <div>
+        {{block "template2" .}}
+            这里相当于定义了模板template2,同时这段话也会立即成为主模板的一部分。相当于它在主模板的当前位置引入了该模板。
+        {{end}}
+        </div>
+
+        <div>
+            如下是我们自己手动再引入一次template2.<br/>
+            {{template "template2"}}
+        </div>
+
+        
+    </body>
+</html>

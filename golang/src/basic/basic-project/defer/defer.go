@@ -17,7 +17,7 @@ main defer1
 */
 func main() {
 
-	// defer 语句会在func执行完成后再执行。有多个defer时，defer会按声明时的倒序执行
+	// defer 语句会在func执行完成后return前再执行。有多个defer时，defer会按声明时的倒序执行
 
 	println("main Start")
 	defer println("main defer1")
@@ -39,6 +39,11 @@ func main() {
 	a = 10
 	defer calc("B", a, calc("B", a, b))
 	b = 20
+
+
+	// defer是在函数执行完后，跳出函数前执行，包括异常跳出或者正常return
+
+
 }
 
 func func1() {

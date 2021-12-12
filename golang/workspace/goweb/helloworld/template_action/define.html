@@ -1,0 +1,25 @@
+<html>
+    <head>
+        <title>测试define标签</title>
+    </head>
+    <body>
+        当前值是：{{.}}<br/>
+
+        define标签用于定义一个模板，并给模板命名。下面的define标签包含的内容就是一个模板，名字叫template1
+
+        {{define "template1"}}
+            当前值是-----template1：{{.}}
+            <div>也可以用template标签包含其它的模板</div>
+            <div>
+                {{template "template2"}}
+            </div>
+
+        {{end}}
+
+
+
+        {{define "template2"}}
+            当前值是--------template2：{{.}}
+        {{end}}
+    </body>
+</html>

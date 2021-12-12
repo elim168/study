@@ -20,7 +20,14 @@ func main() {
 	println(fmt.Sprint(b))//[0 0 3 0 0 30 0 0 0 0]
 
 	var c = []int{2, 3, 6, 8, 9, 10, 22, 23, 28}
-	println(fmt.Sprint(c))
+	// 数组定义为跨行的时候，最后一个结束的元素后面也必须有逗号,
+	var d1 = []int{
+		1,
+		2,
+		3,
+		4,
+	}
+	println(fmt.Sprint(c), "d1=", d1)
 	// 数组可以进行切片，即取数组中的某一段内容，语法类型python，用冒号分隔起始索引，包括前面的不包括后面的
 	println(fmt.Sprint(c[1:2]))//[3]
 	println(fmt.Sprint(c[5:]))//[10 22 23 28]

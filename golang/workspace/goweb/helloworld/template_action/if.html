@@ -1,0 +1,15 @@
+<html>
+    <head>
+        <title>测试if标签</title>
+    </head>
+    <body>
+        当前值是：{{.}}<br/>
+        {{if  gt . 18}}
+        当前值大于18<br/>
+        {{else if eq . 18}}
+        当前值等于18<br/>
+        {{else}}
+        当前值不大于18<br/>
+        {{end}}
+    </body>
+</html>
