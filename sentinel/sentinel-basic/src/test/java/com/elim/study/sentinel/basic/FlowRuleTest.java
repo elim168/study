@@ -80,6 +80,7 @@ public class FlowRuleTest {
         try (Entry entry = SphU.entry(resourceName)){
           TimeUnit.MILLISECONDS.sleep(500);
           succeedCount.incrementAndGet();
+          entry.exit();
         } catch (BlockException e) {
           failCount.incrementAndGet();
         } catch (Exception e) {

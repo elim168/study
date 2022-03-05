@@ -9,6 +9,6 @@ as a triplet (hour, min, sec) (t_start=(0,3,50.54)) or as a string (t_start='00:
 """
 
 def subclip() :
-    video = VideoFileClip('1.result.mp4')
+    video = VideoFileClip('../../basic/video/航拍中国-新疆/1.mp4')
     # 截取0-10秒
-    subclip1: VideoClip = video.subclip(0, 5)
+    subclip1: VideoClip = video.subclip(3)

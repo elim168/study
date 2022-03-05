@@ -50,8 +50,8 @@ class Cctv():
         json_data = response.json()
         print(json_data)
         validChapterNum = json_data['video']['validChapterNum']
-        # dl_list = json_data['video']['chapters4']
-        dl_list = json_data['video']['chapters' + str(validChapterNum)]
+        dl_list = json_data['video']['chapters4']
+        # dl_list = json_data['video']['chapters' + str(validChapterNum)]
         for each in range(len(dl_list)):
             downloadurl = dl_list[each]['url']
             dl_urls.append(downloadurl)
@@ -73,8 +73,9 @@ class Cctv():
                     f.write(r)
             clip = VideoFileClip(file_name)
             clips.append(clip)
-        result_video = concatenate_videoclips(clips)
-        result_video.write_videofile('%s.mp4' % (name))
+        # result_video = concatenate_videoclips(clips)
+        # result_video.write_videofile('%s.mp4' % (name))
+
         # 删除创建的临时文件
         # files = os.listdir(name)
         # for file in files:
@@ -85,6 +86,6 @@ class Cctv():
 
 if __name__ == "__main__":
     cctv = Cctv()
-    url = 'https://tv.cctv.com/2009/11/11/VIDE1355603184812672.shtml?spm=C55953877151.PuvgIQ6NQbQd.0.0'
-    video_name = '2001赵本山-卖拐'
+    url = 'https://tv.cctv.com/2017/03/04/VIDEhOELsnCYlUtKhOmfO4Qu170304.shtml'
+    video_name = '航拍中国-新疆'
     cctv.download(url, video_name)
